@@ -1,0 +1,58 @@
+Options are saved in file run.config and printed here:
+compFile=../comp.wt.vs.ko.txt
+dmrMethods=2
+doComp=1
+doDmcScan=0
+doDmrScan=1
+doMergeRatioFiles=0
+doStrandSpecifiMeth=0
+filterCredibleDif=-10
+lmFit=1
+maxDistConsDmcs=300
+mergeNotIntersect=1
+minCredibleDif=0.1
+minDepthForComp=3
+minDmcsInDmr=3
+minNominalDif=0.3333
+pFetDmc=0.05
+pFetDmr=0.05
+pSimDmc=1
+pSimDmr=1
+precision=3
+threads=6
+topRankByCDif=1
+topRankByPSim=1
+Since ratiosFiles are not specified but compFile ../comp.wt.vs.ko.txt is specified and exists, program will go to DMR calling.
+../comp.wt.vs.ko.txt	6	1	1
+size of xVector=0
+size of labels=0
+size of ratiosFiles=0
+0	0	1	
+../comp.wt.vs.ko.txt	6	1	1
+size of xVector=0
+size of labels=0
+size of ratiosFiles=0
+0	0	0	
+../comp.wt.vs.ko.txt	6	1	1
+size of xVector=0
+0,1,size of labels=2
+size of ratiosFiles=0
+0	0	0	
+../comp.wt.vs.ko.txt	6	1	1
+size of xVector=0
+0,1,size of labels=2
+size of ratiosFiles=0
+0	0	0	
+Start to call DMCs
+done0..1
+running: egrep -v '^track|^browser|^#' dmc_M2_0_vs_1.bed > dmc_M2_0_vs_1.temp && bedToBigBed dmc_M2_0_vs_1.temp /pillar_storage/pillar00/deqiangs/ref/mm9.chrom.sizes dmc_M2_0_vs_1.bb && rm dmc_M2_0_vs_1.temp
+0....1
+starting to call DMR
+running: egrep -v '^track|^browser|^#' dmr_M2_0_vs_1.bed > dmr_M2_0_vs_1.temp && bedToBigBed dmr_M2_0_vs_1.temp /pillar_storage/pillar00/deqiangs/ref/mm9.chrom.sizes dmr_M2_0_vs_1.bb
+pass1 - making usageList (20 chroms): 1 millis
+pass2 - checking and writing primary data (99 records, 9 fields): 2 millis
+index write: 0 millis
+pass3 - writeReducedOnceReturnReducedTwice: 0 millis
+further reductions: 1 millis
+start to check predefined regions
+Program successfully finished

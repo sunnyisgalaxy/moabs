@@ -1,0 +1,318 @@
+Options are saved in file run.config and printed here:
+cytosineMinScore=20
+excludedFlag=0
+fullMode=0
+keepTemp=0
+mappedFiles=ko_r2.bam ko_r1.bam 
+minFragSize=0
+minMMFragSize=0
+nextBaseMinScore=3
+processPEOverlapSeq=1
+qualityScoreBase=0
+reference=/lilab/deqiangs/data/moabs/ref/mm9.fa
+reportCHX=X
+reportCpX=G
+requiredFlag=0
+sampleName=ko
+skipRandomChrom=1
+statsOnly=0
+threads=4
+trimRRBSEndRepairSeq=2
+trimWGBSEndRepairPE1Seq=3
+trimWGBSEndRepairPE2Seq=3
+Program started
+From the extension of file ko_r2.bam, program is parsing file according to BAM foramt
+From the extension of file ko_r1.bam, program is parsing file according to BAM foramt
+For file ko_r1.bam, the quality score format is Sanger format based at 33!
+For file ko_r2.bam, the quality score format is Sanger format based at 33!
+Protocol and read length are detected as WGBS and 100 bases for file ko_r1.bam
+Protocol and read length are detected as WGBS and 100 bases for file ko_r2.bam
+For file ko_r2.bam the number of all reads is 6706 and the number of mapped reads is 6706
+For file ko_r1.bam the number of all reads is 14317 and the number of mapped reads is 14317
+Start processing file ko_r2.bam on chrom chr1
+Start processing file ko_r1.bam on chrom chr1
+Writing strand specific statistics for file ko_r2.bam and chrom chr1
+Writing strand combined statistics for file ko_r2.bam and chrom chr1
+Writing strand specific statistics for file ko_r1.bam and chrom chr1
+Writing strand combined statistics for file ko_r1.bam and chrom chr1
+Start processing file ko_r2.bam on chrom chr10
+Start processing file ko_r1.bam on chrom chr10
+Writing strand specific statistics for file ko_r2.bam and chrom chr10
+Writing strand combined statistics for file ko_r2.bam and chrom chr10
+Writing strand specific statistics for file ko_r1.bam and chrom chr10
+Writing strand combined statistics for file ko_r1.bam and chrom chr10
+Start processing file ko_r2.bam on chrom chr11
+Start processing file ko_r1.bam on chrom chr11
+Writing strand specific statistics for file ko_r2.bam and chrom chr11
+Writing strand combined statistics for file ko_r2.bam and chrom chr11
+Writing strand specific statistics for file ko_r1.bam and chrom chr11
+Writing strand combined statistics for file ko_r1.bam and chrom chr11
+Finished processing file ko_r2.bam on chrom chr1
+Finished processing file ko_r1.bam on chrom chr1
+For file ko, number of cytosines processed: 10343 for chrom chr1
+Writing strand specific statistics for file ko and chrom chr1
+Writing strand combined statistics for file ko and chrom chr1
+Start processing file ko_r2.bam on chrom chr12
+Start processing file ko_r1.bam on chrom chr12
+Writing strand specific statistics for file ko_r2.bam and chrom chr12
+Writing strand combined statistics for file ko_r2.bam and chrom chr12
+Writing strand specific statistics for file ko_r1.bam and chrom chr12
+Writing strand combined statistics for file ko_r1.bam and chrom chr12
+
+All files done for chrom chr1
+Finished processing file ko_r1.bam on chrom chr10
+Finished processing file ko_r2.bam on chrom chr10
+For file ko, number of cytosines processed: 5364 for chrom chr10
+Writing strand specific statistics for file ko and chrom chr10
+Writing strand combined statistics for file ko and chrom chr10
+Finished processing file ko_r1.bam on chrom chr11
+Finished processing file ko_r2.bam on chrom chr11
+For file ko, number of cytosines processed: 9831 for chrom chr11
+Writing strand specific statistics for file ko and chrom chr11
+Writing strand combined statistics for file ko and chrom chr11
+Finished processing file ko_r1.bam on chrom chr12
+Start processing file ko_r2.bam on chrom chr13
+Start processing file ko_r1.bam on chrom chr13
+Writing strand specific statistics for file ko_r2.bam and chrom chr13
+Writing strand combined statistics for file ko_r2.bam and chrom chr13
+Writing strand specific statistics for file ko_r1.bam and chrom chr13
+Writing strand combined statistics for file ko_r1.bam and chrom chr13
+
+All files done for chrom chr10
+Finished processing file ko_r2.bam on chrom chr12
+For file ko, number of cytosines processed: 5811 for chrom chr12
+Writing strand specific statistics for file ko and chrom chr12
+Writing strand combined statistics for file ko and chrom chr12
+
+All files done for chrom chr11
+Finished processing file ko_r2.bam on chrom chr13
+Finished processing file ko_r1.bam on chrom chr13
+For file ko, number of cytosines processed: 5245 for chrom chr13
+Writing strand specific statistics for file ko and chrom chr13
+Writing strand combined statistics for file ko and chrom chr13
+Start processing file ko_r2.bam on chrom chr14
+Start processing file ko_r1.bam on chrom chr14
+Writing strand specific statistics for file ko_r2.bam and chrom chr14
+Writing strand combined statistics for file ko_r2.bam and chrom chr14
+Writing strand specific statistics for file ko_r1.bam and chrom chr14
+Writing strand combined statistics for file ko_r1.bam and chrom chr14
+
+All files done for chrom chr12
+Start processing file ko_r2.bam on chrom chr15
+Start processing file ko_r1.bam on chrom chr15
+Writing strand specific statistics for file ko_r2.bam and chrom chr15
+Writing strand combined statistics for file ko_r2.bam and chrom chr15
+Writing strand specific statistics for file ko_r1.bam and chrom chr15
+Writing strand combined statistics for file ko_r1.bam and chrom chr15
+Finished processing file ko_r1.bam on chrom chr14
+Finished processing file ko_r2.bam on chrom chr14
+For file ko, number of cytosines processed: 7494 for chrom chr14
+Writing strand specific statistics for file ko and chrom chr14
+Writing strand combined statistics for file ko and chrom chr14
+
+All files done for chrom chr13
+Finished processing file ko_r1.bam on chrom chr15
+Finished processing file ko_r2.bam on chrom chr15
+For file ko, number of cytosines processed: 4334 for chrom chr15
+Writing strand specific statistics for file ko and chrom chr15
+Writing strand combined statistics for file ko and chrom chr15
+Start processing file ko_r2.bam on chrom chr16
+Start processing file ko_r1.bam on chrom chr16
+Writing strand specific statistics for file ko_r2.bam and chrom chr16
+Writing strand combined statistics for file ko_r2.bam and chrom chr16
+Writing strand specific statistics for file ko_r1.bam and chrom chr16
+Writing strand combined statistics for file ko_r1.bam and chrom chr16
+
+All files done for chrom chr14
+Start processing file ko_r2.bam on chrom chr17
+Start processing file ko_r1.bam on chrom chr17
+Writing strand specific statistics for file ko_r2.bam and chrom chr17
+Writing strand combined statistics for file ko_r2.bam and chrom chr17
+Writing strand specific statistics for file ko_r1.bam and chrom chr17
+Writing strand combined statistics for file ko_r1.bam and chrom chr17
+
+All files done for chrom chr15
+Finished processing file ko_r1.bam on chrom chr16
+Finished processing file ko_r2.bam on chrom chr16
+For file ko, number of cytosines processed: 4695 for chrom chr16
+Writing strand specific statistics for file ko and chrom chr16
+Writing strand combined statistics for file ko and chrom chr16
+Finished processing file ko_r2.bam on chrom chr17
+Finished processing file ko_r1.bam on chrom chr17
+For file ko, number of cytosines processed: 5884 for chrom chr17
+Writing strand specific statistics for file ko and chrom chr17
+Writing strand combined statistics for file ko and chrom chr17
+Start processing file ko_r2.bam on chrom chr19
+Start processing file ko_r1.bam on chrom chr19
+Writing strand specific statistics for file ko_r2.bam and chrom chr19
+Writing strand combined statistics for file ko_r2.bam and chrom chr19
+Writing strand specific statistics for file ko_r1.bam and chrom chr19
+Writing strand combined statistics for file ko_r1.bam and chrom chr19
+Start processing file ko_r2.bam on chrom chr18
+Start processing file ko_r1.bam on chrom chr18
+Writing strand specific statistics for file ko_r2.bam and chrom chr18
+Writing strand combined statistics for file ko_r2.bam and chrom chr18
+Writing strand specific statistics for file ko_r1.bam and chrom chr18
+Writing strand combined statistics for file ko_r1.bam and chrom chr18
+
+All files done for chrom chr16
+Start processing file ko_r2.bam on chrom chr2
+Start processing file ko_r1.bam on chrom chr2
+Writing strand specific statistics for file ko_r2.bam and chrom chr2
+Writing strand combined statistics for file ko_r2.bam and chrom chr2
+Writing strand specific statistics for file ko_r1.bam and chrom chr2
+Writing strand combined statistics for file ko_r1.bam and chrom chr2
+
+All files done for chrom chr17
+Finished processing file ko_r1.bam on chrom chr2
+Finished processing file ko_r2.bam on chrom chr2
+For file ko, number of cytosines processed: 24255 for chrom chr2
+Writing strand specific statistics for file ko and chrom chr2
+Writing strand combined statistics for file ko and chrom chr2
+Finished processing file ko_r1.bam on chrom chr18
+Finished processing file ko_r2.bam on chrom chr19
+Finished processing file ko_r2.bam on chrom chr18
+For file ko, number of cytosines processed: 8839 for chrom chr18
+Writing strand specific statistics for file ko and chrom chr18
+Writing strand combined statistics for file ko and chrom chr18
+Finished processing file ko_r1.bam on chrom chr19
+For file ko, number of cytosines processed: 4543 for chrom chr19
+Writing strand specific statistics for file ko and chrom chr19
+Writing strand combined statistics for file ko and chrom chr19
+Start processing file ko_r2.bam on chrom chr3
+Start processing file ko_r1.bam on chrom chr3
+Writing strand specific statistics for file ko_r2.bam and chrom chr3
+Writing strand specific statistics for file ko_r1.bam and chrom chr3
+Writing strand combined statistics for file ko_r2.bam and chrom chr3
+Writing strand combined statistics for file ko_r1.bam and chrom chr3
+
+All files done for chrom chr2
+Finished processing file ko_r1.bam on chrom chr3
+Finished processing file ko_r2.bam on chrom chr3
+For file ko, number of cytosines processed: 12517 for chrom chr3
+Writing strand specific statistics for file ko and chrom chr3
+Writing strand combined statistics for file ko and chrom chr3
+
+All files done for chrom chr19
+Start processing file ko_r2.bam on chrom chr6
+Start processing file ko_r1.bam on chrom chr6
+Writing strand specific statistics for file ko_r2.bam and chrom chr6
+Writing strand combined statistics for file ko_r2.bam and chrom chr6
+Writing strand specific statistics for file ko_r1.bam and chrom chr6
+Writing strand combined statistics for file ko_r1.bam and chrom chr6
+
+All files done for chrom chr18
+
+All files done for chrom chr3
+Start processing file ko_r2.bam on chrom chr5
+Start processing file ko_r1.bam on chrom chr5
+Writing strand specific statistics for file ko_r2.bam and chrom chr5
+Writing strand combined statistics for file ko_r2.bam and chrom chr5
+Writing strand specific statistics for file ko_r1.bam and chrom chr5
+Writing strand combined statistics for file ko_r1.bam and chrom chr5
+Start processing file ko_r2.bam on chrom chr4
+Start processing file ko_r1.bam on chrom chr4
+Writing strand specific statistics for file ko_r2.bam and chrom chr4
+Writing strand combined statistics for file ko_r2.bam and chrom chr4
+Writing strand specific statistics for file ko_r1.bam and chrom chr4
+Writing strand combined statistics for file ko_r1.bam and chrom chr4
+Finished processing file ko_r2.bam on chrom chr6
+Finished processing file ko_r1.bam on chrom chr6
+For file ko, number of cytosines processed: 16309 for chrom chr6
+Writing strand specific statistics for file ko and chrom chr6
+Writing strand combined statistics for file ko and chrom chr6
+Start processing file ko_r2.bam on chrom chr7
+Start processing file ko_r1.bam on chrom chr7
+Writing strand specific statistics for file ko_r2.bam and chrom chr7
+Writing strand combined statistics for file ko_r2.bam and chrom chr7
+Writing strand specific statistics for file ko_r1.bam and chrom chr7
+Writing strand combined statistics for file ko_r1.bam and chrom chr7
+Finished processing file ko_r1.bam on chrom chr5
+Finished processing file ko_r2.bam on chrom chr5
+For file ko, number of cytosines processed: 23165 for chrom chr5
+Writing strand specific statistics for file ko and chrom chr5
+Writing strand combined statistics for file ko and chrom chr5
+Finished processing file ko_r1.bam on chrom chr4
+Finished processing file ko_r2.bam on chrom chr4
+For file ko, number of cytosines processed: 12274 for chrom chr4
+Writing strand specific statistics for file ko and chrom chr4
+Writing strand combined statistics for file ko and chrom chr4
+
+All files done for chrom chr6
+Finished processing file ko_r2.bam on chrom chr7
+Finished processing file ko_r1.bam on chrom chr7
+For file ko, number of cytosines processed: 8005 for chrom chr7
+Writing strand specific statistics for file ko and chrom chr7
+Writing strand combined statistics for file ko and chrom chr7
+
+All files done for chrom chr5
+
+All files done for chrom chr4
+
+All files done for chrom chr7
+Start processing file ko_r2.bam on chrom chrM
+Start processing file ko_r1.bam on chrom chrM
+Writing strand specific statistics for file ko_r2.bam and chrom chrM
+Writing strand combined statistics for file ko_r2.bam and chrom chrM
+Writing strand specific statistics for file ko_r1.bam and chrom chrM
+Writing strand combined statistics for file ko_r1.bam and chrom chrM
+Finished processing file ko_r2.bam on chrom chrM
+Finished processing file ko_r1.bam on chrom chrM
+For file ko, number of cytosines processed: 0 for chrom chrM
+Writing strand specific statistics for file ko and chrom chrM
+Writing strand combined statistics for file ko and chrom chrM
+
+All files done for chrom chrM
+Start processing file ko_r2.bam on chrom chr9
+Start processing file ko_r1.bam on chrom chr9
+Writing strand specific statistics for file ko_r2.bam and chrom chr9
+Writing strand combined statistics for file ko_r2.bam and chrom chr9
+Writing strand specific statistics for file ko_r1.bam and chrom chr9
+Writing strand combined statistics for file ko_r1.bam and chrom chr9
+Start processing file ko_r2.bam on chrom chr8
+Start processing file ko_r1.bam on chrom chr8
+Writing strand specific statistics for file ko_r2.bam and chrom chr8
+Writing strand combined statistics for file ko_r2.bam and chrom chr8
+Writing strand specific statistics for file ko_r1.bam and chrom chr8
+Writing strand combined statistics for file ko_r1.bam and chrom chr8
+Finished processing file ko_r1.bam on chrom chr9
+Finished processing file ko_r2.bam on chrom chr8
+Finished processing file ko_r2.bam on chrom chr9
+For file ko, number of cytosines processed: 8217 for chrom chr9
+Writing strand specific statistics for file ko and chrom chr9
+Writing strand combined statistics for file ko and chrom chr9
+Finished processing file ko_r1.bam on chrom chr8
+For file ko, number of cytosines processed: 5663 for chrom chr8
+Writing strand specific statistics for file ko and chrom chr8
+Writing strand combined statistics for file ko and chrom chr8
+Start processing file ko_r2.bam on chrom chrX
+Start processing file ko_r1.bam on chrom chrX
+Writing strand specific statistics for file ko_r2.bam and chrom chrX
+Writing strand combined statistics for file ko_r2.bam and chrom chrX
+Writing strand specific statistics for file ko_r1.bam and chrom chrX
+Writing strand combined statistics for file ko_r1.bam and chrom chrX
+
+All files done for chrom chr9
+
+All files done for chrom chr8
+Finished processing file ko_r2.bam on chrom chrX
+Finished processing file ko_r1.bam on chrom chrX
+For file ko, number of cytosines processed: 10280 for chrom chrX
+Writing strand specific statistics for file ko and chrom chrX
+Writing strand combined statistics for file ko and chrom chrX
+Start processing file ko_r2.bam on chrom chrY
+Start processing file ko_r1.bam on chrom chrY
+Writing strand specific statistics for file ko_r2.bam and chrom chrY
+Writing strand combined statistics for file ko_r2.bam and chrom chrY
+Writing strand specific statistics for file ko_r1.bam and chrom chrY
+Writing strand combined statistics for file ko_r1.bam and chrom chrY
+Finished processing file ko_r2.bam on chrom chrY
+Finished processing file ko_r1.bam on chrom chrY
+For file ko, number of cytosines processed: 0 for chrom chrY
+Writing strand specific statistics for file ko and chrom chrY
+Writing strand combined statistics for file ko and chrom chrY
+
+All files done for chrom chrY
+
+All files done for chrom chrX
+Program successfully finished

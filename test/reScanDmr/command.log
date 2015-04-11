@@ -1,0 +1,1 @@
+nohup mcomp -c ../comp.wt.vs.ko.txt --doDmcScan=0 --dmrMethods=2 --minCredibleDif 0.1 > mcomp.rerun.log

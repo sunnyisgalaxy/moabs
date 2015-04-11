@@ -1,0 +1,1 @@
+#chrom	start	end	totalC_0	nominalRatio_0	ratioCI_0	totalC_1	nominalRatio_1	ratioCI_1	nominalDif_1-0	credibleDif_1-0	difCI_1-0	p_sim_1_v_0	p_fet_1_v_0	class

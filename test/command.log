@@ -1,0 +1,7 @@
+/usr/bin/cpan 
+export PERL5LIB=$PERL5LIB:/lilab/deqiangs/progs/forcpan/lib/perl5/site_perl/5.8.8/
+/usr/bin/perl -e 'use Config::Simple;'
+
+export PATH=/lilab/deqiangs/data/moabs/v1.2.1/bin:$PATH
+
+nohup moabs -cf mytestrun.cfg > moabs.mytestrun.cfg.log 

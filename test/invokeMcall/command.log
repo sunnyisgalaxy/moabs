@@ -1,0 +1,1 @@
+nohup moabs -cf mytestrun.cfg > moabs.mytestrun.cfg.log

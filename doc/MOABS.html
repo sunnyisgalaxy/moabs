@@ -1,0 +1,2353 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  
+  "http://www.w3.org/TR/html4/loose.dtd">  
+<html > 
+<head><title></title> 
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"> 
+<meta name="generator" content="TeX4ht (http://www.cse.ohio-state.edu/~gurari/TeX4ht/)"> 
+<meta name="originator" content="TeX4ht (http://www.cse.ohio-state.edu/~gurari/TeX4ht/)"> 
+<!-- html --> 
+<meta name="src" content="MOABS.tex"> 
+<meta name="date" content="2013-06-21 11:03:00"> 
+<link rel="stylesheet" type="text/css" href="MOABS.css"> 
+</head><body 
+>
+                                                                                  
+                                                                                  
+<!--l. 9--><p class="indent" >
+                                                                                  
+                                                                                  
+<div class="center" 
+>
+<!--l. 9--><p class="noindent" >
+<!--l. 9--><p class="noindent" ><a 
+href="https://code.google.com/p/moabs" ><span 
+class="ec-lmbx-12">The MOABS Pipeline Document</span></a>
+<div class="tabular"> <table id="TBL-1" class="tabular" 
+cellspacing="0" cellpadding="0"  
+><colgroup id="TBL-1-1g"><col 
+id="TBL-1-1"></colgroup><tr  
+ style="vertical-align:baseline;" id="TBL-1-1-"><td  style="white-space:nowrap; text-align:center;" id="TBL-1-1-1"  
+class="td11"> A Technical Document  </td>
+</tr><tr  
+ style="vertical-align:baseline;" id="TBL-1-2-"><td  style="white-space:nowrap; text-align:center;" id="TBL-1-2-1"  
+class="td11">       written by           </td>
+</tr><tr  
+ style="vertical-align:baseline;" id="TBL-1-3-"><td  style="white-space:nowrap; text-align:center;" id="TBL-1-3-1"  
+class="td11">    <a 
+href="https://sites.google.com/site/deqiangsunbio" >DEQIANG SUN</a>       </td>
+</tr><tr  
+ style="vertical-align:baseline;" id="TBL-1-4-"><td  style="white-space:nowrap; text-align:center;" id="TBL-1-4-1"  
+class="td11">Baylor College of Medicine</td></tr></table>
+</div>
+<!--l. 9--><p class="noindent" >June 12, 2013<br />
+For MOABS v1.2.1
+<!--l. 9--><p class="noindent" >Contact: deqiangs@bcm.edu</div>
+                                                                                  
+                                                                                  
+                                                                                  
+                                                                                  
+                                                                                  
+                                                                                  
+<!--l. 4--><p class="indent" >
+                                                                                  
+                                                                                  
+<div class="center" 
+>
+<!--l. 4--><p class="noindent" >
+<!--l. 4--><p class="noindent" ><span 
+class="ec-lmbx-12">Abstract</span><br />
+<span 
+class="ec-lmbx-12">MOABS: </span><span id="textcolor1"><span 
+class="ec-lmbx-12">MO</span></span><span 
+class="ec-lmbx-12">del based </span><span id="textcolor2"><span 
+class="ec-lmbx-12">A</span></span><span 
+class="ec-lmbx-12">nalysis of </span><span id="textcolor3"><span 
+class="ec-lmbx-12">B</span></span><span 
+class="ec-lmbx-12">isulfite </span><span id="textcolor4"><span 
+class="ec-lmbx-12">S</span></span><span 
+class="ec-lmbx-12">equencing data</span>
+<br />
+Keywords: <span 
+class="ec-lmbx-12">Bioinformatics, Biostatistics, Methylation,</span>
+<span 
+class="ec-lmbx-12">Hydroxymethylation, WGBS, RRBS, DMR, Differential Methylation</span>
+</div>
+<!--l. 4--><p class="noindent" >&#x00A0;&#x00A0;
+<!--l. 7--><p class="indent" >    In one sentence, MOABS is a complete, accurate and efficient solution for analysis of
+large scale base-resolution DNA methylation data, bisulfite sequencing or single molecule
+direct sequencing.
+<!--l. 9--><p class="indent" >    5-methylcytosine and 5-hydroxymethylcytosine can now be quantitatively measured
+at base level by whole genome bisulfite sequencing. However, lack of complete and
+accurate methods describing and utilizing digital methylation information from single base
+to region level, and lack of accurate and fast analysis pipeline are still two major
+challenges. They are now solved by MOABS, a complete, accurate and efficient solution for
+methylation data analysis. It seamlessly integrates alignment, methylation calling,
+identification of hypomethylation for one sample and differential methylation for multiple
+samples, and other downstream analysis. We show that it is aware of replicate
+reproducibility, measures biological significance, and is accurate even at low coverage. It
+uses advanced algorithms and efficiently utilizes threads and clusters so that 2 billion
+aligned reads from two conditions can be processed lightening fast in 1 hour (vs
+more than 1 day by other pipelines) analyzing methylation on around 30 million
+                                                                                  
+                                                                                  
+CpGs.
+                                                                                  
+                                                                                  
+                                                                                  
+                                                                                  
+    <h2 class="likechapterHead"><a 
+ id="x1-1000"></a>Contents</h2> <div class="tableofcontents">
+    <span class="chapterToc" >1 <a 
+href="#x1-20001" id="QQ2-1-2"><span 
+class="ec-lmbx-12">Overview</span></a></span>
+<br />    &#x00A0;<span class="sectionToc" >1 <a 
+href="#x1-30001" id="QQ2-1-3"><span 
+class="ec-lmbx-12">Introduction</span></a></span>
+<br />    &#x00A0;<span class="sectionToc" >2 <a 
+href="#x1-40002" id="QQ2-1-4"><span 
+class="ec-lmbx-12">Summary of available tools</span></a></span>
+<br />    &#x00A0;<span class="sectionToc" >3 <a 
+href="#x1-50003" id="QQ2-1-5"><span 
+class="ec-lmbx-12">Implementation and algorithmic approach</span></a></span>
+<br />    &#x00A0;<span class="sectionToc" >4 <a 
+href="#x1-60004" id="QQ2-1-6"><span 
+class="ec-lmbx-12">License and Availability</span></a></span>
+<br />    &#x00A0;<span class="sectionToc" >5 <a 
+href="#x1-70005" id="QQ2-1-7"><span 
+class="ec-lmbx-12">Cite MOABS</span></a></span>
+<br />    &#x00A0;<span class="sectionToc" >6 <a 
+href="#x1-80006" id="QQ2-1-8"><span 
+class="ec-lmbx-12">Contact</span></a></span>
+<br />    <span class="chapterToc" >2 <a 
+href="#x1-90002" id="QQ2-1-9"><span 
+class="ec-lmbx-12">Installation of MOABS</span></a></span>
+<br />    &#x00A0;<span class="sectionToc" >1 <a 
+href="#x1-100001" id="QQ2-1-10"><span 
+class="ec-lmbx-12">Downloads </span></a></span>
+<br />    &#x00A0;<span class="sectionToc" >2 <a 
+href="#x1-110002" id="QQ2-1-11"><span 
+class="ec-lmbx-12">Prerequisites for installation from sources </span></a></span>
+<br />    &#x00A0;<span class="sectionToc" >3 <a 
+href="#x1-120003" id="QQ2-1-12"><span 
+class="ec-lmbx-12">Install MOABS from sources</span></a></span>
+<br />    <span class="chapterToc" >3 <a 
+href="#x1-130003" id="QQ2-1-13"><span 
+class="ec-lmbx-12">Manual</span></a></span>
+<br />    &#x00A0;<span class="sectionToc" >1 <a 
+href="#x1-140001" id="QQ2-1-14"><span 
+class="ec-lmbx-12">Usage of master script</span></a></span>
+<br />    &#x00A0;&#x00A0;<span class="subsectionToc" >1 <a 
+href="#x1-150001" id="QQ2-1-15">The solution in brief</a></span>
+<br />    &#x00A0;&#x00A0;<span class="subsectionToc" >2 <a 
+href="#x1-160002" id="QQ2-1-16">The configuration file</a></span>
+<br />    &#x00A0;&#x00A0;<span class="subsectionToc" >3 <a 
+href="#x1-170003" id="QQ2-1-17">The command line options</a></span>
+<br />    &#x00A0;<span class="sectionToc" >2 <a 
+href="#x1-180002" id="QQ2-1-18"><span 
+class="ec-lmbx-12">Usage of mcall module </span></a></span>
+<br />    &#x00A0;&#x00A0;<span class="subsectionToc" >1 <a 
+href="#x1-190001" id="QQ2-1-19">Summary of usage and option</a></span>
+<br />    &#x00A0;&#x00A0;<span class="subsectionToc" >2 <a 
+href="#x1-200002" id="QQ2-1-20">Format of input and output files</a></span>
+<br />    &#x00A0;&#x00A0;<span class="subsectionToc" >3 <a 
+href="#x1-210003" id="QQ2-1-21">Examples</a></span>
+<br />    &#x00A0;<span class="sectionToc" >3 <a 
+href="#x1-220003" id="QQ2-1-22"><span 
+class="ec-lmbx-12">Usage of mcomp module</span></a></span>
+<br />    &#x00A0;&#x00A0;<span class="subsectionToc" >1 <a 
+href="#x1-230001" id="QQ2-1-23">Summary of usage and option</a></span>
+<br />    &#x00A0;&#x00A0;<span class="subsectionToc" >2 <a 
+href="#x1-240002" id="QQ2-1-24">Format of input and output files</a></span>
+<br />    &#x00A0;&#x00A0;<span class="subsectionToc" >3 <a 
+href="#x1-250003" id="QQ2-1-25">Examples</a></span>
+<br />    <span class="chapterToc" >4 <a 
+href="#x1-260004" id="QQ2-1-26"><span 
+class="ec-lmbx-12">Misc</span></a></span>
+                                                                                  
+                                                                                  
+<br />    &#x00A0;<span class="sectionToc" >1 <a 
+href="#x1-270001" id="QQ2-1-27"><span 
+class="ec-lmbx-12">News</span></a></span>
+    </div>
+                                                                                  
+                                                                                  
+                                                                                  
+                                                                                  
+    <h2 class="chapterHead"><span class="titlemark">Chapter&#x00A0;1</span><br /><a 
+ id="x1-20001"></a><span 
+class="ec-lmbx-12">Overview</span></h2>
+    1.
+    <h3 class="sectionHead"><span class="titlemark">1   </span> <a 
+ id="x1-30001"></a><span 
+class="ec-lmbx-12">Introduction</span></h3>
+<!--l. 8--><p class="noindent" >The MOABS development was motivated by the challenges from the lack of <span 
+class="ec-lmbx-12">accurate</span>
+and <span 
+class="ec-lmbx-12">efficient </span>data analysis pipelines suited to large scale DNA methylation
+data.
+<!--l. 10--><p class="indent" >    5-methylcytosine and 5-hydroxymethylcytosine can now be quantitatively measured
+at base level by whole genome bisulfite sequencing. However, lack of complete and
+accurate methods describing and utilizing digital methylation information from single base
+to region level, and lack of accurate and fast analysis pipeline are still two major
+challenges.
+<!--l. 12--><p class="indent" >    They are now solved by MOABS, model based analysis of bisulfite sequencing data. It
+provides a complete, accurate and efficient and biologist friendly solution for analysis of
+large-scale DNA methylation data from single cytosine level to region level. It seamlessly
+integrates alignment, methylation calling, identification of hypomethylation for one sample
+and differential methylation for two samples, and other downstream analysis. It is aware of
+replicate reproducibility, measures biological significance, and is accurate even at low
+coverage. It uses advanced algorithms and efficiently utilizes threads and clusters so that 2
+billion aligned reads from two conditions can be processed lightening fast in 1 hour (vs
+more than 1 day by other pipelines) analyzing methylation on around 30 million
+CpGs.
+<!--l. 14--><p class="indent" >    We also make the method used by MOABS to detect differentially methylated
+cytosines (DMCs) and differentially methylated regions (DMRs) publically available at the
+<a 
+href="http://code.google.com/p/numci/" >ExactNumCI</a> project.
+                                                                                  
+                                                                                  
+<!--l. 19--><p class="noindent" >2.
+    <h3 class="sectionHead"><span class="titlemark">2   </span> <a 
+ id="x1-40002"></a><span 
+class="ec-lmbx-12">Summary of available tools</span></h3>
+<!--l. 21--><p class="noindent" >The main program moabs is actually wrapper of 4 modules, mmap, mcall, mone, and
+mcomp.
+<!--l. 23--><p class="indent" >    The bisulfite reads alignment module, named as <span 
+class="ts1-lmr12-">&#8217;</span>mmap<span 
+class="ts1-lmr12-">&#8217;</span>, is just a wrapper of popular
+mapping program so that alignment jobs can be efficiently processed in parallel on a
+cluster.
+<!--l. 25--><p class="indent" >    The methylation ratio calling module, named as <span 
+class="ts1-lmr12-">&#8217;</span>mcall<span 
+class="ts1-lmr12-">&#8217;</span>, accepts alignment from
+BSMAP, novoalign and Bismark and then performs methylation ratio calling on every
+covered cytosine.
+<!--l. 27--><p class="indent" >    For one condition analysis, the MOABS module, named as <span 
+class="ts1-lmr12-">&#8217;</span>mone<span 
+class="ts1-lmr12-">&#8217;</span>, detects
+hypomethylated regions in the highly methylated methylome (mammalian 5mc) or
+hypermethylated regions in the lowly methylated methylome (plant and fungi 5mc, and
+mammalian 5hmc).
+<!--l. 29--><p class="indent" >    For two conditions analysis, the MOABS module, named as <span 
+class="ts1-lmr12-">&#8217;</span>mcomp<span 
+class="ts1-lmr12-">&#8217;</span>, detects the
+differential methylation at DMC and DMR level by active search, or determines if the
+given regions are differentially methylated.
+<!--l. 31--><p class="indent" >    All the modules can be executed separately for different stages of research.
+They are also piped in the single master script <span 
+class="ts1-lmr12-">&#8217;</span>moabs<span 
+class="ts1-lmr12-">&#8217;</span>, such that the user can
+specify only the input sequences and all the modules will be executed one by one
+automatically.
+<!--l. 37--><p class="noindent" >3.
+    <h3 class="sectionHead"><span class="titlemark">3   </span> <a 
+ id="x1-50003"></a><span 
+class="ec-lmbx-12">Implementation and algorithmic approach</span></h3>
+                                                                                  
+                                                                                  
+<!--l. 39--><p class="noindent" >The master script <span 
+class="ts1-lmr12-">&#8217;</span>moabs<span 
+class="ts1-lmr12-">&#8217;</span>&#x00A0;was written in Perl. And other modules of MOABS were
+implemented in C++ and makes extensive use of data structures and fundamental
+algorithms from the BOOST and Numerical Recipes (NR) libraries.
+<!--l. 44--><p class="noindent" >4.
+    <h3 class="sectionHead"><span class="titlemark">4   </span> <a 
+ id="x1-60004"></a><span 
+class="ec-lmbx-12">License and Availability</span></h3>
+<!--l. 46--><p class="noindent" >MOABS is freely available under a GNU GPL v2 at google code site <br 
+class="newline" /><a 
+href="https://code.google.com/p/moabs" >https://code.google.com/p/moabs</a>
+<!--l. 52--><p class="noindent" >5.
+    <h3 class="sectionHead"><span class="titlemark">5   </span> <a 
+ id="x1-70005"></a><span 
+class="ec-lmbx-12">Cite MOABS</span></h3>
+<!--l. 54--><p class="noindent" >To be updated.
+<!--l. 59--><p class="noindent" >6.
+    <h3 class="sectionHead"><span class="titlemark">6   </span> <a 
+ id="x1-80006"></a><span 
+class="ec-lmbx-12">Contact</span></h3>
+<!--l. 61--><p class="noindent" >The package is developed by Deqiang Sun. Please post any questions, suggestions or
+problems to the <a 
+href="https://groups.google.com/d/forum/moabs_msuite" >MOABS Discussion google group</a> or send email to Deqiang Sun at
+<a 
+href="mailto:moabs_msuite@googlegroups.com" >moabs_msuite@googlegroups.com</a>. You are welcome to subscribe to the MOABS
+Discussion google group for updates.
+                                                                                  
+                                                                                  
+                                                                                  
+                                                                                  
+                                                                                  
+                                                                                  
+    <h2 class="chapterHead"><span class="titlemark">Chapter&#x00A0;2</span><br /><a 
+ id="x1-90002"></a><span 
+class="ec-lmbx-12">Installation of MOABS</span></h2>
+    1.
+    <h3 class="sectionHead"><span class="titlemark">1   </span> <a 
+ id="x1-100001"></a><span 
+class="ec-lmbx-12">Downloads </span></h3>
+<!--l. 10--><p class="noindent" >There are three downloads available at <br 
+class="newline" /><a 
+href="http://dldcc-web.brc.bcm.edu/lilab/deqiangs/moabs/.j" >http://dldcc-web.brc.bcm.edu/lilab/deqiangs/moabs/.j</a> <br 
+class="newline" />&#8220;moabs-v1.2.2.tar.gz&#8221; includes only sources.<br 
+class="newline" />&#8220;moabs-v1.2.2.data.tar.gz&#8221; includes the sources, the binaries built on x86<span 
+class="ec-lmtt-12">_</span>64 Linux, and
+the test data.
+<!--l. 19--><p class="noindent" >2.
+    <h3 class="sectionHead"><span class="titlemark">2   </span> <a 
+ id="x1-110002"></a><span 
+class="ec-lmbx-12">Prerequisites for installation from sources </span></h3>
+<!--l. 22--><p class="noindent" >If you use x86<span 
+class="ec-lmtt-12">_</span>64 Linux, you may simply download the binaries. If you build MOABS
+from sources, you need install Boost C++ libraries and SAMTOOLS because the mcomp
+module depends on them. It&#8217;s optional to install several perl modules which are used by
+the wrapper script.<br 
+class="newline" />
+<!--l. 26--><p class="indent" >    <span 
+class="ec-lmbx-12">Install Samtools:</span><br 
+class="newline" />Download and unpack the Samtools tarball and cd to the Samtools source directory. Build
+the Samtools by typing &#8220;<span id="textcolor5">make</span>&#8221; at the command line. <br 
+class="newline" />Choose a directory into which you wish to copy the Samtools binary, the included library
+libbam.a, and the library headers. A common choice is /usr/local/. In this case, the
+system variable $SAMTOOLS is /usr/local/.<br 
+class="newline" />Copy libbam.a to the lib/ directory in the folder you&#8217;ve chosen (e.g. /usr/local/lib/).
+<br 
+class="newline" />Create a directory called &#8220;bam&#8221; in the include/ directory (e.g. /usr/local/include/bam/).
+<br 
+class="newline" />Copy the headers (files ending in .h) to the include/bam directory you&#8217;ve created above
+(e.g. /usr/local/include/bam). <br 
+class="newline" />Copy the samtools binary to some directory in your PATH.<br 
+class="newline" />If you install Samtools in your personal dir, then just replace the above string &#8216;/usr/local/&#8217;
+by your desired installation directory.<br 
+class="newline" />
+<!--l. 37--><p class="indent" >    <span 
+class="ec-lmbx-12">Install Boost:</span><br 
+class="newline" />You must have the Boost C++ libraries (version 1.38 or higher) installed on your system.
+Build and install by typing the following two commands in the terminal. <span id="textcolor6">./bootstrap.sh</span>
+<br 
+class="newline" /><span id="textcolor7">./b2 install</span><br 
+class="newline" />The &#8220;./b2 install&#8221; command installs BOOST libraries into a system directory (e.g.
+/usr/local/ at default). You may install it to a personal directory by specifying the
+&#8220;prefix&#8221; option.<br 
+class="newline" />You may have to <span id="textcolor8">export LD<span 
+class="ec-lmtt-12">_</span>LIBRARY<span 
+class="ec-lmtt-12">_</span>PATH=/usr/local/lib:$LD<span 
+class="ec-lmtt-12">_</span>LIBRARY<span 
+class="ec-lmtt-12">_</span>PATH</span> if
+you Boost lib is by default in /usr/local/lib/.<br 
+class="newline" />
+<!--l. 47--><p class="indent" >    <span 
+class="ec-lmbx-12">Optionally install perl modules:</span><br 
+class="newline" />Each module of MOABS is written by C++ but there is a perl script as the wrapper of all
+modules so that MOABS pipeline can be executed automatically on cluster of
+computer nodes or on many threads of a computer. This wrapper is written in
+perl so that you may simply modify cluster setting, or other parameters and so
+on.
+<!--l. 50--><p class="indent" >    To install the Config::Simple module, it will be easy to install by root user. Just
+                                                                                  
+                                                                                  
+simply type &#8216;<span id="textcolor9">cpan</span>&#8217; in the terminal, and &#8216;<span id="textcolor10">install Config::Simple</span>&#8217; in the interactive
+shell.<br 
+class="newline" />The following commands show how to install the Config::Simple module in a user
+directory, say, /myperl/.<br 
+class="newline" />Type <span id="textcolor11">cpan</span> to enter cpan interactive shell (marked by &#8220;cpan&#x003E;&#8221;),<br 
+class="newline" />cpan&#x003E; <span id="textcolor12">o conf makepl<span 
+class="ec-lmtt-12">_</span>arg <span 
+class="ts1-lmr12-">&#8217;</span>PREFIX=/myperl<span 
+class="ts1-lmr12-">&#8217;</span></span><br 
+class="newline" />cpan&#x003E; <span id="textcolor13">install Config::Simple </span><br 
+class="newline" />Exit the cpan shell, and type the following command in terminal:<br 
+class="newline" /><span id="textcolor14">export PERL5LIB=$PERL5LIB:/myperl/lib/perl5/site<span 
+class="ec-lmtt-12">_</span>perl/5.8.8/</span><br 
+class="newline" />Test if the installation is successful by executing the command on terminal<br 
+class="newline" />perl -e <span 
+class="ts1-lmr12-">&#8217;</span>use Config::Simple;<span 
+class="ts1-lmr12-">&#8217;</span><br 
+class="newline" />Seeing nothing means good. If you see &#8220;Can<span 
+class="ts1-lmr12-">&#8217;</span>t locate Config/Simple.pm in @INC&#8221;, it
+means either the installation is not successful or the variable PERL5LIB is not
+correct.
+<!--l. 62--><p class="indent" >    There are some other perl modules used by MOABS but most should be installed by
+perl at default. If you need install additional modules, just follow the same procedures
+above. <br 
+class="newline" />
+<!--l. 66--><p class="indent" >    <span 
+class="ec-lmbx-12">Install RInside:</span><br 
+class="newline" />The mcomp module used R to perform Fisher&#8217;s Exact Test and Anova statistics for
+multiple samples. By the way, the C code extracted from R for Fisher&#8217;s Exact Test is
+unfortunately not safe at Boost Threads. Please help me if you have such C/C++ sources.
+So I just used an quick solution to use R directly. For this purpose, you need install the R
+package RInside.
+<!--l. 69--><p class="indent" >    Commands for installation under Linux/Windows terminal:<br 
+class="newline" /><span id="textcolor15">wget http://cran.r-project.org/src/contrib/RInside<span 
+class="ec-lmtt-12">_</span>0.2.10.tar.gz </span><br 
+class="newline" /><span id="textcolor16">R CMD INSTALL RInside<span 
+class="ec-lmtt-12">_</span>0.2.10.tar.gz </span><br 
+class="newline" />
+<!--l. 73--><p class="indent" >    Or you can install through the R terminal:<br 
+class="newline" />&#x003E; <span id="textcolor17">install.packages(&#8220;RInside&#8221;,dependencies=TRUE) </span><br 
+class="newline" />
+<!--l. 78--><p class="indent" >    <span 
+class="ec-lmbx-12">Set environment variables for installation:</span><br 
+class="newline" />After build and install of Boost and Samtools, you must have system variables
+SAMTOOLS and BOOST<span 
+class="ec-lmtt-12">_</span>ROOT defined for a successful MOABS installation. I do not
+have time to write and test a configure script, so let&#8217;s go with this easy choice. You may
+test them by executing command &#8220;echo $SAMTOOLS $BOOST<span 
+class="ec-lmtt-12">_</span>ROOT&#8221;.
+<!--l. 81--><p class="indent" >    On my system, I set them by inserting the following commands in <span 
+class="ec-lmtt-12">~</span>/.bashrc file or by
+executing them in terminal:<br 
+class="newline" /><div  
+class="centerline">                   <span id="textcolor18">export SAMTOOLS=/dsun/samtools/0.1.16</span>                   </div><br 
+class="newline" /><div  
+class="centerline">                   <span id="textcolor19">export BOOST<span 
+class="ec-lmtt-12">_</span>ROOT=/dsun/boost/1.46.1</span>                   </div> These
+two commands instruct the build <br 
+class="newline" />to find libbam.a at /dsun/samtools/0.1.16/lib/libbam.a, <br 
+class="newline" />to find bam.h at /dsun/samtools/0.1.16/include/bam/bam.h, <br 
+class="newline" />to find /dsun/boost/1.46.1/include/,<br 
+class="newline" />to find /dsun/boost/1.46.1/lib/libboost<span 
+class="ec-lmtt-12">_</span>thread.so and so on.
+<!--l. 97--><p class="noindent" >3.
+    <h3 class="sectionHead"><span class="titlemark">3   </span> <a 
+ id="x1-120003"></a><span 
+class="ec-lmbx-12">Install MOABS from sources</span></h3>
+<!--l. 99--><p class="noindent" >Suppose you downloaded and unpacked MOABS to /home/dsun/ directory, commands for
+installation under Linux/Windows terminal are:<br 
+class="newline" /><span id="textcolor20">cd /home/dsun/moabs-v1.2.2</span><br 
+class="newline" /><span id="textcolor21">make install </span><br 
+class="newline" />The binaries are then installed in /home/dsun/moabs-v1.2.2/bin/. You may simply
+copy all files into your PATH directories. Or, you may add the complete path to
+moabs-v1.2.2/bin/ to your PATH variable by executing command <br 
+class="newline" /><div  
+class="centerline">              <span id="textcolor22">export PATH=/home/dsun/moabs-v1.2.2/bin:$PATH</span>              </div>
+Congratulations, you have built MOABS!
+<!--l. 106--><p class="indent" >    You may type moabs to see if you need install any additional perl modules. You
+may also type mcomp to see if the Boost lib files can be found. If not, use &#8220;echo
+$LD<span 
+class="ec-lmtt-12">_</span>LIBRARY<span 
+class="ec-lmtt-12">_</span>PATH&#8221; to check it. Note that for the mcomp program to run, the
+current working dir (where you type mcomp) can not contain the hidden file
+<span 
+class="ts1-lmr12-">&#8217;</span>.RData<span 
+class="ts1-lmr12-">&#8217;</span>, which is auto-saved by R. Hopefully, this problem will be solved in later
+versions.
+                                                                                  
+                                                                                  
+                                                                                  
+                                                                                  
+                                                                                  
+                                                                                  
+    <h2 class="chapterHead"><span class="titlemark">Chapter&#x00A0;3</span><br /><a 
+ id="x1-130003"></a><span 
+class="ec-lmbx-12">Manual</span></h2>
+    1.
+    <h3 class="sectionHead"><span class="titlemark">1   </span> <a 
+ id="x1-140001"></a><span 
+class="ec-lmbx-12">Usage of master script</span></h3>
+<!--l. 10--><p class="noindent" >The main program moabs is actually wrapper of 4 modules, mmap, mcall, mone, and
+mcom in order to automate the process in a cluster or thread environment. You may
+invoke all modules through moabs in addition to directly use them.
+<!--l. 13--><p class="noindent" >1.
+    <h4 class="subsectionHead"><span class="titlemark">1   </span> <a 
+ id="x1-150001"></a>The solution in brief</h4>
+<!--l. 14--><p class="noindent" >One may simply finish the whole processing of bisulfite data for two conditions by
+typing<br 
+class="newline" /><span id="textcolor23">moabs -i wt_r1.fq -i wt_r2.fq -i ko_r1.fq -i ko_r2.fq </span><br 
+class="newline" />or<br 
+class="newline" /><span id="textcolor24">moabs --cf my_research_config_file</span> <br 
+class="newline" />Done! Here for purpose of easy illustration, I have only used 4 files with 2 conditions and 2
+replicates each condition. The four file names are formated such that the underscore &#8216;_&#8217;
+separates sample name, replicate name, paired-end mate(if possible). Without
+specifying the configuration file, the moabs pipeline at default starts with the
+mmap module in thread mode and parses the condition labels to be wt and
+ko.
+<!--l. 29--><p class="indent" >    The configuration file &#8220;my_research_config_file&#8221; looks like the following
+                                                                                  
+                                                                                  
+    <div class="verbatim" id="verbatim-1">
+[INPUT]
+&#x00A0;<br />s1_r1=wt_r1.fq
+&#x00A0;<br />s1_r2=wt_r2.fq
+&#x00A0;<br />s2_r1=ko_r1.fq
+&#x00A0;<br />s2_r2=ko_r2.fq
+&#x00A0;<br />[TASK]
+&#x00A0;<br />Program=MMAP
+&#x00A0;<br />Label=wt,ko
+&#x00A0;<br />Parallel=THREAD
+</div>
+<!--l. 40--><p class="nopar" > Here 2 sections of the configuration file are shown. In the [INPUT] section, the rightside is
+the real name of the file and the leftside denotes the sample name, replicate name,
+paired-end mate(if possible). You may include as many files as you want. In the [TASK]
+section, Program denotes the first module to run, Label denotes the comma-separated
+sample names corresponding to s1 and s2, Parallel denotes whether to use thread or qsub
+to parallelize the tasks.
+<!--l. 45--><p class="noindent" >2.
+    <h4 class="subsectionHead"><span class="titlemark">2   </span> <a 
+ id="x1-160002"></a>The configuration file</h4>
+<!--l. 46--><p class="noindent" >Since there are multiple modules and three ways to execute the pipeline over the
+computing resources, I think a configuration file is much more flexible than command line
+options. With the use of configuration file, you can simply run the MOABS pipeline by
+entering command <br 
+class="newline" /><span id="textcolor25">moabs --cf my_research_config_file</span>
+<!--l. 53--><p class="indent" >    By setting &#8220;Program=MCOMP&#8221; in the config invokes the mcomp module through
+moabs. The config looks like the following for example:
+                                                                                  
+                                                                                  
+    <div class="verbatim" id="verbatim-2">
+[INPUT]
+&#x00A0;<br />#Input&#x00A0;is&#x00A0;parsed&#x00A0;to&#x00A0;be&#x00A0;wt.G.bed&#x00A0;and&#x00A0;ko.G.bed&#x00A0;from&#x00A0;&#8217;Label&#8217;
+&#x00A0;<br />[TASK]
+&#x00A0;<br />Program=MCOMP
+&#x00A0;<br />Label=wt,ko
+</div>
+<!--l. 60--><p class="nopar" > where the task is defined such that mcomp module is invoked for file wt.G.bed and file
+ko.G.bed.
+<!--l. 81--><p class="indent" >    By setting &#8220;Program=MCALL&#8221; in the config invokes the mcall module through
+moabs. The config looks like the following for example:
+                                                                                  
+                                                                                  
+    <div class="verbatim" id="verbatim-3">
+[INPUT]
+&#x00A0;<br />s1_r1=wt_r1.bam
+&#x00A0;<br />s1_r2=wt_r2.bam
+&#x00A0;<br />s2_r1=ko_r1.bam
+&#x00A0;<br />s2_r2=ko_r2.bam
+&#x00A0;<br />[TASK]
+&#x00A0;<br />Program=MCALL
+&#x00A0;<br />Label=wt,ko
+</div>
+<!--l. 91--><p class="nopar" > where the task is defined such that mcall module is invoked for 4 bam files and the
+mcomp module follows to process the two condition labels.
+<!--l. 95--><p class="indent" >    By setting &#8220;Program=MMAP&#8221; in the config invokes the mmap module through
+moabs. The last subsection <span class="cite">[<span 
+class="ec-lmbx-12">?</span>]</span> showed a elegant and simple example configuration. The
+following is a example a little bit complicated:
+                                                                                  
+                                                                                  
+    <div class="verbatim" id="verbatim-4">
+[INPUT]
+&#x00A0;<br />s1_r1=s1_r1.fq
+&#x00A0;<br />s1_r2_1=s1_r2_1.fq
+&#x00A0;<br />s1_r2_2=s1_r2_2.fq
+&#x00A0;<br />s2_r1=ko_r1.fq
+&#x00A0;<br />s2_r2_1=ko_r2_1.fq
+&#x00A0;<br />s2_r2_2=ko_r2_1.fq
+&#x00A0;<br />[TASK]
+&#x00A0;<br />Program=MCALL
+&#x00A0;<br />Label=wt,ko
+</div>
+<!--l. 107--><p class="nopar" > where the task is defined such that mmap and mcall module is invoked for the fastq file(s)
+for each condition and replicate, and then the mcomp module follows to process the two
+condition labels.
+<!--l. 123--><p class="indent" >    There are three allowed values for key Parallel: NONE, THREAD, or QSUB. For the
+QSUB mode, the master script need run on the head node. It assigns jobs across the
+cluster based on a template file. The template file bin/template_for_qsub for is written
+for Sun Grid Engine (SGE). However, you can easily modify that file for similar cluster
+manager like PBS. You may also modify the template file bin/template_for_qsub for it to
+be suitable for your cluster.
+<!--l. 125--><p class="indent" >    The parameters for each module can also be defined in the config file by block
+instruction [MMAP], [MCALL] and [MCOMP]. In addition to the original options from
+the module, each module comes with an additional key &#8220;Path&#8221; which defines the full path
+                                                                                  
+                                                                                  
+to the module. For example, you may use Novoalign as the aligner for the mmap module
+through the configuration like the following:
+                                                                                  
+                                                                                  
+    <div class="verbatim" id="verbatim-5">
+[MMAP]
+&#x00A0;<br />Path=/dir/to/novoalign
+&#x00A0;<br />b=2
+</div>
+<!--l. 130--><p class="nopar" >
+<!--l. 132--><p class="indent" >    At default with the fastq input files, the master script will automatically call mmap,
+mcall, and mcomp modules one after one. However the process may be interrupted by
+computer crash or other problems. You may want to restart the program but do not want
+to start from the very beginning. The master script moabs checks if there exists the result
+file from each step even if you start with the mmap module. So if you want to rerun the
+mmap module, you can move away the all or some bam files. So if you want
+to rerun the mcall module, you can move away the all or some *.G.bed files.
+So if you want to rerun the mcomp module, you can move away the comp.*
+file.
+<!--l. 137--><p class="noindent" >3.
+    <h4 class="subsectionHead"><span class="titlemark">3   </span> <a 
+ id="x1-170003"></a>The command line options</h4>
+<!--l. 138--><p class="noindent" >There&#8217;s also traditional usage of program moabs through command line options. By
+simply entering moabs in the command line, you notice there are only three
+options.<br 
+class="newline" /><!--tex4ht:inline--><div class="tabular"> <table id="TBL-2" class="tabular" 
+cellspacing="0" cellpadding="0" rules="groups" 
+><colgroup id="TBL-2-1g"><col 
+id="TBL-2-1"></colgroup><colgroup id="TBL-2-2g"><col 
+id="TBL-2-2"></colgroup><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-2-1-"><td  style="white-space:nowrap; text-align:left;" id="TBL-2-1-1"  
+class="td11">-i   </td><td  style="white-space:nowrap; text-align:left;" id="TBL-2-1-2"  
+class="td11">input files.                                                             </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-2-2-"><td  style="white-space:nowrap; text-align:left;" id="TBL-2-2-1"  
+class="td11">--cf  </td><td  style="white-space:nowrap; text-align:left;" id="TBL-2-2-2"  
+class="td11">configuration file.                                                    </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-2-3-"><td  style="white-space:nowrap; text-align:left;" id="TBL-2-3-1"  
+class="td11">--def</td><td  style="white-space:nowrap; text-align:left;" id="TBL-2-3-2"  
+class="td11">overwrite definitions in configuration file. &#8211;def key=value</td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-2-4-"><td  style="white-space:nowrap; text-align:left;" id="TBL-2-4-1"  
+class="td11">    </td></tr></table>
+</div><br 
+class="newline" />Here -i specifies the input files, the option --cf specifies a configuration file, and --def
+provides a way to overwrite the definitions in the configuration file.
+<!--l. 147--><p class="indent" >    For example if you want to use a different number of threads for mcall and different
+version of bsmap than the setting in config, you may change the config file or use
+the --def option: moabs --cf myrun.cfg --def MMAP.Path=/mydir/bsmap --def
+MCALL.p=1
+<!--l. 158--><p class="noindent" >2.
+    <h3 class="sectionHead"><span class="titlemark">2   </span> <a 
+ id="x1-180002"></a><span 
+class="ec-lmbx-12">Usage of mcall module </span></h3>
+<!--l. 160--><p class="noindent" >The methylation ratio calling module, named as mcall, accepts alignment from
+BSMAP (at default), novoalign and Bismark and then performs methylation
+ratio calling on every covered cytosine. The procedure may perform differently
+depending on whether it is RRBS or WGBS data. In short, methylation ratio
+calling module adjusts amplification bias, end-repair bias, short fragment bias,
+accurately reports CpG or CpH methylation and corresponding methylation
+confidence interval, in addition to general statistics and estimated bisulfite conversion
+ratio.
+<!--l. 162--><p class="noindent" >1.
+    <h4 class="subsectionHead"><span class="titlemark">1   </span> <a 
+ id="x1-190001"></a>Summary of usage and option</h4>
+<!--l. 163--><p class="noindent" ><span 
+class="ec-lmbx-12">Usage: </span>$ mcall [options] -m bam/sam -m bam/sam
+<a 
+ id="x1-19001r1"></a>    <!--l. 170--><div class="longtable"> <table id="TBL-3" class="longtable" 
+cellspacing="0" cellpadding="0" rules="groups" 
+><colgroup id="TBL-3-1g"><col 
+id="TBL-3-1"></colgroup><colgroup id="TBL-3-2g"><col 
+id="TBL-3-2"></colgroup>
+                                                                                  
+                                                                                  
+<tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-3-1-"><td  style="white-space:nowrap; text-align:left;" id="TBL-3-1-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">Options                            </span></td><td  style="white-space:wrap; text-align:left;" id="TBL-3-1-2"  
+class="td11">
+<!--l. 170--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">Description</span>                                                               </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-3-2-"><td  style="white-space:nowrap; text-align:left;" id="TBL-3-2-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">help,h                               </span></td><td  style="white-space:wrap; text-align:left;" id="TBL-3-2-2"  
+class="td11">
+<!--l. 172--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">Produce  help  message.  Common  options  are  provided</span>
+<span 
+class="ec-lmr-10x-x-109">with   single   letter   format.   Parameter   defaults   are   in</span>
+<span 
+class="ec-lmr-10x-x-109">brackts. Example command: mCall -m Ko.bam; mCall -m</span>
+<span 
+class="ec-lmr-10x-x-109">wt_r1.bam -m wt_r2.bam -sampleName Wt; See doc for</span>
+<span 
+class="ec-lmr-10x-x-109">more details.)</span>                                                            </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-3-3-"><td  style="white-space:nowrap; text-align:left;" id="TBL-3-3-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">mappedFiles,m                   </span></td><td  style="white-space:wrap; text-align:left;" id="TBL-3-3-2"  
+class="td11">
+<!--l. 174--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">Specify  the  names  of  RRBS/WGBS  alignment  files  for</span>
+<span 
+class="ec-lmr-10x-x-109">methylation  calling.  Multiple  files  can  be  provided  to</span>
+<span 
+class="ec-lmr-10x-x-109">combine them(eg. lanes or replicates) into a single track;</span>    </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-3-4-"><td  style="white-space:nowrap; text-align:left;" id="TBL-3-4-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">sampleName                      </span></td><td  style="white-space:wrap; text-align:left;" id="TBL-3-4-2"  
+class="td11">
+<!--l. 176--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">If  two  or  more  mappedFiles  are  specifed,  this  option</span>
+<span 
+class="ec-lmr-10x-x-109">generates a merged result; Ignored for one input file;</span>         </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-3-5-"><td  style="white-space:nowrap; text-align:left;" id="TBL-3-5-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">outputDir                          </span></td><td  style="white-space:wrap; text-align:left;" id="TBL-3-5-2"  
+class="td11">
+<!--l. 178--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">The name of the output directory;</span>                                 </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-3-6-"><td  style="white-space:nowrap; text-align:left;" id="TBL-3-6-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">webOutputDir                    </span></td><td  style="white-space:wrap; text-align:left;" id="TBL-3-6-2"  
+class="td11">
+<!--l. 180--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">The name of the web-accessible output directory for UCSC</span>
+<span 
+class="ec-lmr-10x-x-109">Genome Browser tracks;</span>                                              </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-3-7-"><td  style="white-space:nowrap; text-align:left;" id="TBL-3-7-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">genome,g                           </span></td><td  style="white-space:wrap; text-align:left;" id="TBL-3-7-2"  
+class="td11">
+<!--l. 182--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">The  UCSC  Genome  Browser  identifier  of  source  genome</span>
+<span 
+class="ec-lmr-10x-x-109">assembly; mm9 for example;</span>                                         </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-3-8-"><td  style="white-space:nowrap; text-align:left;" id="TBL-3-8-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">reference,r                         </span></td><td  style="white-space:wrap; text-align:left;" id="TBL-3-8-2"  
+class="td11">
+<!--l. 184--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">Reference DNA fasta file; It&#8217;s required if CHG methylation</span>
+<span 
+class="ec-lmr-10x-x-109">is wanted;</span>                                                                 </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-3-9-"><td  style="white-space:nowrap; text-align:left;" id="TBL-3-9-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">cytosineMinScore                </span></td><td  style="white-space:wrap; text-align:left;" id="TBL-3-9-2"  
+class="td11">
+<!--l. 186--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">Threshold for cytosine quality score (default: 20). Discard</span>
+<span 
+class="ec-lmr-10x-x-109">the base if threshold is not reached;</span>                               </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-3-10-"><td  style="white-space:nowrap; text-align:left;" id="TBL-3-10-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">nextBaseMinScore               </span></td><td  style="white-space:wrap; text-align:left;" id="TBL-3-10-2"  
+class="td11">
+<!--l. 188--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">Threshold for the next base quality score(default: 3,ie, better</span>
+<span 
+class="ec-lmr-10x-x-109">than B or #); Possible values: -1 makes the program not</span>
+<span 
+class="ec-lmr-10x-x-109">to check if next base matches reference; any positive integer</span>
+<span 
+class="ec-lmr-10x-x-109">or zero makes the program to check if next base matches</span>
+<span 
+class="ec-lmr-10x-x-109">reference and reaches this score threshold;</span>                       </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-3-11-"><td  style="white-space:nowrap; text-align:left;" id="TBL-3-11-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">reportSkippedBase              </span></td><td  style="white-space:wrap; text-align:left;" id="TBL-3-11-2"  
+class="td11">
+<!--l. 190--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">Specify  if  bases  that  are  not  accepted  for  methylation</span>
+<span 
+class="ec-lmr-10x-x-109">analysis should be written to an extra output file;</span>            </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-3-12-"><td  style="white-space:nowrap; text-align:left;" id="TBL-3-12-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">qualityScoreBase                 </span></td><td  style="white-space:wrap; text-align:left;" id="TBL-3-12-2"  
+class="td11">
+<!--l. 192--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">Specify  quality  score  system:  0  means  autodetection;</span>
+<span 
+class="ec-lmr-10x-x-109">Sanger=&#x003E;33;Solexa=&#x003E;59;Illumina=&#x003E;64;       See       wiki</span>
+<span 
+class="ec-lmr-10x-x-109">FASTQ_format for details;</span>                                          </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-3-13-"><td  style="white-space:nowrap; text-align:left;" id="TBL-3-13-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">trimWGBSEndRepairPE2Seq</span></td><td  style="white-space:wrap; text-align:left;" id="TBL-3-13-2"  
+class="td11">
+<!--l. 194--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">How to trim end-repair sequence from begin of +-/-- reads</span>
+<span 
+class="ec-lmr-10x-x-109">from Pair End WGBS Sequencing; 0: no trim; n(positive</span>
+<span 
+class="ec-lmr-10x-x-109">integer):  trim  n  bases  from  begin  of  +-/--  reads;  -2:</span>
+<span 
+class="ec-lmr-10x-x-109">model determined n; -1: trim from beginning to before 1st</span>
+<span 
+class="ec-lmr-10x-x-109">methylated C; Suggest 3; n&#x003E;readLen is equivalent to use</span>
+<span 
+class="ec-lmr-10x-x-109">PE1 reads;</span>                                                                </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-3-14-"><td  style="white-space:nowrap; text-align:left;" id="TBL-3-14-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">trimWGBSEndRepairPE1Seq</span></td><td  style="white-space:wrap; text-align:left;" id="TBL-3-14-2"  
+class="td11">
+<!--l. 196--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">How to trim end-repair sequence from end of ++/-+ reads</span>
+<span 
+class="ec-lmr-10x-x-109">from Pair End WGBS Sequencing; 0: no trim; n(positive</span>
+<span 
+class="ec-lmr-10x-x-109">integer): trim n + NM bases from end of ++/-+ reads if</span>
+<span 
+class="ec-lmr-10x-x-109">fragSize &#x003C;= maxReadLen; -2: model determined n; Suggest</span>
+<span 
+class="ec-lmr-10x-x-109">3;</span>                                                                            </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-3-15-"><td  style="white-space:nowrap; text-align:left;" id="TBL-3-15-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">processPEOverlapSeq          </span></td><td  style="white-space:wrap; text-align:left;" id="TBL-3-15-2"  
+class="td11">
+<!--l. 198--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">1/0 makes the program count once/twice the overlap seq of</span>
+<span 
+class="ec-lmr-10x-x-109">two pairs;</span>                                                                 </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-3-16-"><td  style="white-space:nowrap; text-align:left;" id="TBL-3-16-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">trimRRBSEndRepairSeq      </span></td><td  style="white-space:wrap; text-align:left;" id="TBL-3-16-2"  
+class="td11">
+<!--l. 200--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">How to trim end-repair sequence for RRBS reads; RRBS or</span>
+<span 
+class="ec-lmr-10x-x-109">WGBS protocol can be automatically detected; 0: no trim;</span>
+<span 
+class="ec-lmr-10x-x-109">2: trim the last CG at exactly end of ++/-+ reads and trim</span>
+<span 
+class="ec-lmr-10x-x-109">the first CG at exactly begin of +-/-- reads like the WGBS</span>
+<span 
+class="ec-lmr-10x-x-109">situation;</span>                                                                  </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-3-17-"><td  style="white-space:nowrap; text-align:left;" id="TBL-3-17-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">skipRandomChrom              </span></td><td  style="white-space:wrap; text-align:left;" id="TBL-3-17-2"  
+class="td11">
+<!--l. 202--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">Specify whether to skip random and hadrop chrom;</span>          </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-3-18-"><td  style="white-space:nowrap; text-align:left;" id="TBL-3-18-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">requiredFlag,f                     </span></td><td  style="white-space:wrap; text-align:left;" id="TBL-3-18-2"  
+class="td11">
+<!--l. 204--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">Requiring samtools flag; 0x2(properly paried), 0x40(PE1),</span>
+<span 
+class="ec-lmr-10x-x-109">0x80(PE2), 0x100(not unique), r=0x10(reverse); Examples:</span>
+<span 
+class="ec-lmr-10x-x-109">-f 0x10 &#x003C;=&#x003E; +-/-+ (Right) reads; -f 0x40 &#x003C;=&#x003E; ++/-+</span>
+<span 
+class="ec-lmr-10x-x-109">(PE1) reads; -f 0x50 &#x003C;=&#x003E; -+ read; -f 0x90 &#x003C;=&#x003E; +- read;</span>  </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-3-19-"><td  style="white-space:nowrap; text-align:left;" id="TBL-3-19-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">excludedFlag,F                   </span></td><td  style="white-space:wrap; text-align:left;" id="TBL-3-19-2"  
+class="td11">
+<!--l. 206--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">Excluding samtools flag; Examples: -f 0x2 -F 0x100 &#x003C;=&#x003E;</span>
+<span 
+class="ec-lmr-10x-x-109">uniquely mapped pairs; -F 0x10 &#x003C;=&#x003E; ++/-- (Left) reads;</span>
+<span 
+class="ec-lmr-10x-x-109">-F 0x40 &#x003C;=&#x003E; -f 0x80 +-/-- (PE2) reads; -f 0x40 -F 0x10</span>
+<span 
+class="ec-lmr-10x-x-109">&#x003C;=&#x003E; ++ read; -f 0x80 -F 0x10 &#x003C;=&#x003E; -- read;</span>                  </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-3-20-"><td  style="white-space:nowrap; text-align:left;" id="TBL-3-20-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">minFragSize                       </span></td><td  style="white-space:wrap; text-align:left;" id="TBL-3-20-2"  
+class="td11">
+<!--l. 208--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">Requiring  min  fragment  size,  the  9th  field  in  sam  file;</span>
+<span 
+class="ec-lmr-10x-x-109">Since non-properly-paired read has 0 at 9th field, setting</span>
+<span 
+class="ec-lmr-10x-x-109">this option is requiring properly paired and large enough</span>
+<span 
+class="ec-lmr-10x-x-109">fragment size;</span>                                                            </td>
+                                                                                  
+</tr><tr  
+ style="vertical-align:baseline;" id="TBL-3-21-"><td  style="white-space:nowrap; text-align:left;" id="TBL-3-21-1"  
+class="td11">                           </td><td  style="white-space:wrap; text-align:left;" id="TBL-3-21-2"  
+class="td11"></td></tr>
+<tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-3-22-"><td  style="white-space:nowrap; text-align:left;" id="TBL-3-22-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">minMMFragSize</span></td><td  style="white-space:wrap; text-align:left;" id="TBL-3-22-2"  
+class="td11">
+<!--l. 210--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">Requiring  min  fragment  size  for  multiply  matched  read;</span>
+<span 
+class="ec-lmr-10x-x-109">Same as option above but only this option is only applicable</span>
+<span 
+class="ec-lmr-10x-x-109">to reads with flag 0x100 set as 1;</span>                                   </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-3-23-"><td  style="white-space:nowrap; text-align:left;" id="TBL-3-23-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">reportCpX       </span></td><td  style="white-space:wrap; text-align:left;" id="TBL-3-23-2"  
+class="td11">
+<!--l. 212--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">po::value&#x003C;char&#x003E;()-&#x003E;default_value(&#8217;G&#8217;),  "X=G  generates</span>
+<span 
+class="ec-lmr-10x-x-109">a  file  for  CpG  methylation;  A/C/T  generates  file  for</span>
+<span 
+class="ec-lmr-10x-x-109">CpA/CpC/CpT meth;</span>                                                </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-3-24-"><td  style="white-space:nowrap; text-align:left;" id="TBL-3-24-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">reportCHX       </span></td><td  style="white-space:wrap; text-align:left;" id="TBL-3-24-2"  
+class="td11">
+<!--l. 214--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">po::value&#x003C;char&#x003E;()-&#x003E;default_value(&#8217;X&#8217;),  "X=G  generates</span>
+<span 
+class="ec-lmr-10x-x-109">a  file  for  CHG  methylation;  A/C/T  generates  file  for</span>
+<span 
+class="ec-lmr-10x-x-109">CHA/CHC/CHT meth; This file is large;</span>                        </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-3-25-"><td  style="white-space:nowrap; text-align:left;" id="TBL-3-25-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">fullMode,a        </span></td><td  style="white-space:wrap; text-align:left;" id="TBL-3-25-2"  
+class="td11">
+<!--l. 216--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">Specify whether to turn on full mode. Off(0): only *.G.bed,</span>
+<span 
+class="ec-lmr-10x-x-109">*.HG.bed  and  *_stat.txt  are  allowed  to  be  generated.</span>
+<span 
+class="ec-lmr-10x-x-109">On(1): file *.HG.bed, *.bed, *_skip.bed, and *_strand.bed</span>
+<span 
+class="ec-lmr-10x-x-109">are  forced  to  be  generated.  Extremely  large  files  will  be</span>
+<span 
+class="ec-lmr-10x-x-109">generated at fullMode.</span>                                                </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-3-26-"><td  style="white-space:nowrap; text-align:left;" id="TBL-3-26-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">statsOnly         </span></td><td  style="white-space:wrap; text-align:left;" id="TBL-3-26-2"  
+class="td11">
+<!--l. 218--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">Off(0): no effect. On(1): only *_stat.txt is generated.</span>        </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-3-27-"><td  style="white-space:nowrap; text-align:left;" id="TBL-3-27-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">keepTemp        </span></td><td  style="white-space:wrap; text-align:left;" id="TBL-3-27-2"  
+class="td11">
+<!--l. 220--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">Specify whether to keep temp files;</span>                                </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-3-28-"><td  style="white-space:nowrap; text-align:left;" id="TBL-3-28-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">threads,p         </span></td><td  style="white-space:wrap; text-align:left;" id="TBL-3-28-2"  
+class="td11">
+<!--l. 222--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">Number of threads on all mapped file. Suggest 1</span><span 
+class="lmmi-10x-x-109">sim</span><span 
+class="ec-lmr-10x-x-109">8 on</span>
+<span 
+class="ec-lmr-10x-x-109">EACH input file depending RAM size and disk speed.</span>       </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-3-29-"><td  style="white-space:nowrap; text-align:left;" id="TBL-3-29-1"  
+class="td11">              </td>
+</tr><tr  
+ style="vertical-align:baseline;" id="TBL-3-30-"><td  style="white-space:nowrap; text-align:left;" id="TBL-3-30-1"  
+class="td11">              </td>
+</tr><tr  
+ style="vertical-align:baseline;" id="TBL-3-31-"><td  style="white-space:nowrap; text-align:left;" id="TBL-3-31-1"  
+class="td11">              </td>
+</tr><tr  
+ style="vertical-align:baseline;" id="TBL-3-32-"><td  style="white-space:nowrap; text-align:left;" id="TBL-3-32-1"  
+class="td11">              </td>
+</tr><tr  
+ style="vertical-align:baseline;" id="TBL-3-33-"><td  style="white-space:nowrap; text-align:left;" id="TBL-3-33-1"  
+class="td11">              </td></tr>
+    </table></div>
+<!--l. 227--><p class="noindent" >2.
+    <h4 class="subsectionHead"><span class="titlemark">2   </span> <a 
+ id="x1-200002"></a>Format of input and output files</h4>
+<!--l. 228--><p class="noindent" >The input files defined by -m (i.e. --mappedFiles) are sam or bam files. If it&#8217;s a bam file, it
+need be sorted. The sam/bam must include a field to specify which bisulfite
+strand the read is sequenced from. In the BSMAP result this field is for example
+&#8220;ZS:Z:-+&#8221;.
+<!--l. 232--><p class="indent" >    If the --fullMode option is set to 0, only *.G.bed, *.HG.bed and *_stat.txt are allowed
+to be generated.
+                                                                                  
+                                                                                  
+<!--l. 234--><p class="indent" >    The *.G.bed and *.HG.bed files report the CG and CHG methylation. Here is the
+format<br 
+class="newline" /> <!--tex4ht:inline--><div class="tabular"> <table id="TBL-4" class="tabular" 
+cellspacing="0" cellpadding="0" rules="groups" 
+><colgroup id="TBL-4-1g"><col 
+id="TBL-4-1"></colgroup><colgroup id="TBL-4-2g"><col 
+id="TBL-4-2"></colgroup><colgroup id="TBL-4-3g"><col 
+id="TBL-4-3"></colgroup><colgroup id="TBL-4-4g"><col 
+id="TBL-4-4"></colgroup><colgroup id="TBL-4-5g"><col 
+id="TBL-4-5"></colgroup><colgroup id="TBL-4-6g"><col 
+id="TBL-4-6"></colgroup><colgroup id="TBL-4-7g"><col 
+id="TBL-4-7"></colgroup><colgroup id="TBL-4-8g"><col 
+id="TBL-4-8"></colgroup><colgroup id="TBL-4-9g"><col 
+id="TBL-4-9"></colgroup><colgroup id="TBL-4-10g"><col 
+id="TBL-4-10"></colgroup><colgroup id="TBL-4-11g"><col 
+id="TBL-4-11"></colgroup><colgroup id="TBL-4-12g"><col 
+id="TBL-4-12"></colgroup><colgroup id="TBL-4-13g"><col 
+id="TBL-4-13"></colgroup><colgroup id="TBL-4-14g"><col 
+id="TBL-4-14"></colgroup><tr 
+class="hline"><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-4-1-"><td  style="white-space:nowrap; text-align:left;" id="TBL-4-1-1"  
+class="td11"><span 
+class="ec-lmr-8">chrom</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-4-1-2"  
+class="td11"><span 
+class="ec-lmr-8">start</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-4-1-3"  
+class="td11"><span 
+class="ec-lmr-8">end</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-4-1-4"  
+class="td11"><span 
+class="ec-lmr-8">ratio</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-4-1-5"  
+class="td11"><span 
+class="ec-lmr-8">totalC</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-4-1-6"  
+class="td11"><span 
+class="ec-lmr-8">methC</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-4-1-7"  
+class="td11"><span 
+class="ec-lmr-8">strand</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-4-1-8"  
+class="td11"><span 
+class="ec-lmr-8">next</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-4-1-9"  
+class="td11"><span 
+class="ec-lmr-8">Plus</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-4-1-10"  
+class="td11"><span 
+class="ec-lmr-8">totalC</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-4-1-11"  
+class="td11"><span 
+class="ec-lmr-8">methC</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-4-1-12"  
+class="td11"><span 
+class="ec-lmr-8">Minus</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-4-1-13"  
+class="td11"><span 
+class="ec-lmr-8">totalC</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-4-1-14"  
+class="td11"><span 
+class="ec-lmr-8">methC</span></td></tr><tr 
+class="hline"><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-4-2-"><td  style="white-space:nowrap; text-align:left;" id="TBL-4-2-1"  
+class="td11"><span 
+class="ec-lmr-8">chr10 </span></td> <td  style="white-space:nowrap; text-align:right;" id="TBL-4-2-2"  
+class="td11"> <span 
+class="ec-lmr-8">308</span></td> <td  style="white-space:nowrap; text-align:right;" id="TBL-4-2-3"  
+class="td11"><span 
+class="ec-lmr-8">390</span></td> <td  style="white-space:nowrap; text-align:right;" id="TBL-4-2-4"  
+class="td11"> <span 
+class="ec-lmr-8">1</span></td> <td  style="white-space:nowrap; text-align:right;" id="TBL-4-2-5"  
+class="td11"> <span 
+class="ec-lmr-8">10</span></td> <td  style="white-space:nowrap; text-align:right;" id="TBL-4-2-6"  
+class="td11"> <span 
+class="ec-lmr-8">10</span></td> <td  style="white-space:nowrap; text-align:right;" id="TBL-4-2-7"  
+class="td11"> <span 
+class="ec-lmr-8">B</span></td> <td  style="white-space:nowrap; text-align:right;" id="TBL-4-2-8"  
+class="td11"> <span 
+class="ec-lmr-8">G</span></td> <td  style="white-space:nowrap; text-align:right;" id="TBL-4-2-9"  
+class="td11"> <span 
+class="ec-lmr-8">+</span></td> <td  style="white-space:nowrap; text-align:right;" id="TBL-4-2-10"  
+class="td11"> <span 
+class="ec-lmr-8">4</span></td> <td  style="white-space:nowrap; text-align:right;" id="TBL-4-2-11"  
+class="td11"> <span 
+class="ec-lmr-8">4</span></td> <td  style="white-space:nowrap; text-align:right;" id="TBL-4-2-12"  
+class="td11"> <span 
+class="ec-lmr-8">-</span></td> <td  style="white-space:nowrap; text-align:right;" id="TBL-4-2-13"  
+class="td11"> <span 
+class="ec-lmr-8">6</span></td> <td  style="white-space:nowrap; text-align:right;" id="TBL-4-2-14"  
+class="td11"> <span 
+class="ec-lmr-8">6</span></td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-4-3-"><td  style="white-space:nowrap; text-align:left;" id="TBL-4-3-1"  
+class="td11"><span 
+class="ec-lmr-8">chr10  </span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-4-3-2"  
+class="td11"> <span 
+class="ec-lmr-8">510</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-4-3-3"  
+class="td11"><span 
+class="ec-lmr-8">512</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-4-3-4"  
+class="td11">  <span 
+class="ec-lmr-8">0.5</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-4-3-5"  
+class="td11">    <span 
+class="ec-lmr-8">10</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-4-3-6"  
+class="td11">     <span 
+class="ec-lmr-8">5</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-4-3-7"  
+class="td11">     <span 
+class="ec-lmr-8">-</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-4-3-8"  
+class="td11">  <span 
+class="ec-lmr-8">G</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-4-3-9"  
+class="td11">  <span 
+class="ec-lmr-8">+</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-4-3-10"  
+class="td11">     <span 
+class="ec-lmr-8">0</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-4-3-11"  
+class="td11">     <span 
+class="ec-lmr-8">0</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-4-3-12"  
+class="td11">     <span 
+class="ec-lmr-8">-</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-4-3-13"  
+class="td11">    <span 
+class="ec-lmr-8">10</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-4-3-14"  
+class="td11">     <span 
+class="ec-lmr-8">5</span></td></tr><tr 
+class="hline"><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-4-4-"><td  style="white-space:nowrap; text-align:left;" id="TBL-4-4-1"  
+class="td11"> </td> </tr></table>
+</div>
+where B means info is from Both strands, next is the nucleotide after C, Plus and
+following two columns show the info from the + strand, and Minus and following two
+columns show the info from the - strand.
+<!--l. 245--><p class="indent" >    The *_stat.txt file reports various statistics. <br 
+class="newline" />It first reports the number of all reads in sam/bam file and number of mapped
+reads:<br 
+class="newline" /> <!--tex4ht:inline--><div class="tabular"> <table id="TBL-5" class="tabular" 
+cellspacing="0" cellpadding="0" rules="groups" 
+><colgroup id="TBL-5-1g"><col 
+id="TBL-5-1"></colgroup><tr 
+class="hline"><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-5-1-"><td  style="white-space:nowrap; text-align:center;" id="TBL-5-1-1"  
+class="td11"><span 
+class="ec-lmr-8">Allreads = 46308748; Mapped reads = 46308748</span></td></tr><tr 
+class="hline"><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-5-2-"><td  style="white-space:nowrap; text-align:center;" id="TBL-5-2-1"  
+class="td11"></td> </tr></table>
+</div>
+<br 
+class="newline" />It then reports &#8220;Strand specific&#8221; statistics where the CG dimer on two strands are
+regarded as two Cytosines.<br 
+class="newline" /> <!--tex4ht:inline--><div class="tabular"> <table id="TBL-6" class="tabular" 
+cellspacing="0" cellpadding="0" rules="groups" 
+><colgroup id="TBL-6-1g"><col 
+id="TBL-6-1"></colgroup><colgroup id="TBL-6-2g"><col 
+id="TBL-6-2"></colgroup><colgroup id="TBL-6-3g"><col 
+id="TBL-6-3"></colgroup><colgroup id="TBL-6-4g"><col 
+id="TBL-6-4"></colgroup><colgroup id="TBL-6-5g"><col 
+id="TBL-6-5"></colgroup><colgroup id="TBL-6-6g"><col 
+id="TBL-6-6"></colgroup><colgroup id="TBL-6-7g"><col 
+id="TBL-6-7"></colgroup><colgroup id="TBL-6-8g"><col 
+id="TBL-6-8"></colgroup><tr 
+class="hline"><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-6-1-"><td  style="white-space:nowrap; text-align:left;" id="TBL-6-1-1"  
+class="td11"><span 
+class="ec-lmr-8">next</span></td><td  style="white-space:nowrap; text-align:left;" id="TBL-6-1-2"  
+class="td11"><span 
+class="ec-lmr-8">strand</span></td><td  style="white-space:nowrap; text-align:left;" id="TBL-6-1-3"  
+class="td11"><div class="multicolumn"  style="white-space:nowrap; text-align:left;"><span 
+class="ec-lmr-8">sites</span></div>        </td><td  style="white-space:nowrap; text-align:left;" id="TBL-6-1-4"  
+class="td11"><div class="multicolumn"  style="white-space:nowrap; text-align:left;"><span 
+class="ec-lmr-8">mean</span></div>  </td><td  style="white-space:nowrap; text-align:left;" id="TBL-6-1-5"  
+class="td11"><div class="multicolumn"  style="white-space:nowrap; text-align:left;"><span 
+class="ec-lmr-8">totalC</span></div>     </td><td  style="white-space:nowrap; text-align:left;" id="TBL-6-1-6"  
+class="td11"><div class="multicolumn"  style="white-space:nowrap; text-align:left;"><span 
+class="ec-lmr-8">methC</span></div>   </td><td  style="white-space:nowrap; text-align:left;" id="TBL-6-1-7"  
+class="td11"><div class="multicolumn"  style="white-space:nowrap; text-align:left;"><span 
+class="ec-lmr-8">global</span></div> </td><td  style="white-space:nowrap; text-align:left;" id="TBL-6-1-8"  
+class="td11"><div class="multicolumn"  style="white-space:nowrap; text-align:left;"><span 
+class="ec-lmr-8">depth</span></div>
+</td></tr><tr 
+class="hline"><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-6-2-"><td  style="white-space:nowrap; text-align:left;" id="TBL-6-2-1"  
+class="td11"><span 
+class="ec-lmr-8">C     </span></td><td  style="white-space:nowrap; text-align:left;" id="TBL-6-2-2"  
+class="td11"><span 
+class="ec-lmr-8">+      </span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-2-3"  
+class="td11"> <span 
+class="ec-lmr-8">36752215</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-2-4"  
+class="td11"> <span 
+class="ec-lmr-8">0.76%</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-2-5"  
+class="td11"> <span 
+class="ec-lmr-8">76555557</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-2-6"  
+class="td11">  <span 
+class="ec-lmr-8">565290</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-2-7"  
+class="td11"> <span 
+class="ec-lmr-8">0.74%</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-2-8"  
+class="td11"><span 
+class="ec-lmr-8">2.08302</span></td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-6-3-"><td  style="white-space:nowrap; text-align:left;" id="TBL-6-3-1"  
+class="td11"><span 
+class="ec-lmr-8">C     </span></td><td  style="white-space:nowrap; text-align:left;" id="TBL-6-3-2"  
+class="td11"><span 
+class="ec-lmr-8">-       </span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-3-3"  
+class="td11"> <span 
+class="ec-lmr-8">36416416</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-3-4"  
+class="td11"> <span 
+class="ec-lmr-8">0.76%</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-3-5"  
+class="td11"> <span 
+class="ec-lmr-8">74628171</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-3-6"  
+class="td11">  <span 
+class="ec-lmr-8">563779</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-3-7"  
+class="td11"> <span 
+class="ec-lmr-8">0.76%</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-3-8"  
+class="td11"> <span 
+class="ec-lmr-8">2.0493</span></td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-6-4-"><td  style="white-space:nowrap; text-align:left;" id="TBL-6-4-1"  
+class="td11"><span 
+class="ec-lmr-8">C     </span></td><td  style="white-space:nowrap; text-align:left;" id="TBL-6-4-2"  
+class="td11"><span 
+class="ec-lmr-8">B      </span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-4-3"  
+class="td11"> <span 
+class="ec-lmr-8">73168631</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-4-4"  
+class="td11"> <span 
+class="ec-lmr-8">0.76%</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-4-5"  
+class="td11"><span 
+class="ec-lmr-8">151183728</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-4-6"  
+class="td11"> <span 
+class="ec-lmr-8">1129069</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-4-7"  
+class="td11"> <span 
+class="ec-lmr-8">0.75%</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-4-8"  
+class="td11"><span 
+class="ec-lmr-8">2.06624</span></td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-6-5-"><td  style="white-space:nowrap; text-align:left;" id="TBL-6-5-1"  
+class="td11"><span 
+class="ec-lmr-8">G    </span></td><td  style="white-space:nowrap; text-align:left;" id="TBL-6-5-2"  
+class="td11"><span 
+class="ec-lmr-8">+      </span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-5-3"  
+class="td11">  <span 
+class="ec-lmr-8">7227348</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-5-4"  
+class="td11"><span 
+class="ec-lmr-8">85.71%</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-5-5"  
+class="td11"> <span 
+class="ec-lmr-8">25700731</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-5-6"  
+class="td11"><span 
+class="ec-lmr-8">22522713</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-5-7"  
+class="td11"><span 
+class="ec-lmr-8">87.63%</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-5-8"  
+class="td11"><span 
+class="ec-lmr-8">3.55604</span></td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-6-6-"><td  style="white-space:nowrap; text-align:left;" id="TBL-6-6-1"  
+class="td11"><span 
+class="ec-lmr-8">G    </span></td><td  style="white-space:nowrap; text-align:left;" id="TBL-6-6-2"  
+class="td11"><span 
+class="ec-lmr-8">-       </span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-6-3"  
+class="td11">  <span 
+class="ec-lmr-8">7188816</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-6-4"  
+class="td11"><span 
+class="ec-lmr-8">85.65%</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-6-5"  
+class="td11"> <span 
+class="ec-lmr-8">23335829</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-6-6"  
+class="td11"><span 
+class="ec-lmr-8">20324113</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-6-7"  
+class="td11"><span 
+class="ec-lmr-8">87.09%</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-6-8"  
+class="td11"><span 
+class="ec-lmr-8">3.24613</span></td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-6-7-"><td  style="white-space:nowrap; text-align:left;" id="TBL-6-7-1"  
+class="td11"><span 
+class="ec-lmr-8">G    </span></td><td  style="white-space:nowrap; text-align:left;" id="TBL-6-7-2"  
+class="td11"><span 
+class="ec-lmr-8">B      </span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-7-3"  
+class="td11"> <span 
+class="ec-lmr-8">14416164</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-7-4"  
+class="td11"><span 
+class="ec-lmr-8">85.68%</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-7-5"  
+class="td11"> <span 
+class="ec-lmr-8">49036560</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-7-6"  
+class="td11"><span 
+class="ec-lmr-8">42846826</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-7-7"  
+class="td11"><span 
+class="ec-lmr-8">87.38%</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-7-8"  
+class="td11"> <span 
+class="ec-lmr-8">3.4015</span></td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-6-8-"><td  style="white-space:nowrap; text-align:left;" id="TBL-6-8-1"  
+class="td11"><span 
+class="ec-lmr-8">A     </span></td><td  style="white-space:nowrap; text-align:left;" id="TBL-6-8-2"  
+class="td11"><span 
+class="ec-lmr-8">+      </span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-8-3"  
+class="td11"> <span 
+class="ec-lmr-8">59108520</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-8-4"  
+class="td11"> <span 
+class="ec-lmr-8">0.85%</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-8-5"  
+class="td11"><span 
+class="ec-lmr-8">134242394</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-8-6"  
+class="td11"> <span 
+class="ec-lmr-8">1061459</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-8-7"  
+class="td11"> <span 
+class="ec-lmr-8">0.79%</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-8-8"  
+class="td11"><span 
+class="ec-lmr-8">2.27112</span></td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-6-9-"><td  style="white-space:nowrap; text-align:left;" id="TBL-6-9-1"  
+class="td11"><span 
+class="ec-lmr-8">A     </span></td><td  style="white-space:nowrap; text-align:left;" id="TBL-6-9-2"  
+class="td11"><span 
+class="ec-lmr-8">-       </span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-9-3"  
+class="td11"> <span 
+class="ec-lmr-8">58644042</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-9-4"  
+class="td11"> <span 
+class="ec-lmr-8">0.85%</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-9-5"  
+class="td11"><span 
+class="ec-lmr-8">132252113</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-9-6"  
+class="td11"> <span 
+class="ec-lmr-8">1050043</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-9-7"  
+class="td11"> <span 
+class="ec-lmr-8">0.79%</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-9-8"  
+class="td11"><span 
+class="ec-lmr-8">2.25517</span></td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-6-10-"><td  style="white-space:nowrap; text-align:left;" id="TBL-6-10-1"  
+class="td11"><span 
+class="ec-lmr-8">A     </span></td><td  style="white-space:nowrap; text-align:left;" id="TBL-6-10-2"  
+class="td11"><span 
+class="ec-lmr-8">B      </span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-10-3"  
+class="td11"><span 
+class="ec-lmr-8">117752562</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-10-4"  
+class="td11"> <span 
+class="ec-lmr-8">0.85%</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-10-5"  
+class="td11"><span 
+class="ec-lmr-8">266494507</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-10-6"  
+class="td11"> <span 
+class="ec-lmr-8">2111502</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-10-7"  
+class="td11"> <span 
+class="ec-lmr-8">0.79%</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-10-8"  
+class="td11"><span 
+class="ec-lmr-8">2.26317</span></td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-6-11-"><td  style="white-space:nowrap; text-align:left;" id="TBL-6-11-1"  
+class="td11"><span 
+class="ec-lmr-8">T     </span></td><td  style="white-space:nowrap; text-align:left;" id="TBL-6-11-2"  
+class="td11"><span 
+class="ec-lmr-8">+      </span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-11-3"  
+class="td11"> <span 
+class="ec-lmr-8">53335539</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-11-4"  
+class="td11"> <span 
+class="ec-lmr-8">0.81%</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-11-5"  
+class="td11"><span 
+class="ec-lmr-8">119944928</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-11-6"  
+class="td11">  <span 
+class="ec-lmr-8">885216</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-11-7"  
+class="td11"> <span 
+class="ec-lmr-8">0.74%</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-11-8"  
+class="td11"><span 
+class="ec-lmr-8">2.24887</span></td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-6-12-"><td  style="white-space:nowrap; text-align:left;" id="TBL-6-12-1"  
+class="td11"><span 
+class="ec-lmr-8">T     </span></td><td  style="white-space:nowrap; text-align:left;" id="TBL-6-12-2"  
+class="td11"><span 
+class="ec-lmr-8">-       </span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-12-3"  
+class="td11"> <span 
+class="ec-lmr-8">52891643</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-12-4"  
+class="td11"> <span 
+class="ec-lmr-8">0.81%</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-12-5"  
+class="td11"><span 
+class="ec-lmr-8">116964923</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-12-6"  
+class="td11">  <span 
+class="ec-lmr-8">879988</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-12-7"  
+class="td11"> <span 
+class="ec-lmr-8">0.75%</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-12-8"  
+class="td11"><span 
+class="ec-lmr-8">2.21141</span></td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-6-13-"><td  style="white-space:nowrap; text-align:left;" id="TBL-6-13-1"  
+class="td11"><span 
+class="ec-lmr-8">T     </span></td><td  style="white-space:nowrap; text-align:left;" id="TBL-6-13-2"  
+class="td11"><span 
+class="ec-lmr-8">B      </span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-13-3"  
+class="td11"><span 
+class="ec-lmr-8">106227182</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-13-4"  
+class="td11"> <span 
+class="ec-lmr-8">0.81%</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-13-5"  
+class="td11"><span 
+class="ec-lmr-8">236909851</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-13-6"  
+class="td11"> <span 
+class="ec-lmr-8">1765204</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-13-7"  
+class="td11"> <span 
+class="ec-lmr-8">0.75%</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-6-13-8"  
+class="td11"><span 
+class="ec-lmr-8">2.23022</span></td></tr><tr 
+class="hline"><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-6-14-"><td  style="white-space:nowrap; text-align:left;" id="TBL-6-14-1"  
+class="td11"> </td> </tr></table>
+</div>
+<br 
+class="newline" />Here the &#8220;mean&#8221; is mean ratio of all cytosine specified by &#8220;next&#8221; and &#8220;strand&#8221; (e.g. &#8220;T&#8221;
+and &#8220;-&#8221;). The &#8220;global&#8221; is &#8220;totalC&#8221; divided by &#8220;methC&#8221;, and hence slightly different than
+&#8220;mean&#8221;. The strand &#8220;B&#8221; denotes all Cytosines from both strands but still considers each
+CG dimer as two Cytosines.<br 
+class="newline" />It then reports the &#8220;Strand combined&#8221; statistics where the CG dimer on two strands are
+regarded as one Cytosine. <br 
+class="newline" /> <!--tex4ht:inline--><div class="tabular"> <table id="TBL-7" class="tabular" 
+cellspacing="0" cellpadding="0" rules="groups" 
+><colgroup id="TBL-7-1g"><col 
+id="TBL-7-1"></colgroup><colgroup id="TBL-7-2g"><col 
+id="TBL-7-2"></colgroup><colgroup id="TBL-7-3g"><col 
+id="TBL-7-3"></colgroup><colgroup id="TBL-7-4g"><col 
+id="TBL-7-4"></colgroup><colgroup id="TBL-7-5g"><col 
+id="TBL-7-5"></colgroup><colgroup id="TBL-7-6g"><col 
+id="TBL-7-6"></colgroup><colgroup id="TBL-7-7g"><col 
+id="TBL-7-7"></colgroup><colgroup id="TBL-7-8g"><col 
+id="TBL-7-8"></colgroup><tr 
+class="hline"><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-7-1-"><td  style="white-space:nowrap; text-align:left;" id="TBL-7-1-1"  
+class="td11"><span 
+class="ec-lmr-8">next</span></td><td  style="white-space:nowrap; text-align:left;" id="TBL-7-1-2"  
+class="td11"><span 
+class="ec-lmr-8">strand</span></td><td  style="white-space:nowrap; text-align:left;" id="TBL-7-1-3"  
+class="td11"><div class="multicolumn"  style="white-space:nowrap; text-align:left;"><span 
+class="ec-lmr-8">sites</span></div>        </td><td  style="white-space:nowrap; text-align:left;" id="TBL-7-1-4"  
+class="td11"><div class="multicolumn"  style="white-space:nowrap; text-align:left;"><span 
+class="ec-lmr-8">mean</span></div>  </td><td  style="white-space:nowrap; text-align:left;" id="TBL-7-1-5"  
+class="td11"><div class="multicolumn"  style="white-space:nowrap; text-align:left;"><span 
+class="ec-lmr-8">totalC</span></div>     </td><td  style="white-space:nowrap; text-align:left;" id="TBL-7-1-6"  
+class="td11"><div class="multicolumn"  style="white-space:nowrap; text-align:left;"><span 
+class="ec-lmr-8">methC</span></div>   </td><td  style="white-space:nowrap; text-align:left;" id="TBL-7-1-7"  
+class="td11"><div class="multicolumn"  style="white-space:nowrap; text-align:left;"><span 
+class="ec-lmr-8">global</span></div> </td><td  style="white-space:nowrap; text-align:left;" id="TBL-7-1-8"  
+class="td11"><div class="multicolumn"  style="white-space:nowrap; text-align:left;"><span 
+class="ec-lmr-8">depth</span></div>
+</td></tr><tr 
+class="hline"><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-7-2-"><td  style="white-space:nowrap; text-align:left;" id="TBL-7-2-1"  
+class="td11"><span 
+class="ec-lmr-8">C     </span></td><td  style="white-space:nowrap; text-align:left;" id="TBL-7-2-2"  
+class="td11"><span 
+class="ec-lmr-8">B      </span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-7-2-3"  
+class="td11"> <span 
+class="ec-lmr-8">77917233</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-7-2-4"  
+class="td11"> <span 
+class="ec-lmr-8">0.76%</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-7-2-5"  
+class="td11"><span 
+class="ec-lmr-8">160572980</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-7-2-6"  
+class="td11"> <span 
+class="ec-lmr-8">1198962</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-7-2-7"  
+class="td11"> <span 
+class="ec-lmr-8">0.75%</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-7-2-8"  
+class="td11"><span 
+class="ec-lmr-8">2.06081</span></td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-7-3-"><td  style="white-space:nowrap; text-align:left;" id="TBL-7-3-1"  
+class="td11"><span 
+class="ec-lmr-8">G    </span></td><td  style="white-space:nowrap; text-align:left;" id="TBL-7-3-2"  
+class="td11"><span 
+class="ec-lmr-8">B      </span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-7-3-3"  
+class="td11"> <span 
+class="ec-lmr-8">12946070</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-7-3-4"  
+class="td11"><span 
+class="ec-lmr-8">85.30%</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-7-3-5"  
+class="td11"> <span 
+class="ec-lmr-8">50940096</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-7-3-6"  
+class="td11"><span 
+class="ec-lmr-8">44443423</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-7-3-7"  
+class="td11"><span 
+class="ec-lmr-8">87.25%</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-7-3-8"  
+class="td11"><span 
+class="ec-lmr-8">3.93479</span></td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-7-4-"><td  style="white-space:nowrap; text-align:left;" id="TBL-7-4-1"  
+class="td11"><span 
+class="ec-lmr-8">A     </span></td><td  style="white-space:nowrap; text-align:left;" id="TBL-7-4-2"  
+class="td11"><span 
+class="ec-lmr-8">B      </span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-7-4-3"  
+class="td11"><span 
+class="ec-lmr-8">125062492</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-7-4-4"  
+class="td11"> <span 
+class="ec-lmr-8">0.85%</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-7-4-5"  
+class="td11"><span 
+class="ec-lmr-8">281423311</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-7-4-6"  
+class="td11"> <span 
+class="ec-lmr-8">2232449</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-7-4-7"  
+class="td11"> <span 
+class="ec-lmr-8">0.79%</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-7-4-8"  
+class="td11"><span 
+class="ec-lmr-8">2.25026</span></td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-7-5-"><td  style="white-space:nowrap; text-align:left;" id="TBL-7-5-1"  
+class="td11"><span 
+class="ec-lmr-8">T     </span></td><td  style="white-space:nowrap; text-align:left;" id="TBL-7-5-2"  
+class="td11"><span 
+class="ec-lmr-8">B      </span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-7-5-3"  
+class="td11"><span 
+class="ec-lmr-8">112814040</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-7-5-4"  
+class="td11"> <span 
+class="ec-lmr-8">0.81%</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-7-5-5"  
+class="td11"><span 
+class="ec-lmr-8">250154072</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-7-5-6"  
+class="td11"> <span 
+class="ec-lmr-8">1868150</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-7-5-7"  
+class="td11"> <span 
+class="ec-lmr-8">0.75%</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-7-5-8"  
+class="td11"> <span 
+class="ec-lmr-8">2.2174</span></td></tr><tr 
+class="hline"><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-7-6-"><td  style="white-space:nowrap; text-align:left;" id="TBL-7-6-1"  
+class="td11"> </td> </tr></table>
+</div>
+<br 
+class="newline" />Here the &#8220;Strand combined&#8221; numbers are different than the &#8220;Strand specific&#8221; numbers as
+expected.<br 
+class="newline" />It then reports the &#8220;bisulfite Conversion ratio&#8221; as<br 
+class="newline" /> <!--tex4ht:inline--><div class="tabular"> <table id="TBL-8" class="tabular" 
+cellspacing="0" cellpadding="0" rules="groups" 
+><colgroup id="TBL-8-1g"><col 
+id="TBL-8-1"></colgroup><tr 
+class="hline"><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-8-1-"><td  style="white-space:nowrap; text-align:center;" id="TBL-8-1-1"  
+class="td11"><span 
+class="ec-lmr-8">bisulfiteConversionFail: 0.00765666, or bisulfite conversion ratio = 0.992343</span></td></tr><tr 
+class="hline"><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-8-2-"><td  style="white-space:nowrap; text-align:center;" id="TBL-8-2-1"  
+class="td11"></td> </tr></table>
+</div>
+<br 
+class="newline" />It then reports the &#8220;Strand combined&#8221; statistics for mean methylation ratio of C, CG, CH,
+CHG, and CHH at different depth cutoff values.<br 
+class="newline" /> <!--tex4ht:inline--><div class="tabular"> <table id="TBL-9" class="tabular" 
+cellspacing="0" cellpadding="0" rules="groups" 
+><colgroup id="TBL-9-1g"><col 
+id="TBL-9-1"></colgroup><colgroup id="TBL-9-2g"><col 
+id="TBL-9-2"></colgroup><colgroup id="TBL-9-3g"><col 
+id="TBL-9-3"></colgroup><colgroup id="TBL-9-4g"><col 
+id="TBL-9-4"></colgroup><colgroup id="TBL-9-5g"><col 
+id="TBL-9-5"></colgroup><colgroup id="TBL-9-6g"><col 
+id="TBL-9-6"></colgroup><colgroup id="TBL-9-7g"><col 
+id="TBL-9-7"></colgroup><colgroup id="TBL-9-8g"><col 
+id="TBL-9-8"></colgroup><colgroup id="TBL-9-9g"><col 
+id="TBL-9-9"></colgroup><colgroup id="TBL-9-10g"><col 
+id="TBL-9-10"></colgroup><colgroup id="TBL-9-11g"><col 
+id="TBL-9-11"></colgroup><tr 
+class="hline"><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-9-1-"><td  style="white-space:nowrap; text-align:right;" id="TBL-9-1-1"  
+class="td11"><span 
+class="ec-lmr-6">depth</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-1-2"  
+class="td11">    <span 
+class="ec-lmr-6">NumC</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-1-3"  
+class="td11"> <span 
+class="ec-lmr-6">NumCG</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-1-4"  
+class="td11">  <span 
+class="ec-lmr-6">NumCH</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-1-5"  
+class="td11"> <span 
+class="ec-lmr-6">NumCHG</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-1-6"  
+class="td11"> <span 
+class="ec-lmr-6">NumCHH</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-1-7"  
+class="td11"><span 
+class="ec-lmr-6">MeanC</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-1-8"  
+class="td11"><span 
+class="ec-lmr-6">MeanCG</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-1-9"  
+class="td11"><span 
+class="ec-lmr-6">MeanCH</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-1-10"  
+class="td11"><span 
+class="ec-lmr-6">MeanCHG</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-1-11"  
+class="td11"><span 
+class="ec-lmr-6">MeanCHH</span></td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-9-2-"><td  style="white-space:nowrap; text-align:right;" id="TBL-9-2-1"  
+class="td11">     <span 
+class="ec-lmr-6">0</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-2-2"  
+class="td11"><span 
+class="ec-lmr-6">534146040</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-2-3"  
+class="td11"><span 
+class="ec-lmr-6">21342779</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-2-4"  
+class="td11"><span 
+class="ec-lmr-6">512803261</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-2-5"  
+class="td11"><span 
+class="ec-lmr-6">112610026</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-2-6"  
+class="td11"><span 
+class="ec-lmr-6">400193235</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-2-7"  
+class="td11">    <span 
+class="ec-lmr-6">NA</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-2-8"  
+class="td11">      <span 
+class="ec-lmr-6">NA</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-2-9"  
+class="td11">     <span 
+class="ec-lmr-6">NA</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-2-10"  
+class="td11">       <span 
+class="ec-lmr-6">NA</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-2-11"  
+class="td11">       <span 
+class="ec-lmr-6">NA</span></td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-9-3-"><td  style="white-space:nowrap; text-align:right;" id="TBL-9-3-1"  
+class="td11">     <span 
+class="ec-lmr-6">1</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-3-2"  
+class="td11"><span 
+class="ec-lmr-6">328739835</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-3-3"  
+class="td11"><span 
+class="ec-lmr-6">12946070</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-3-4"  
+class="td11"><span 
+class="ec-lmr-6">315793765</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-3-5"  
+class="td11"> <span 
+class="ec-lmr-6">71982073</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-3-6"  
+class="td11"><span 
+class="ec-lmr-6">243811692</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-3-7"  
+class="td11"> <span 
+class="ec-lmr-6">4.14%</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-3-8"  
+class="td11">  <span 
+class="ec-lmr-6">85.30%</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-3-9"  
+class="td11">   <span 
+class="ec-lmr-6">0.81%</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-3-10"  
+class="td11">     <span 
+class="ec-lmr-6">0.80%</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-3-11"  
+class="td11">     <span 
+class="ec-lmr-6">0.82%</span></td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-9-4-"><td  style="white-space:nowrap; text-align:right;" id="TBL-9-4-1"  
+class="td11">     <span 
+class="ec-lmr-6">2</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-4-2"  
+class="td11"><span 
+class="ec-lmr-6">156636760</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-4-3"  
+class="td11"> <span 
+class="ec-lmr-6">8038102</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-4-4"  
+class="td11"><span 
+class="ec-lmr-6">148598658</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-4-5"  
+class="td11"> <span 
+class="ec-lmr-6">34782601</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-4-6"  
+class="td11"><span 
+class="ec-lmr-6">113816057</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-4-7"  
+class="td11"> <span 
+class="ec-lmr-6">5.25%</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-4-8"  
+class="td11">  <span 
+class="ec-lmr-6">85.85%</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-4-9"  
+class="td11">   <span 
+class="ec-lmr-6">0.89%</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-4-10"  
+class="td11">     <span 
+class="ec-lmr-6">0.85%</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-4-11"  
+class="td11">     <span 
+class="ec-lmr-6">0.90%</span></td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-9-5-"><td  style="white-space:nowrap; text-align:right;" id="TBL-9-5-1"  
+class="td11">     <span 
+class="ec-lmr-6">3</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-5-2"  
+class="td11"> <span 
+class="ec-lmr-6">79872726</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-5-3"  
+class="td11"> <span 
+class="ec-lmr-6">4830783</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-5-4"  
+class="td11"> <span 
+class="ec-lmr-6">75041943</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-5-5"  
+class="td11"> <span 
+class="ec-lmr-6">17860683</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-5-6"  
+class="td11"> <span 
+class="ec-lmr-6">57181260</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-5-7"  
+class="td11"> <span 
+class="ec-lmr-6">6.03%</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-5-8"  
+class="td11">  <span 
+class="ec-lmr-6">86.27%</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-5-9"  
+class="td11">   <span 
+class="ec-lmr-6">0.86%</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-5-10"  
+class="td11">     <span 
+class="ec-lmr-6">0.82%</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-5-11"  
+class="td11">     <span 
+class="ec-lmr-6">0.87%</span></td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-9-6-"><td  style="white-space:nowrap; text-align:right;" id="TBL-9-6-1"  
+class="td11">     <span 
+class="ec-lmr-6">4</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-6-2"  
+class="td11"> <span 
+class="ec-lmr-6">42049689</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-6-3"  
+class="td11"> <span 
+class="ec-lmr-6">2839717</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-6-4"  
+class="td11"> <span 
+class="ec-lmr-6">39209972</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-6-5"  
+class="td11">  <span 
+class="ec-lmr-6">9429506</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-6-6"  
+class="td11"> <span 
+class="ec-lmr-6">29780466</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-6-7"  
+class="td11"> <span 
+class="ec-lmr-6">6.56%</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-6-8"  
+class="td11">  <span 
+class="ec-lmr-6">86.54%</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-6-9"  
+class="td11">   <span 
+class="ec-lmr-6">0.77%</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-6-10"  
+class="td11">     <span 
+class="ec-lmr-6">0.74%</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-6-11"  
+class="td11">     <span 
+class="ec-lmr-6">0.78%</span></td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-9-7-"><td  style="white-space:nowrap; text-align:right;" id="TBL-9-7-1"  
+class="td11">     <span 
+class="ec-lmr-6">5</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-7-2"  
+class="td11"> <span 
+class="ec-lmr-6">22619828</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-7-3"  
+class="td11"> <span 
+class="ec-lmr-6">1646517</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-7-4"  
+class="td11"> <span 
+class="ec-lmr-6">20973311</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-7-5"  
+class="td11">  <span 
+class="ec-lmr-6">5083334</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-7-6"  
+class="td11"> <span 
+class="ec-lmr-6">15889977</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-7-7"  
+class="td11"> <span 
+class="ec-lmr-6">6.93%</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-7-8"  
+class="td11">  <span 
+class="ec-lmr-6">86.68%</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-7-9"  
+class="td11">   <span 
+class="ec-lmr-6">0.67%</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-7-10"  
+class="td11">     <span 
+class="ec-lmr-6">0.64%</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-9-7-11"  
+class="td11">     <span 
+class="ec-lmr-6">0.68%</span></td></tr><tr 
+class="hline"><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-9-8-"><td  style="white-space:nowrap; text-align:right;" id="TBL-9-8-1"  
+class="td11"> </td> </tr></table>
+</div>
+--
+<!--l. 306--><p class="indent" >    If the --fullMode option is set to 1, the files *.HG.bed, *.bed, *_skip.bed, and
+*_strand.bed are forced to be generated. Extremely large files will be generated at
+fullMode. It&#8217;s not recommended to turn this on, unless you want to diagnose the
+procedures or want to see what bases or what reads are &#8220;skip&#8221; at quality control
+step.
+<!--l. 308--><p class="noindent" >3.
+    <h4 class="subsectionHead"><span class="titlemark">3   </span> <a 
+ id="x1-210003"></a>Examples</h4>
+<!--l. 310--><p class="noindent" >$ mcall -m ko_r1.bam -m ko_r2.bam --sampleName ko -p 4 -r hg19.fa <br 
+class="newline" />The easiest use is just use mcall process for all files from one condition. This command
+performs the methylation ratio calling for ko_r1.bam and ko_r2.bam parallely
+                                                                                  
+                                                                                  
+and then generate the new ko.G.bed and ko.HG.bed and ko_stat.txt files. This
+command is more or less same as &#8220;mcall -m ko_r1.bam&#8221; and &#8220;mcall -m ko_r2.bam&#8221;
+followed by a merging command &#8220;mcomp -r ko_r1.bam.G.bed,ko_r2.bam.G.bed -m
+ko.G.bed&#8221;.
+<!--l. 317--><p class="noindent" >3.
+    <h3 class="sectionHead"><span class="titlemark">3   </span> <a 
+ id="x1-220003"></a><span 
+class="ec-lmbx-12">Usage of mcomp module</span></h3>
+<!--l. 319--><p class="noindent" >For two conditions analysis, the MOABS module, named as mcomp, detects the
+differential methylation at DMC and DMR level by active search, or determines if the
+given regions are differentially methylated.
+<!--l. 322--><p class="noindent" >1.
+    <h4 class="subsectionHead"><span class="titlemark">1   </span> <a 
+ id="x1-230001"></a>Summary of usage and option</h4>
+<!--l. 323--><p class="noindent" ><span 
+class="ec-lmbx-12">Usage: </span>$ mcomp [options] -r wt.G.bed -m ko.G.bed -c comp.wt.vs.ko.txt<br 
+class="newline" /><span 
+class="ec-lmbx-12">Usage: </span>$ mcomp [options] -r wt_r1.bam.G.bed,wt_r2.bam.G.bed<br 
+class="newline" /><span 
+class="ec-lmbx-12">Usage: </span>$ mcomp [options] -r wt_r1.bed,wt_r2.bed -r ko.bed -c comp.wt.vs.ko.txt<br 
+class="newline" /><span 
+class="ec-lmbx-12">Usage: </span>$ mcomp [options] -c comp.wt.vs.ko.txt -f CGI.bed<br 
+class="newline" />
+<a 
+ id="x1-23001r2"></a>    <!--l. 330--><div class="longtable"> <table id="TBL-10" class="longtable" 
+cellspacing="0" cellpadding="0" rules="groups" 
+><colgroup id="TBL-10-1g"><col 
+id="TBL-10-1"></colgroup><colgroup id="TBL-10-2g"><col 
+id="TBL-10-2"></colgroup>
+                                                                                  
+                                                                                  
+<tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-10-1-"><td  style="white-space:nowrap; text-align:left;" id="TBL-10-1-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">Options                 </span></td><td  style="white-space:wrap; text-align:left;" id="TBL-10-1-2"  
+class="td11">
+<!--l. 330--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">Description</span>                                                               </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-10-2-"><td  style="white-space:nowrap; text-align:left;" id="TBL-10-2-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">help,h                    </span></td><td  style="white-space:wrap; text-align:left;" id="TBL-10-2-2"  
+class="td11">
+<!--l. 331--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">produce help message;</span>                                                 </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-10-3-"><td  style="white-space:nowrap; text-align:left;" id="TBL-10-3-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">email                     </span></td><td  style="white-space:wrap; text-align:left;" id="TBL-10-3-2"  
+class="td11">
+<!--l. 332--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">Specify email;</span>                                                            </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-10-4-"><td  style="white-space:nowrap; text-align:left;" id="TBL-10-4-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">ratiosFiles,r            </span></td><td  style="white-space:wrap; text-align:left;" id="TBL-10-4-2"  
+class="td11">
+<!--l. 333--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">Specify the names of ratio files from methCall. Multiple lane</span>
+<span 
+class="ec-lmr-10x-x-109">files can be separated by , to be combined into a single track;</span>
+<span 
+class="ec-lmr-10x-x-109">example: -r sample1 -r sample2 -r s_r1,s_r2,s_r3;</span>            </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-10-5-"><td  style="white-space:nowrap; text-align:left;" id="TBL-10-5-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">mergedRatiosFiles,m</span></td><td  style="white-space:wrap; text-align:left;" id="TBL-10-5-2"  
+class="td11">
+<!--l. 334--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">If --ratiosFiles is &#8217;,&#8217; separated, then this option must be set;</span></td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-10-6-"><td  style="white-space:nowrap; text-align:left;" id="TBL-10-6-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">labels,l                   </span></td><td  style="white-space:wrap; text-align:left;" id="TBL-10-6-2"  
+class="td11">
+<!--l. 335--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">Name labels for samples, defaut 0, 1, ...;</span>                         </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-10-7-"><td  style="white-space:nowrap; text-align:left;" id="TBL-10-7-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">outputDir               </span></td><td  style="white-space:wrap; text-align:left;" id="TBL-10-7-2"  
+class="td11">
+<!--l. 336--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">Specify the name of the output directory;</span>                       </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-10-8-"><td  style="white-space:nowrap; text-align:left;" id="TBL-10-8-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">webOutputDir         </span></td><td  style="white-space:wrap; text-align:left;" id="TBL-10-8-2"  
+class="td11">
+<!--l. 337--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">Specify the name of the web-accessible output directory for</span>
+<span 
+class="ec-lmr-10x-x-109">UCSC Genome Browser tracks;</span>                                     </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-10-9-"><td  style="white-space:nowrap; text-align:left;" id="TBL-10-9-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">compFile,c              </span></td><td  style="white-space:wrap; text-align:left;" id="TBL-10-9-2"  
+class="td11">
+<!--l. 338--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">Name of the comparison file resulted from statistical tests;</span> </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-10-10-"><td  style="white-space:nowrap; text-align:left;" id="TBL-10-10-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">inGenome               </span></td><td  style="white-space:wrap; text-align:left;" id="TBL-10-10-2"  
+class="td11">
+<!--l. 339--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">Specify  the  UCSC  Genome  Browser  identifier  of  source</span>
+<span 
+class="ec-lmr-10x-x-109">genome assembly;</span>                                                       </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-10-11-"><td  style="white-space:nowrap; text-align:left;" id="TBL-10-11-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">outGenome             </span></td><td  style="white-space:wrap; text-align:left;" id="TBL-10-11-2"  
+class="td11">
+<!--l. 340--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">Specify the UCSC Genome Browser identifier of destination</span>
+<span 
+class="ec-lmr-10x-x-109">genome assembly;</span>                                                       </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-10-12-"><td  style="white-space:nowrap; text-align:left;" id="TBL-10-12-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">xVector                  </span></td><td  style="white-space:wrap; text-align:left;" id="TBL-10-12-2"  
+class="td11">
+<!--l. 341--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">Specify  the  x  vector  for  R.lm()  function;x  is  comma(,)</span>
+<span 
+class="ec-lmr-10x-x-109">separated float numbers; default, 1.0,2.0,...,;</span>                    </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-10-13-"><td  style="white-space:nowrap; text-align:left;" id="TBL-10-13-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">precision                </span></td><td  style="white-space:wrap; text-align:left;" id="TBL-10-13-2"  
+class="td11">
+<!--l. 342--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">Specify the precision of float numbers in output files (default:</span>
+<span 
+class="ec-lmr-10x-x-109">3);</span>                                                                          </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-10-14-"><td  style="white-space:nowrap; text-align:left;" id="TBL-10-14-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">threads,p                </span></td><td  style="white-space:wrap; text-align:left;" id="TBL-10-14-2"  
+class="td11">
+<!--l. 343--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">Specify number of threads; suggest number 6-12; default 6;</span></td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-10-15-"><td  style="white-space:nowrap; text-align:left;" id="TBL-10-15-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">lmFit                     </span></td><td  style="white-space:wrap; text-align:left;" id="TBL-10-15-2"  
+class="td11">
+<!--l. 344--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">Specify if lenear model fitting is performed; default true;</span>
+<span 
+class="ec-lmr-10x-x-109">Note that &#8217;na&#8217; is generated if slope is 0;</span>                          </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-10-16-"><td  style="white-space:nowrap; text-align:left;" id="TBL-10-16-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">mergeNotIntersect    </span></td><td  style="white-space:wrap; text-align:left;" id="TBL-10-16-2"  
+class="td11">
+<!--l. 345--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">Specify if genomic locations are merged or intersected among</span>
+<span 
+class="ec-lmr-10x-x-109">samples; 1 for merge(default) and 0 for intersect;</span>              </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-10-17-"><td  style="white-space:nowrap; text-align:left;" id="TBL-10-17-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">doMergeRatioFiles   </span></td><td  style="white-space:wrap; text-align:left;" id="TBL-10-17-2"  
+class="td11">
+<!--l. 346--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">Internal  parameter.  Is  true  when  -m  parameter  is  &#8217;,&#8217;</span>
+<span 
+class="ec-lmr-10x-x-109">separated  and  program  will  merge  ratio  Files  that  are</span>
+<span 
+class="ec-lmr-10x-x-109">separated by &#8217;,&#8217; and the output files are named according to</span>
+<span 
+class="ec-lmr-10x-x-109">option -x;</span>                                                                 </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-10-18-"><td  style="white-space:nowrap; text-align:left;" id="TBL-10-18-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">doStrandSpecifiMeth</span></td><td  style="white-space:wrap; text-align:left;" id="TBL-10-18-2"  
+class="td11">
+<!--l. 347--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">whether   strand   specific   methylation   analysis   will   be</span>
+<span 
+class="ec-lmr-10x-x-109">performed;</span>                                                                </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-10-19-"><td  style="white-space:nowrap; text-align:left;" id="TBL-10-19-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">doComp                 </span></td><td  style="white-space:wrap; text-align:left;" id="TBL-10-19-2"  
+class="td11">
+<!--l. 348--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">doComp;</span>                                                                  </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-10-20-"><td  style="white-space:nowrap; text-align:left;" id="TBL-10-20-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">minDepthForComp,d</span></td><td  style="white-space:wrap; text-align:left;" id="TBL-10-20-2"  
+class="td11">
+<!--l. 349--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">If a site has depth &#x003C; d then this site is ignored for statistical</span>
+<span 
+class="ec-lmr-10x-x-109">tests; This option affects much of nominal ratios but none</span>
+<span 
+class="ec-lmr-10x-x-109">of credible ratios; Suggest 10 for method 2 and 3 for method</span>
+<span 
+class="ec-lmr-10x-x-109">2; You may also reset this option during later DMC/DMR</span>
+<span 
+class="ec-lmr-10x-x-109">rescan to filter sites with depth &#x003C; d;</span>                              </td>
+                                                                                  
+                                                                                  
+</tr><tr  
+ style="vertical-align:baseline;" id="TBL-10-21-"><td  style="white-space:nowrap; text-align:left;" id="TBL-10-21-1"  
+class="td11">                   </td><td  style="white-space:wrap; text-align:left;" id="TBL-10-21-2"  
+class="td11"></td></tr>
+<tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-10-22-"><td  style="white-space:nowrap; text-align:left;" id="TBL-10-22-1"  
+class="td11">                </td><td  style="white-space:wrap; text-align:left;" id="TBL-10-22-2"  
+class="td11">
+<!--l. 350--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">Below are options for Dmc and Dmr scan;)</span>                     </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-10-23-"><td  style="white-space:nowrap; text-align:left;" id="TBL-10-23-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">doDmcScan          </span></td><td  style="white-space:wrap; text-align:left;" id="TBL-10-23-2"  
+class="td11">
+<!--l. 351--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">doDmcScan;</span>                                                              </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-10-24-"><td  style="white-space:nowrap; text-align:left;" id="TBL-10-24-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">doDmrScan          </span></td><td  style="white-space:wrap; text-align:left;" id="TBL-10-24-2"  
+class="td11">
+<!--l. 352--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">doDmrScan;</span>                                                              </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-10-25-"><td  style="white-space:nowrap; text-align:left;" id="TBL-10-25-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">filterCredibleDif    </span></td><td  style="white-space:wrap; text-align:left;" id="TBL-10-25-2"  
+class="td11">
+<!--l. 353--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">if absolute value of cDif for a site &#x003C; filterCredibleDif, then</span>
+<span 
+class="ec-lmr-10x-x-109">this  site  is  ignored  for  regional  calculation.  use  0.01(for</span>
+<span 
+class="ec-lmr-10x-x-109">example) to filter all sites with no difference; use 0.20(for</span>
+<span 
+class="ec-lmr-10x-x-109">example) to select DMCs; Any negative number = no filter;</span></td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-10-26-"><td  style="white-space:nowrap; text-align:left;" id="TBL-10-26-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">dmrMethods        </span></td><td  style="white-space:wrap; text-align:left;" id="TBL-10-26-2"  
+class="td11">
+<!--l. 354--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">dmrMethods:  add  2^x  method  x;  examples:  7  for  three</span>
+<span 
+class="ec-lmr-10x-x-109">methods, 4 for method 3 only;</span>                                      </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-10-27-"><td  style="white-space:nowrap; text-align:left;" id="TBL-10-27-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">pFetDmc             </span></td><td  style="white-space:wrap; text-align:left;" id="TBL-10-27-2"  
+class="td11">
+<!--l. 355--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">Cutoff of P value from Fisher Exact Test for Dmc scan;</span>     </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-10-28-"><td  style="white-space:nowrap; text-align:left;" id="TBL-10-28-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">pFetDmr             </span></td><td  style="white-space:wrap; text-align:left;" id="TBL-10-28-2"  
+class="td11">
+<!--l. 356--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">Cutoff of P value from Fisher Exact Test for Dmr scan;</span>     </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-10-29-"><td  style="white-space:nowrap; text-align:left;" id="TBL-10-29-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">minNominalDif     </span></td><td  style="white-space:wrap; text-align:left;" id="TBL-10-29-2"  
+class="td11">
+<!--l. 357--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">min nominal meth diff for Dmc Dmr;</span>                             </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-10-30-"><td  style="white-space:nowrap; text-align:left;" id="TBL-10-30-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">pSimDmc            </span></td><td  style="white-space:wrap; text-align:left;" id="TBL-10-30-2"  
+class="td11">
+<!--l. 358--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">Cutoff P value from Similarity Test for Dmc scan; Since p</span>
+<span 
+class="ec-lmr-10x-x-109">is alwasys less than 1, default 1 means not a criteria;</span>        </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-10-31-"><td  style="white-space:nowrap; text-align:left;" id="TBL-10-31-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">pSimDmr             </span></td><td  style="white-space:wrap; text-align:left;" id="TBL-10-31-2"  
+class="td11">
+<!--l. 359--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">Cutoff P value from Simlarity Test for Dmr scan;</span>             </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-10-32-"><td  style="white-space:nowrap; text-align:left;" id="TBL-10-32-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">minCredibleDif     </span></td><td  style="white-space:wrap; text-align:left;" id="TBL-10-32-2"  
+class="td11">
+<!--l. 360--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">min  credible  meth  diff  for  Dmc  calling,  used  in  M2  or</span>
+<span 
+class="ec-lmr-10x-x-109">predefined regions;</span>                                                     </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-10-33-"><td  style="white-space:nowrap; text-align:left;" id="TBL-10-33-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">topRankByCDif    </span></td><td  style="white-space:wrap; text-align:left;" id="TBL-10-33-2"  
+class="td11">
+<!--l. 361--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">filter Dmc by asking it to be in top (default 100%) percent</span>
+<span 
+class="ec-lmr-10x-x-109">by ranking absolute value of credibleDif; suggest 0.05 as the</span>
+<span 
+class="ec-lmr-10x-x-109">only condition to call Dmc if cDif condition is not prefered;</span>
+<span 
+class="ec-lmr-10x-x-109">The cutoff cDif will be used as Dmr criteria;</span>                    </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-10-34-"><td  style="white-space:nowrap; text-align:left;" id="TBL-10-34-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">topRankByPSim   </span></td><td  style="white-space:wrap; text-align:left;" id="TBL-10-34-2"  
+class="td11">
+<!--l. 362--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">filter Dmc by asking it to be in top (default 100%) percent</span>
+<span 
+class="ec-lmr-10x-x-109">by ranking P value from Similarity Test;</span>                         </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-10-35-"><td  style="white-space:nowrap; text-align:left;" id="TBL-10-35-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">minDmcsInDmr    </span></td><td  style="white-space:wrap; text-align:left;" id="TBL-10-35-2"  
+class="td11">
+<!--l. 363--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">minimum number of Dmcs in a Dmr;</span>                             </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-10-36-"><td  style="white-space:nowrap; text-align:left;" id="TBL-10-36-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">maxDistConsDmcs</span></td><td  style="white-space:wrap; text-align:left;" id="TBL-10-36-2"  
+class="td11">
+<!--l. 364--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">max distance between two consective Dmcs for them to be</span>
+<span 
+class="ec-lmr-10x-x-109">considered in a Dmr;</span>                                                  </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-10-37-"><td  style="white-space:nowrap; text-align:left;" id="TBL-10-37-1"  
+class="td11"><span 
+class="ec-lmr-10x-x-109">predefinedFeature,f</span></td><td  style="white-space:wrap; text-align:left;" id="TBL-10-37-2"  
+class="td11">
+<!--l. 365--><p class="noindent" ><span 
+class="ec-lmr-10x-x-109">supply       bed       files       as       predefined       feature;</span>
+<span 
+class="ec-lmr-10x-x-109">-f promoter.bed -f CpgIsland.bed -f LINE.bed is same as -f</span>
+<span 
+class="ec-lmr-10x-x-109">promoter.bed,CpgIsland.bed,Line.bed</span>                             </td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-10-38-"><td  style="white-space:nowrap; text-align:left;" id="TBL-10-38-1"  
+class="td11">                </td>
+</tr><tr  
+ style="vertical-align:baseline;" id="TBL-10-39-"><td  style="white-space:nowrap; text-align:left;" id="TBL-10-39-1"  
+class="td11">                </td>
+</tr><tr  
+ style="vertical-align:baseline;" id="TBL-10-40-"><td  style="white-space:nowrap; text-align:left;" id="TBL-10-40-1"  
+class="td11">                </td>
+</tr><tr  
+ style="vertical-align:baseline;" id="TBL-10-41-"><td  style="white-space:nowrap; text-align:left;" id="TBL-10-41-1"  
+class="td11">                </td>
+</tr><tr  
+ style="vertical-align:baseline;" id="TBL-10-42-"><td  style="white-space:nowrap; text-align:left;" id="TBL-10-42-1"  
+class="td11">                </td></tr>
+                                                                                  
+                                                                                  
+    </table></div>
+<!--l. 370--><p class="noindent" >2.
+    <h4 class="subsectionHead"><span class="titlemark">2   </span> <a 
+ id="x1-240002"></a>Format of input and output files</h4>
+<!--l. 371--><p class="noindent" >The input files defined by -r (i.e. --ratiosFiles) are the *.G.bed files generated by mcall
+module. If you have methylation ratio files from other programs, you can easily convert
+them to the *.G.bed format.
+<!--l. 373--><p class="indent" >    The file defined by -c (i.e. --compFile) is the major result of comparison between two
+conditions. Each row represents a Cytosine. The selected columns are explained
+below.<br 
+class="newline" /> <!--tex4ht:inline--><div class="tabular"> <table id="TBL-11" class="tabular" 
+cellspacing="0" cellpadding="0" rules="groups" 
+><colgroup id="TBL-11-1g"><col 
+id="TBL-11-1"></colgroup><colgroup id="TBL-11-2g"><col 
+id="TBL-11-2"></colgroup><colgroup id="TBL-11-3g"><col 
+id="TBL-11-3"></colgroup><colgroup id="TBL-11-4g"><col 
+id="TBL-11-4"></colgroup><tr 
+class="hline"><td><hr></td><td><hr></td><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-11-1-"><td  style="white-space:nowrap; text-align:left;" id="TBL-11-1-1"  
+class="td11"><span 
+class="ec-lmr-8">Header           </span></td><td  style="white-space:nowrap; text-align:left;" id="TBL-11-1-2"  
+class="td11"><div class="multicolumn"  style="white-space:nowrap; text-align:left;"><span 
+class="ec-lmr-8">Example</span></div>   </td><td  style="white-space:nowrap; text-align:left;" id="TBL-11-1-3"  
+class="td11"><span 
+class="ec-lmr-8">Description                            </span></td><td  style="white-space:nowrap; text-align:left;" id="TBL-11-1-4"  
+class="td11"></td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-11-2-"><td  style="white-space:nowrap; text-align:left;" id="TBL-11-2-1"  
+class="td11"><span 
+class="ec-lmr-8">#chrom           </span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-11-2-2"  
+class="td11">      <span 
+class="ec-lmr-8">chr1</span></td><td  style="white-space:nowrap; text-align:left;" id="TBL-11-2-3"  
+class="td11"><span 
+class="ec-lmr-8">chrom                                   </span></td><td  style="white-space:nowrap; text-align:left;" id="TBL-11-2-4"  
+class="td11"></td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-11-3-"><td  style="white-space:nowrap; text-align:left;" id="TBL-11-3-1"  
+class="td11"><span 
+class="ec-lmr-8">start               </span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-11-3-2"  
+class="td11">  <span 
+class="ec-lmr-8">3002598</span></td><td  style="white-space:nowrap; text-align:left;" id="TBL-11-3-3"  
+class="td11"><span 
+class="ec-lmr-8">start                                     </span></td><td  style="white-space:nowrap; text-align:left;" id="TBL-11-3-4"  
+class="td11"></td></tr><tr 
+class="hline"><td><hr></td><td><hr></td><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-11-4-"><td  style="white-space:nowrap; text-align:left;" id="TBL-11-4-1"  
+class="td11"><span 
+class="ec-lmr-8">end </span></td> <td  style="white-space:nowrap; text-align:right;" id="TBL-11-4-2"  
+class="td11"> <span 
+class="ec-lmr-8">3002600</span></td> <td  style="white-space:nowrap; text-align:left;" id="TBL-11-4-3"  
+class="td11"><span 
+class="ec-lmr-8">end </span></td> <td  style="white-space:nowrap; text-align:left;" id="TBL-11-4-4"  
+class="td11"></td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-11-5-"><td  style="white-space:nowrap; text-align:left;" id="TBL-11-5-1"  
+class="td11"><span 
+class="ec-lmr-8">totalC_0         </span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-11-5-2"  
+class="td11">        <span 
+class="ec-lmr-8">3</span></td><td  style="white-space:nowrap; text-align:left;" id="TBL-11-5-3"  
+class="td11"><span 
+class="ec-lmr-8">total number of reads for s0       </span></td><td  style="white-space:nowrap; text-align:left;" id="TBL-11-5-4"  
+class="td11"></td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-11-6-"><td  style="white-space:nowrap; text-align:left;" id="TBL-11-6-1"  
+class="td11"><span 
+class="ec-lmr-8">nominalRatio_0</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-11-6-2"  
+class="td11">     <span 
+class="ec-lmr-8">0.333</span></td><td  style="white-space:nowrap; text-align:left;" id="TBL-11-6-3"  
+class="td11"><span 
+class="ec-lmr-8">nominal ratio for s0                 </span></td><td  style="white-space:nowrap; text-align:left;" id="TBL-11-6-4"  
+class="td11"></td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-11-7-"><td  style="white-space:nowrap; text-align:left;" id="TBL-11-7-1"  
+class="td11"><span 
+class="ec-lmr-8">ratioCI_0        </span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-11-7-2"  
+class="td11">   <span 
+class="ec-lmr-8">0,0.751</span></td><td  style="white-space:nowrap; text-align:left;" id="TBL-11-7-3"  
+class="td11"><span 
+class="ec-lmr-8">confidence interval of ratio for s0</span></td><td  style="white-space:nowrap; text-align:left;" id="TBL-11-7-4"  
+class="td11"></td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-11-8-"><td  style="white-space:nowrap; text-align:left;" id="TBL-11-8-1"  
+class="td11"><span 
+class="ec-lmr-8">totalC_1         </span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-11-8-2"  
+class="td11">        <span 
+class="ec-lmr-8">4</span></td><td  style="white-space:nowrap; text-align:left;" id="TBL-11-8-3"  
+class="td11"><span 
+class="ec-lmr-8">total number of reads for s1       </span></td><td  style="white-space:nowrap; text-align:left;" id="TBL-11-8-4"  
+class="td11"></td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-11-9-"><td  style="white-space:nowrap; text-align:left;" id="TBL-11-9-1"  
+class="td11"><span 
+class="ec-lmr-8">nominalRatio_1</span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-11-9-2"  
+class="td11">        <span 
+class="ec-lmr-8">0</span></td><td  style="white-space:nowrap; text-align:left;" id="TBL-11-9-3"  
+class="td11"><span 
+class="ec-lmr-8">nominal ratio for s1                 </span></td><td  style="white-space:nowrap; text-align:left;" id="TBL-11-9-4"  
+class="td11"></td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-11-10-"><td  style="white-space:nowrap; text-align:left;" id="TBL-11-10-1"  
+class="td11"><span 
+class="ec-lmr-8">ratioCI_1        </span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-11-10-2"  
+class="td11">   <span 
+class="ec-lmr-8">0,0.451</span></td><td  style="white-space:nowrap; text-align:left;" id="TBL-11-10-3"  
+class="td11"><span 
+class="ec-lmr-8">confidence interval of ratio for s1</span></td><td  style="white-space:nowrap; text-align:left;" id="TBL-11-10-4"  
+class="td11"></td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-11-11-"><td  style="white-space:nowrap; text-align:left;" id="TBL-11-11-1"  
+class="td11"><span 
+class="ec-lmr-8">nominalDif_1-0 </span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-11-11-2"  
+class="td11">    <span 
+class="ec-lmr-8">-0.333</span></td><td  style="white-space:nowrap; text-align:left;" id="TBL-11-11-3"  
+class="td11"><span 
+class="ec-lmr-8">nominal difference of s1 - s0      </span></td><td  style="white-space:nowrap; text-align:left;" id="TBL-11-11-4"  
+class="td11"></td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-11-12-"><td  style="white-space:nowrap; text-align:left;" id="TBL-11-12-1"  
+class="td11"><span 
+class="ec-lmr-8">credibleDif_1-0 </span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-11-12-2"  
+class="td11">        <span 
+class="ec-lmr-8">-0</span></td><td  style="white-space:nowrap; text-align:left;" id="TBL-11-12-3"  
+class="td11"><span 
+class="ec-lmr-8">credible difference for s1 - s0      </span></td><td  style="white-space:nowrap; text-align:left;" id="TBL-11-12-4"  
+class="td11"></td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-11-13-"><td  style="white-space:nowrap; text-align:left;" id="TBL-11-13-1"  
+class="td11"><span 
+class="ec-lmr-8">difCI_1-0         </span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-11-13-2"  
+class="td11"><span 
+class="ec-lmr-8">-0.639,0.17</span></td><td  style="white-space:nowrap; text-align:left;" id="TBL-11-13-3"  
+class="td11"><span 
+class="ec-lmr-8">confidence interval for s1 - s0     </span></td><td  style="white-space:nowrap; text-align:left;" id="TBL-11-13-4"  
+class="td11"></td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-11-14-"><td  style="white-space:nowrap; text-align:left;" id="TBL-11-14-1"  
+class="td11"><span 
+class="ec-lmr-8">p_sim_1_v_0  </span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-11-14-2"  
+class="td11">    <span 
+class="ec-lmr-8">0.0214</span></td><td  style="white-space:nowrap; text-align:left;" id="TBL-11-14-3"  
+class="td11"><span 
+class="ec-lmr-8">pvalue from similarity test         </span></td><td  style="white-space:nowrap; text-align:left;" id="TBL-11-14-4"  
+class="td11"></td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-11-15-"><td  style="white-space:nowrap; text-align:left;" id="TBL-11-15-1"  
+class="td11"><span 
+class="ec-lmr-8">p_fet_1_v_0   </span></td><td  style="white-space:nowrap; text-align:right;" id="TBL-11-15-2"  
+class="td11">     <span 
+class="ec-lmr-8">0.429</span></td><td  style="white-space:nowrap; text-align:left;" id="TBL-11-15-3"  
+class="td11"><span 
+class="ec-lmr-8">pvalue from fisher&#8217;s exact test    </span></td><td  style="white-space:nowrap; text-align:left;" id="TBL-11-15-4"  
+class="td11"></td>
+</tr><tr 
+class="hline"><td><hr></td><td><hr></td><td><hr></td><td><hr></td></tr><tr  
+ style="vertical-align:baseline;" id="TBL-11-16-"><td  style="white-space:nowrap; text-align:left;" id="TBL-11-16-1"  
+class="td11">              </td> </tr></table></div>
+<br 
+class="newline" />Here the credible difference balances the sequencing depth and nominal differences. For
+more details, please refer the Chapter [xx] for methods.
+<!--l. 399--><p class="noindent" >3.
+    <h4 class="subsectionHead"><span class="titlemark">3   </span> <a 
+ id="x1-250003"></a>Examples</h4>
+<!--l. 400--><p class="noindent" >This module contains multiple functions depending on how the input files and options are
+set. Here I list several common usages of this module.
+<!--l. 402--><p class="indent" >    $ mcomp [options] -r wt.G.bed -m ko.G.bed -c comp.wt.vs.ko.txt<br 
+class="newline" />This is in general the first step in your differential analysis for two conditions. It will
+                                                                                  
+                                                                                  
+generate the result for differential test on each Cytosine (file -c comp.wt.ko.txt). It will
+also generate reports of DMCs and DMRs.
+<!--l. 405--><p class="indent" >    $ mcomp [options] -r wt_r1.G.bed,wt_r2.G.bed -r ko_r1.G.bed,ko_r2.G.bed -c
+comp.wt.vs.ko.txt<br 
+class="newline" />This command does the same thing but includes the replicate information which may be
+used by particular options.
+<!--l. 408--><p class="indent" >    $ mcomp [options] -r wt_r1.bam.G.bed,wt_r2.bam.G.bed<br 
+class="newline" />This command will just merge two methylation ratio files.
+<!--l. 411--><p class="indent" >    $ mcomp -c comp.wt.vs.ko.txt --doDmcScan=0 --doDmcScan=1 --dmrMethods=2
+--minCredibleDif 0.1<br 
+class="newline" />This will rerun the DMR scan using parameters different than default values. The input
+here is just the test file so that the lengthy differential testing step neednot be repeated.
+You need probably create a different directory because it overwrite previous
+results.
+<!--l. 414--><p class="indent" >    $ mcomp -c ../comp.wt.vs.ko.txt -f CGI.bed <br 
+class="newline" />This command generates the statistics file and methylation report on all predefined regions
+in file CGI.bed.
+                                                                                  
+                                                                                  
+                                                                                  
+                                                                                  
+                                                                                  
+                                                                                  
+    <h2 class="chapterHead"><span class="titlemark">Chapter&#x00A0;4</span><br /><a 
+ id="x1-260004"></a><span 
+class="ec-lmbx-12">Misc</span></h2>
+    1.
+    <h3 class="sectionHead"><span class="titlemark">1   </span> <a 
+ id="x1-270001"></a><span 
+class="ec-lmbx-12">News</span></h3>
+<!--l. 9--><p class="noindent" >2013.06.15 <br 
+class="newline" />The documentation is updated for MOABS v1.2.2. I have used two good references for
+writing latex and bibtex codes:<br 
+class="newline" />http://groups.mrl.uiuc.edu/chiang/czoschke/latex.html<br 
+class="newline" />and<br 
+class="newline" />http://schneider.ncifcrf.gov/latex.html.
+<!--l. 16--><p class="indent" >    The R command output is generated by Sweave.
+                                                                                  
+                                                                                  
+     
+</body></html> 
+
+                                                                                  
+
+

@@ -1,0 +1,103 @@
+$opt = {
+         'INPUT.s1_r1' => 'wt_r1.bam',
+         'INPUT.s1_r2' => 'wt_r2.bam',
+         'INPUT.s2_r1' => 'ko_r1.bam',
+         'INPUT.s2_r2' => 'ko_r2.bam',
+         'MCALL.Path' => '/lilab/deqiangs/data/moabs/v1.2.1/bin/mcall',
+         'MCALL.p' => '4',
+         'MCALL.r' => '/lilab/deqiangs/data/moabs/ref/mm9.fa',
+         'MCOMP.Path' => '/lilab/deqiangs/data/moabs/v1.2.1/bin/mcomp',
+         'MMAP.Path' => '/lilab/deqiangs/data/moabs/v1.2.1/bin/bsmap',
+         'MMAP.d' => '/lilab/deqiangs/data/moabs/ref/mm9.fa',
+         'MMAP.p' => '16',
+         'QSUB.Template' => '/lilab/deqiangs/data/moabs/v1.2.1/bin/template_for_qsub',
+         'TASK.Label' => [
+                           'wt',
+                           'ko'
+                         ],
+         'TASK.Parallel' => 'THREAD',
+         'TASK.Program' => 'MCALL',
+         'cf' => 'mytestrun.cfg',
+         'default.MOABS_ROOT' => '/lilab/deqiangs/data/moabs/v1.2.1'
+       };
+Labels:	wt	ko
+$inputs = {
+            's1' => {
+                      'r1' => {
+                                '1' => 'wt_r1.bam'
+                              },
+                      'r2' => {
+                                '1' => 'wt_r2.bam'
+                              }
+                    },
+            's2' => {
+                      'r1' => {
+                                '1' => 'ko_r1.bam'
+                              },
+                      'r2' => {
+                                '1' => 'ko_r2.bam'
+                              }
+                    }
+          };
+
+################################
+Started the MCALL
+Thu Jun 20 16:37:11 CDT 2013
+Thu Jun 20 16:37:11 CDT 2013
+/lilab/deqiangs/data/moabs/v1.2.1/bin//moabs: Start to execute   [/lilab/deqiangs/data/moabs/v1.2.1/bin/mcall  -m ko_r2.bam   -m ko_r1.bam    -p 4  -r /lilab/deqiangs/data/moabs/ref/mm9.fa  --sampleName ko > moabs.mcall.ko.log] 
+/lilab/deqiangs/data/moabs/v1.2.1/bin//moabs: Start to execute   [/lilab/deqiangs/data/moabs/v1.2.1/bin/mcall  -m wt_r2.bam   -m wt_r1.bam    -p 4  -r /lilab/deqiangs/data/moabs/ref/mm9.fa  --sampleName wt > moabs.mcall.wt.log] 
+XR:Z or ZR:Z:, or ZS:Z: field not found, please enable -R option in bsmap
+XR:Z or ZR:Z:, or ZS:Z: field not found, please enable -R option in bsmap
+XR:Z or ZR:Z:, or ZS:Z: field not found, please enable -R option in bsmap
+XR:Z or ZR:Z:, or ZS:Z: field not found, please enable -R option in bsmap
+rm: cannot remove `wt_r2.bam.chrM_strand.bed': No such file or directory
+rm: cannot remove `wt_r1.bam.chrM_strand.bed': No such file or directory
+rm: cannot remove `wt_r2.bam.chrM.bed': No such file or directory
+rm: cannot remove `wt_r1.bam.chrM.bed': No such file or directory
+rm: cannot remove `ko_r2.bam.chrM_strand.bed': No such file or directory
+rm: cannot remove `ko_r1.bam.chrM_strand.bed': No such file or directory
+rm: cannot remove `ko_r2.bam.chrM.bed': No such file or directory
+rm: cannot remove `ko_r1.bam.chrM.bed': No such file or directory
+rm: cannot remove `wt_r2.bam.chrY_strand.bed': No such file or directory
+rm: cannot remove `wt_r1.bam.chrY_strand.bed': No such file or directory
+rm: cannot remove `wt_r2.bam.chrY.bed': No such file or directory
+rm: cannot remove `wt_r1.bam.chrY.bed': No such file or directory
+rm: cannot remove `ko_r2.bam.chrY_strand.bed': No such file or directory
+rm: cannot remove `ko_r1.bam.chrY_strand.bed': No such file or directory
+rm: cannot remove `ko_r2.bam.chrY.bed': No such file or directory
+rm: cannot remove `ko_r1.bam.chrY.bed': No such file or directory
+/lilab/deqiangs/data/moabs/v1.2.1/bin//moabs: Finished executing [/lilab/deqiangs/data/moabs/v1.2.1/bin/mcall  -m wt_r2.bam   -m wt_r1.bam    -p 4  -r /lilab/deqiangs/data/moabs/ref/mm9.fa  --sampleName wt > moabs.mcall.wt.log] with doSys exit code 0
+Thu Jun 20 16:40:43 CDT 2013
+/lilab/deqiangs/data/moabs/v1.2.1/bin//moabs: Finished executing [/lilab/deqiangs/data/moabs/v1.2.1/bin/mcall  -m ko_r2.bam   -m ko_r1.bam    -p 4  -r /lilab/deqiangs/data/moabs/ref/mm9.fa  --sampleName ko > moabs.mcall.ko.log] with doSys exit code 0
+Thu Jun 20 16:40:54 CDT 2013
+Finished the MCALL
+################################
+
+################################
+Started the MCOMP
+Thu Jun 20 16:40:54 CDT 2013
+/lilab/deqiangs/data/moabs/v1.2.1/bin//moabs: Start to execute   [/lilab/deqiangs/data/moabs/v1.2.1/bin/mcomp -r wt.G.bed -r ko.G.bed -c comp.wt.vs.ko.txt > moabs.mcomp.comp.wt.vs.ko.txt.log] 
+pass1 - making usageList (20 chroms): 1 millis
+pass2 - checking and writing primary data (1076 records, 9 fields): 4 millis
+index write: 0 millis
+pass3 - writeReducedOnceReturnReducedTwice: 0 millis
+further reductions: 1 millis
+pass1 - making usageList (20 chroms): 0 millis
+pass2 - checking and writing primary data (102 records, 9 fields): 2 millis
+index write: 0 millis
+pass3 - writeReducedOnceReturnReducedTwice: 1 millis
+further reductions: 0 millis
+pass1 - making usageList (20 chroms): 1 millis
+pass2 - checking and writing primary data (868 records, 9 fields): 3 millis
+index write: 0 millis
+pass3 - writeReducedOnceReturnReducedTwice: 0 millis
+further reductions: 1 millis
+pass1 - making usageList (20 chroms): 0 millis
+pass2 - checking and writing primary data (95 records, 9 fields): 2 millis
+index write: 0 millis
+pass3 - writeReducedOnceReturnReducedTwice: 1 millis
+further reductions: 0 millis
+/lilab/deqiangs/data/moabs/v1.2.1/bin//moabs: Finished executing [/lilab/deqiangs/data/moabs/v1.2.1/bin/mcomp -r wt.G.bed -r ko.G.bed -c comp.wt.vs.ko.txt > moabs.mcomp.comp.wt.vs.ko.txt.log] with doSys exit code 0
+Thu Jun 20 17:02:10 CDT 2013
+Finished the MCOMP
+################################

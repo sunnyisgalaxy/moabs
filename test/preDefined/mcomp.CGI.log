@@ -1,0 +1,146 @@
+Options are saved in file run.config and printed here:
+compFile=../comp.wt.vs.ko.txt
+dmrMethods=7
+doComp=1
+doDmcScan=1
+doDmrScan=1
+doMergeRatioFiles=0
+doStrandSpecifiMeth=0
+filterCredibleDif=-10
+lmFit=1
+maxDistConsDmcs=300
+mergeNotIntersect=1
+minCredibleDif=0.2
+minDepthForComp=3
+minDmcsInDmr=3
+minNominalDif=0.3333
+pFetDmc=0.05
+pFetDmr=0.05
+pSimDmc=1
+pSimDmr=1
+precision=3
+predefinedFeature=CGI.bed 
+threads=6
+topRankByCDif=1
+topRankByPSim=1
+Since ratiosFiles are not specified but compFile ../comp.wt.vs.ko.txt is specified and exists, program will go to DMR calling.
+../comp.wt.vs.ko.txt	6	1	1
+size of xVector=0
+size of labels=0
+size of ratiosFiles=0
+0	0	1	
+../comp.wt.vs.ko.txt	6	1	1
+size of xVector=0
+size of labels=0
+size of ratiosFiles=0
+0	0	0	
+../comp.wt.vs.ko.txt	6	1	1
+size of xVector=0
+0,1,size of labels=2
+size of ratiosFiles=0
+0	0	0	
+../comp.wt.vs.ko.txt	6	1	1
+size of xVector=0
+0,1,size of labels=2
+size of ratiosFiles=0
+0	0	0	
+Start to call DMCs
+done0..1
+running: egrep -v '^track|^browser|^#' dmc_M1_0_vs_1.bed > dmc_M1_0_vs_1.temp && bedToBigBed dmc_M1_0_vs_1.temp /pillar_storage/pillar00/deqiangs/ref/mm9.chrom.sizes dmc_M1_0_vs_1.bb && rm dmc_M1_0_vs_1.temp
+pass1 - making usageList (20 chroms): 1 millis
+pass2 - checking and writing primary data (1076 records, 9 fields): 3 millis
+index write: 0 millis
+pass3 - writeReducedOnceReturnReducedTwice: 1 millis
+further reductions: 1 millis
+0....1
+starting to call DMR
+running: egrep -v '^track|^browser|^#' dmr_M1_0_vs_1.bed > dmr_M1_0_vs_1.temp && bedToBigBed dmr_M1_0_vs_1.temp /pillar_storage/pillar00/deqiangs/ref/mm9.chrom.sizes dmr_M1_0_vs_1.bb
+pass1 - making usageList (20 chroms): 1 millis
+pass2 - checking and writing primary data (102 records, 9 fields): 2 millis
+index write: 0 millis
+pass3 - writeReducedOnceReturnReducedTwice: 0 millis
+further reductions: 0 millis
+done0..1
+running: egrep -v '^track|^browser|^#' dmc_M2_0_vs_1.bed > dmc_M2_0_vs_1.temp && bedToBigBed dmc_M2_0_vs_1.temp /pillar_storage/pillar00/deqiangs/ref/mm9.chrom.sizes dmc_M2_0_vs_1.bb && rm dmc_M2_0_vs_1.temp
+pass1 - making usageList (20 chroms): 1 millis
+pass2 - checking and writing primary data (868 records, 9 fields): 3 millis
+index write: 0 millis
+pass3 - writeReducedOnceReturnReducedTwice: 1 millis
+further reductions: 0 millis
+0....1
+starting to call DMR
+running: egrep -v '^track|^browser|^#' dmr_M2_0_vs_1.bed > dmr_M2_0_vs_1.temp && bedToBigBed dmr_M2_0_vs_1.temp /pillar_storage/pillar00/deqiangs/ref/mm9.chrom.sizes dmr_M2_0_vs_1.bb
+pass1 - making usageList (20 chroms): 1 millis
+pass2 - checking and writing primary data (95 records, 9 fields): 2 millis
+index write: 0 millis
+pass3 - writeReducedOnceReturnReducedTwice: 0 millis
+further reductions: 0 millis
+start reading
+read done
+reading file completed. regionNum=205
+building lookup table...
+Initializing HMM...
+Iteration 0
+Iteration 1
+Iteration 1
+Iteration 2
+Iteration 2
+Iteration 3
+Iteration 3
+Iteration 4
+Iteration 4
+Iteration 5
+Iteration 5
+Iteration 6
+Iteration 6
+Iteration 7
+Iteration 7
+Iteration 8
+Iteration 8
+Iteration 9
+Iteration 9
+Iteration 10
+Iteration 10
+Iteration 11
+Iteration 11
+Iteration 12
+Iteration 12
+Iteration 13
+Iteration 13
+Iteration 14
+Iteration 14
+Iteration 15
+Iteration 15
+Iteration 16
+Iteration 16
+Iteration 17
+Iteration 17
+Iteration 18
+Iteration 18
+Iteration 19
+Iteration 19
+Iteration 20
+Iteration 20
+Iteration 21
+Iteration 21
+Iteration 22
+Iteration 22
+Iteration 23
+start to check predefined regions
+done0..1
+start to process predefined region CGI.bed
+total sim=-7716.37	0
+size=3759 avg sim=-2.05277
+running: intersectBed -a CGI.bed -b ../comp.wt.vs.ko.txt -wa -wb > CGI.bed.Inter.AllCpgs.bed
+numCols = 3
+start reading 
+starting to call DMR
+running: egrep -v '^track|^browser|^#' dmr_CGI.bed_0_vs_1.bed > dmr_CGI.bed_0_vs_1.temp && bedToBigBed dmr_CGI.bed_0_vs_1.temp /pillar_storage/pillar00/deqiangs/ref/mm9.chrom.sizes dmr_CGI.bed_0_vs_1.bb
+pass1 - making usageList (15 chroms): 1 millis
+pass2 - checking and writing primary data (35 records, 9 fields): 2 millis
+index write: 0 millis
+pass3 - writeReducedOnceReturnReducedTwice: 0 millis
+further reductions: 0 millis
+running: intersectBed -a ../comp.wt.vs.ko.txt -b CGI.bed -wa | uniq > CGI.bed.AllCpgs.bed
+start reading 
+Program successfully finished

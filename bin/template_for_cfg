@@ -1,0 +1,46 @@
+##Optionally you may define system variables for ease of writing this config file.
+##This MOABS_BIN is where the moabs program is located. But it can be overwritten if you define it here.
+##MOABS_BIN=/lilab/deqiangs/data/moabs/v1.2.2/bin
+
+
+##The leftside  is the label with '_' separating sample name, replicate name, paired-end mate(if possible)
+##The rightside is the real file name corresponding to the label
+[INPUT]
+s1_r1=s1_r1.fq
+s1_r2_1=s1_r2_1.fq
+s1_r2_2=s1_r2_2.fq
+s2_r1=ko_r1.fq
+s2_r2_1=ko_r2_1.fq
+s2_r2_2=ko_r2_1.fq
+
+
+##If [INPUT] is fastq file, the first TASK is MMAP. Otherwise, it could be MCALL, MCOMP, MONE, MCALL2, MMERGE or NA.
+##NA makes moabs to output all options merged from this config file and command line overrides.
+##Label is ',' separated and matches the label description in [INPUT]
+##Parallel could be NONE, THREAD, or QSUB
+[TASK]
+#Program=NA
+Program=MMAP
+Label=wt,ko
+Parallel=THREAD
+#Parallel=QSUB
+#Parallel=NONE
+
+
+[QSUB]
+Template=$MOABS_BIN/template_for_qsub
+
+##For each individual program, 'Path' sets the aboslute path to the executable.
+##Every other parameter can be set like p=16 for using 16 cpus.
+[MMAP]
+Path=$MOABS_BIN/bsmap
+p=16
+d=/lilab/deqiangs/data/moabs/ref/mm9.fa
+
+[MCALL]
+Path=$MOABS_BIN/mcall
+r=/lilab/deqiangs/data/moabs/ref/mm9.fa
+p=4
+
+[MCOMP]
+Path=$MOABS_BIN/mcomp

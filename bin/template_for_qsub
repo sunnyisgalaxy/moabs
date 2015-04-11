@@ -1,0 +1,13 @@
+#!/bin/sh 
+#$ -cwd 
+#$ -j y 
+#$ -l qname=all.q 
+#$ -l mem_free=2G
+#$ -pe serial 16
+source ~/.bashrc 
+source ~/.bash_profile
+cd $SGE_O_WORKDIR 
+echo hostname: $HOSTNAME 
+
+#echo THIS LINE IS REPLACED BY REAL COMMAND
+#echo $? DONERANDOM

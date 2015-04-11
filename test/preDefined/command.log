@@ -1,0 +1,1 @@
+nohup mcomp -c ../comp.wt.vs.ko.txt -f CGI.bed > mcomp.CGI.log

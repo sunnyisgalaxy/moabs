@@ -1,0 +1,732 @@
+#!/usr/bin/perl
+use warnings;
+use strict;
+use Data::Dumper;
+use List::Util qw(first max maxstr min minstr reduce shuffle sum);
+use Getopt::Long;
+use Config::Simple;
+use threads;
+use threads::shared;
+
+
+my $ver = "1.0";
+my $usage=<<"USAGE";
+        Program : $0
+        Version : $ver
+        Contact : deqiangs\@bcm.edu
+        Usage : $0 [options]
+                -i 	<str>	input files.
+                --cf 	<str>	configuration file.
+		--def 	<str>	overwrite definitions in configuration file. --def key=value
+                -v	<boleen>	verbose output	[0 or 1, default 0] 
+                
+Example: $0 -i s1_r1_1.fq -i s1_r1_2.fq -i s1_r2_1.fq -i s1_r2_2.fq \
+	      -i s2_r1_1.fq -i s2_r1_2.fq -i s2_r2_1.fq -i s2_r2_2.fq
+Example: $0 --cf myrun.cfg
+Example: $0 --cf myrun.cfg --def MMAP.Path=./bsmap/bsmap
+USAGE
+
+
+my %def = ();
+my $cf = "";
+my $verbose;
+my @input=();
+
+GetOptions ( 
+            "def=s"     => \%def, 
+            "cf=s"      => \$cf, 
+            "i=s"       => \@input, 
+            "verbose"   => \$verbose
+            ); 
+
+die $usage unless ( $cf ne "" or @input >0);
+
+##put all options into %opt
+my %opt;
+
+if(defined $cf){
+    $opt{'cf'} = $cf;
+    Config::Simple->import_from( $cf, \%opt);
+}
+
+if( @input > 0){ $opt{'i'} = \@input; }
+
+if(defined $verbose){ $opt{'verbose'} = $verbose; }
+
+##the inputs by overwriting config file with command parameter i
+my %inputs = ();
+
+##process command parameter i and overwrite the config file
+for my $x (@input){
+    my @n = split(/\./, $x);
+    my $k = "INPUT.$n[0]";
+    $opt{$k} = $x;
+}
+
+##process INPUT in config file
+for my $k (keys %opt){
+    if($k =~ /^INPUT/){
+        $k =~ /INPUT\.(.*)/;
+        my @s = split(/\_/, $1);
+        if(@s==3){
+            $inputs{$s[0]}{$s[1]}{$s[2]} = $opt{$k};
+        } elsif(@s==2){
+            $inputs{$s[0]}{$s[1]}{'1'} = $opt{$k};
+        } elsif(@s==1){
+            $inputs{$s[0]}{'1'}{'1'} = $opt{$k};
+        } else{
+            die "The file info is like s1(sample1), s1_r1(sample1_rep1), or s1_r1_1(sample1_rep1_mate1)";
+        }
+    }
+}
+
+foreach my $k (keys %def){
+    $opt{$k} = $def{$k};
+}
+
+if(not defined $opt{'default.MOABS_BIN'}){
+    my @x = split(/\//, $0);
+    $opt{'default.MOABS_BIN'} = join("\/", @x[0..(@x-2)]);
+}
+
+##process the MOABS_BIN definition
+
+foreach my $k (keys %opt){
+    if($opt{$k} =~ /\$/){
+	my @g= split(/\//, $opt{$k});
+	for( my $i = 0; $i < @g; $i++){
+	    if($g[$i] =~ /\$(.*)/){
+		my $n = $1;
+		$g[$i] = $opt{"default.$n"};
+	    }
+	}
+	$opt{$k} = join("/", @g);
+    }
+}
+
+
+require "$opt{'default.MOABS_BIN'}/routines.pm";
+
+$Data::Dumper::Sortkeys = 1;
+print STDOUT Data::Dumper->Dump([\%opt], ['opt']);
+
+##if Label=XX then the Config::Simple reads it as scalar;
+##if Label=XX,YY then the Config::Simple reads it as array reference;
+if( ref $opt{'TASK.Label'} ne 'ARRAY' ){
+    $opt{'TASK.Label'} = [$opt{'TASK.Label'}];
+}
+
+print STDOUT join("\t", "Labels:", @{$opt{'TASK.Label'}} ), "\n";
+print STDOUT Data::Dumper->Dump([\%inputs], ['inputs']);
+
+
+
+my $current_task = $opt{'TASK.Program'};
+
+
+
+##print "Start MMAP program\n";
+if($current_task eq 'MMAP'){
+    print STDOUT "\n################################\n";
+    print STDOUT "Started the $current_task\n";
+    
+    if($opt{'TASK.Parallel'} eq "NONE"){
+        
+        foreach my $sample (keys %inputs){
+            $sample =~ /s(\d)/;
+            my $sid = $1 - 1;
+            foreach my $replicate (keys %{$inputs{$sample}}){
+                my @mates = values %{$inputs{$sample}{$replicate}};
+		my $o = $opt{'TASK.Label'}->[$sid] . '_' . $replicate . '.bam';
+		if(scalar(keys %{$inputs{$sample}}) == 1) {
+		    $o = $opt{'TASK.Label'}->[$sid] . '.bam';
+		}
+		
+                startBSMAP(\@mates, $o);
+            }
+        }##waiting for all mapping process/jobs to finish in serial mode    
+        
+    }
+    elsif( $opt{'TASK.Parallel'} eq "QSUB"){
+        my @jids = ();
+        foreach my $sample (keys %inputs){
+            $sample =~ /s(\d)/;
+            my $sid = $1 - 1;
+            foreach my $replicate (keys %{$inputs{$sample}}){
+                my @mates = values %{$inputs{$sample}{$replicate}};
+                my $o = $opt{'TASK.Label'}->[$sid] . '_' . $replicate . '.bam';
+		if(scalar(keys %{$inputs{$sample}}) == 1) {
+		    $o = $opt{'TASK.Label'}->[$sid] . '.bam';
+		}
+		
+                my $jid = startBSMAP_qsub(\@mates, $o);
+                push(@jids, $jid);
+            }
+        }
+        
+        ##waiting for all mapping jobs to finish in qsub mode
+        while(@jids > 0 ){
+            my $jdone = system("qstat -j $jids[0]  > /dev/null 2>&1");
+            if($jdone == 1){ ##0 means this job is in either wait or run states ##1 means this job never exists or being done
+                shift @jids;
+            }
+            sleep(30);
+        }            
+        
+    }
+    elsif( $opt{'TASK.Parallel'} eq "THREAD"){
+        my @thr = ();
+        foreach my $sample (keys %inputs){
+            $sample =~ /s(\d)/;
+            my $sid = $1 - 1;
+            foreach my $replicate (keys %{$inputs{$sample}}){
+                my @mates = values %{$inputs{$sample}{$replicate}};
+                my $o = $opt{'TASK.Label'}->[$sid] . '_' . $replicate . '.bam';
+		if(scalar(keys %{$inputs{$sample}}) == 1) {
+		    $o = $opt{'TASK.Label'}->[$sid] . '.bam';
+		}
+		
+                push(@thr, threads->new(\&startBSMAP, \@mates, $o) );
+            }
+        
+        }
+        ##waiting for all mapping process to finish in thread mode
+        foreach my $t (@thr) {
+            $t->join();
+        }
+        
+    }
+    else {
+        die "currently only NONE, QSUB or THREAD are allowed as value for key TASK.Parallel";   
+    }
+    
+    print STDOUT "Finished the $current_task\n";
+    print STDOUT "################################\n";
+    
+    $current_task = "MCALL";
+}
+
+##print "NOW MMAP is done\n";
+
+##print "start mcall2 program: each bam file is individually processed\n";
+if($current_task eq 'MCALL2'){
+    print STDOUT "\n################################\n";
+    print STDOUT "Started the $current_task\n";
+    
+    if($opt{'TASK.Parallel'} eq "NONE"){
+        
+        foreach my $sample (keys %inputs){
+            $sample =~ /s(\d)/;
+            my $sid = $1 - 1;
+            foreach my $replicate (keys %{$inputs{$sample}}){
+                my $bam = $opt{'TASK.Label'}->[$sid] . '_' . $replicate . '.bam';
+                startMCALL2($bam);
+            }
+        }##waiting for all mapping process/jobs to finish in serial mode    
+        
+    }
+    elsif( $opt{'TASK.Parallel'} eq "QSUB"){
+        my @jids = ();
+        foreach my $sample (keys %inputs){
+            $sample =~ /s(\d)/;
+            my $sid = $1 - 1;
+            foreach my $replicate (keys %{$inputs{$sample}}){
+                my $bam = $opt{'TASK.Label'}->[$sid] . '_' . $replicate . '.bam';
+                my $jid = startMCALL2_qsub($bam);
+                push(@jids, $jid);
+            }
+        }
+        
+        ##waiting for all mapping jobs to finish in qsub mode
+        while(@jids > 0 ){
+            my $jdone = system("qstat -j $jids[0] > /dev/null 2>&1");
+            if($jdone == 1){ ##0 means this job is in either wait or run states ##1 means this job never exists or being done
+                shift @jids;
+            }
+            sleep(30);
+        }            
+        
+    }
+    elsif( $opt{'TASK.Parallel'} eq "THREAD"){
+        my @thr = ();
+        foreach my $sample (keys %inputs){
+            $sample =~ /s(\d)/;
+            my $sid = $1 - 1;
+            foreach my $replicate (keys %{$inputs{$sample}}){
+                my $bam = $opt{'TASK.Label'}->[$sid] . '_' . $replicate . '.bam';
+                push(@thr, threads->new(\&startMCALL2, $bam) );
+            }
+        
+        }
+        ##waiting for all mapping process to finish in thread mode
+        foreach my $t (@thr) {
+            $t->join();
+        }
+        
+    }
+    else {
+        die "currently only NONE, QSUB or THREAD are allowed as value for key TASK.Parallel";   
+    }
+    
+    print STDOUT "Finished the $current_task\n";
+    print STDOUT "################################\n";
+    $current_task = "MMERGE";
+    
+}
+
+##print "Now MCALL2 is done\n";
+
+
+
+
+##print "Start MMERGE program\n";
+if($current_task eq "MMERGE"){
+    print STDOUT "\n################################\n";
+    print STDOUT "Started the $current_task\n";
+
+    if($opt{'TASK.Parallel'} eq "NONE"){
+        
+        foreach my $sample (keys %inputs){
+            $sample =~ /s(\d)/;
+            my $sid = $1 - 1;
+            my @ratios = ();
+            foreach my $replicate (keys %{$inputs{$sample}}){
+                my $ratio = $opt{'TASK.Label'}->[$sid] . '_' . $replicate . '.bam.G.bed';
+                push(@ratios, $ratio);
+            }
+            my $in = join("\,", @ratios);
+            my $ou = $opt{'TASK.Label'}->[$sid] . '.G.bed';
+            startMMERGE($in, $ou);
+        } 
+        
+    }
+    elsif( $opt{'TASK.Parallel'} eq "QSUB"){
+        my @jids = ();
+        foreach my $sample (keys %inputs){
+            $sample =~ /s(\d)/;
+            my $sid = $1 - 1;
+            my @ratios = ();
+            foreach my $replicate (keys %{$inputs{$sample}}){
+                my $ratio = $opt{'TASK.Label'}->[$sid] . '_' . $replicate . '.bam.G.bed';
+                push(@ratios, $ratio);
+            }
+            my $in = join("\,", @ratios);
+            my $ou = $opt{'TASK.Label'}->[$sid] . '.G.bed';
+            my $jid = startMERGE_qsub($in, $ou);
+            push(@jids, $jid);
+        }
+        
+        ##waiting for all mapping jobs to finish in qsub mode
+        while(@jids > 0 ){
+            my $jdone = system("qstat -j $jids[0] > /dev/null 2>&1");
+            if($jdone == 1){ ##0 means this job is in either wait or run states ##1 means this job never exists or being done
+                shift @jids;
+            }
+            sleep(30);
+        }            
+        
+    }
+    elsif( $opt{'TASK.Parallel'} eq "THREAD"){
+        my @thr = ();
+        foreach my $sample (keys %inputs){
+            $sample =~ /s(\d)/;
+            my $sid = $1 - 1;
+            my @ratios = ();
+            foreach my $replicate (keys %{$inputs{$sample}}){
+                my $ratio = $opt{'TASK.Label'}->[$sid] . '_' . $replicate . '.bam.G.bed';
+                push(@ratios, $ratio);
+            }
+            my $in = join("\,", @ratios);
+            my $ou = $opt{'TASK.Label'}->[$sid] . '.G.bed';
+            
+            push(@thr, threads->new(\&startMMERGE, $in, $ou) );
+        }
+        ##waiting for all mapping process to finish in thread mode
+        foreach my $t (@thr) {
+            $t->join();
+        }
+        
+    }
+    else {
+        die "currently only NONE, QSUB or THREAD are allowed as value for key TASK.Parallel";   
+    }
+    
+    print STDOUT "Finished the $current_task\n";
+    print STDOUT "################################\n";    
+
+    $current_task = 'MCOMP';
+    
+}
+##print "done with merge program\n";
+
+
+
+##print "start mcall program\n";
+if($current_task eq "MCALL"){
+    print STDOUT "\n################################\n";
+    print STDOUT "Started the $current_task\n";    
+
+    if($opt{'TASK.Parallel'} eq "NONE"){
+        
+        foreach my $sample (keys %inputs){
+            $sample =~ /s(\d)/;
+            my $sid = $1 - 1;
+            my @bams = ();
+            foreach my $replicate (keys %{$inputs{$sample}}){
+                my $bam = $opt{'TASK.Label'}->[$sid] . '_' . $replicate . '.bam';
+		if(scalar(keys %{$inputs{$sample}}) == 1) {
+		    $bam = $opt{'TASK.Label'}->[$sid] . '.bam';
+		}
+		
+		
+		if( -e "$bam.G.bed" ){
+		    print STDOUT "File $bam.G.bed exists... skipping the MCALL program...\n";
+		} else {
+		    push(@bams, " -m $bam ");    
+		}
+            }
+	    if(@bams>0){
+		my $in = join(" ", @bams);
+		my $sampleName = $opt{'TASK.Label'}->[$sid] ;
+		startMCALL($in, $sampleName);
+	    }
+        } 
+        
+    }
+    elsif( $opt{'TASK.Parallel'} eq "QSUB"){
+        my @jids = ();
+        foreach my $sample (keys %inputs){
+            $sample =~ /s(\d)/;
+            my $sid = $1 - 1;
+            my @bams = ();
+            foreach my $replicate (keys %{$inputs{$sample}}){
+                my $bam = $opt{'TASK.Label'}->[$sid] . '_' . $replicate . '.bam';
+		if(scalar(keys %{$inputs{$sample}}) == 1) {
+		    $bam = $opt{'TASK.Label'}->[$sid] . '.bam';
+		}
+		if( -e "$bam.G.bed" ){
+		    print STDOUT "File $bam.G.bed exists... skipping the MCALL program...\n";
+		} else {
+		    push(@bams, " -m $bam ");    
+		}
+            }
+            if(@bams>0){
+		my $in = join(" ", @bams);
+		my $sampleName = $opt{'TASK.Label'}->[$sid] ;
+		my $jid = startMCALL_qsub($in, $sampleName);
+		push(@jids, $jid);
+	    }
+        }
+        
+        ##waiting for all mapping jobs to finish in qsub mode
+        while(@jids > 0 ){
+            my $jdone = system("qstat -j $jids[0] > /dev/null 2>&1");
+            if($jdone == 1){ ##0 means this job is in either wait or run states ##1 means this job never exists or being done
+                shift @jids;
+            }
+            sleep(30);
+        }            
+        
+    }
+    elsif( $opt{'TASK.Parallel'} eq "THREAD"){
+        my @thr = ();
+        foreach my $sample (keys %inputs){
+            $sample =~ /s(\d)/;
+            my $sid = $1 - 1;
+            my @bams = ();
+            foreach my $replicate (keys %{$inputs{$sample}}){
+                my $bam = $opt{'TASK.Label'}->[$sid] . '_' . $replicate . '.bam';
+		if(scalar(keys %{$inputs{$sample}}) == 1) {
+		    $bam = $opt{'TASK.Label'}->[$sid] . '.bam';
+		}
+		if( -e "$bam.G.bed" ){
+		    print STDOUT "File $bam.G.bed exists... skipping the MCALL program...\n";
+		} else {
+		    push(@bams, " -m $bam ");    
+		}
+            }
+	    if(@bams>0){
+		my $in = join(" ", @bams);
+		my $sampleName = $opt{'TASK.Label'}->[$sid] ;
+		
+		push(@thr, threads->new(\&startMCALL, $in, $sampleName) );
+	    }
+        }
+        ##waiting for all mapping process to finish in thread mode
+        foreach my $t (@thr) {
+            $t->join();
+        }
+        
+    }
+    else {
+        die "currently only NONE, QSUB or THREAD are allowed as value for key TASK.Parallel";   
+    }
+    
+    print STDOUT "Finished the $current_task\n";
+    print STDOUT "################################\n";
+    
+    $current_task = 'MCOMP';
+    
+}
+
+
+##print "done with mcall program\n";
+
+
+
+
+
+##pritn "start mcomp program\n";
+
+if($current_task eq 'MCOMP'){
+    print STDOUT "\n################################\n";
+    print STDOUT "Started the $current_task\n";
+
+    my $a = $opt{'TASK.Label'}->[0] . '.G.bed';
+    my $b = $opt{'TASK.Label'}->[1] . '.G.bed';
+    my $o = 'comp.' . $opt{'TASK.Label'}->[0] . '.vs.' . $opt{'TASK.Label'}->[1] . '.txt';
+    
+    if($opt{'TASK.Parallel'} eq "NONE"){
+        startMCOMP($a, $b, $o);        
+    }
+    elsif( $opt{'TASK.Parallel'} eq "QSUB"){
+        my @jids = ();
+        push(@jids, startMCOMP_qsub($a, $b, $o) );
+        
+        ##waiting for all mapping jobs to finish in qsub mode
+        while(@jids > 0 ){
+            my $jdone = system("qstat -j $jids[0] > /dev/null 2>&1");
+            if($jdone == 1){ ##0 means this job is in either wait or run states ##1 means this job never exists or being done
+                shift @jids;
+            }
+            sleep(30);
+        }            
+        
+    }
+    elsif( $opt{'TASK.Parallel'} eq "THREAD"){
+        my @thr = ();
+        push(@thr, threads->new(\&startMCOMP, $a, $b, $o) );
+        
+        ##waiting for all mapping process to finish in thread mode
+        foreach my $t (@thr) {
+            $t->join();
+        }
+        
+    }
+    else {
+        die "currently only NONE, QSUB or THREAD are allowed as value for key TASK.Parallel";   
+    }
+
+    print STDOUT "Finished the $current_task\n";
+    print STDOUT "################################\n";    
+
+    $current_task = "DONE";
+    
+}
+
+
+
+sub getExePar #($string)
+{
+    my ($exe) = @_;
+    my %p = ();
+    foreach my $k (keys %opt){
+        if(index($k, $exe)==0){
+            my @s = split(/\./, $k);
+            $p{$s[1]}=$opt{$k};
+        }
+    }
+    my $cl = " ";
+    foreach my $k (keys %p){
+        next if ($k eq "Path");
+        if(length($k)==1){
+            $cl .= " -$k $p{$k} ";
+        } else{
+            $cl .= " --$k $p{$k} ";
+        }
+    }
+    return $cl;
+}
+
+
+
+sub startBSMAP ##(\@mates, $o)
+{
+    my ($m, $o) = @_;
+
+    if( -e $o ){
+        print STDOUT "File $o exists... skipping the MMAP program...\n";
+        return 0;
+    }
+    
+    my $others = getExePar("MMAP");
+    
+    my @mates = @{$m};
+    my $mapper = $opt{'MMAP.Path'};
+    if( @mates ==2 ){
+        doSys("$mapper -a $mates[0] -b $mates[1] -o $o $others > moabs.bsmap.$o.log 2>&1");
+    } elsif( @mates ==1 ){
+        #doSys("sleep 20");
+        doSys("$mapper -a $mates[0]              -o $o $others > moabs.bsmap.$o.log 2>&1");
+    } else {
+        die;
+    }
+}
+
+sub startBSMAP_qsub ##(\@mates, $replicate, $sample)
+{
+    my ($m, $o) = @_;
+
+    if( -e $o ){
+        print STDOUT "File $o exists... skipping the MMAP program...\n";
+        return 0;
+    }
+            
+    my $others = getExePar("MMAP");
+
+    my @mates = @{$m};
+    my $mapper = $opt{'MMAP.Path'};
+    my $cmd = "";
+    if( @mates ==2 ){
+        $cmd = "$mapper -a $mates[0] -b $mates[1] -o $o $others > moabs.bsmap.$o.log 2>&1";
+    } elsif( @mates ==1 ){
+        $cmd = "$mapper -a $mates[0]              -o $o $others > moabs.bsmap.$o.log 2>&1";
+    } else {
+        die;
+    }
+    my $script = $o . '.map.sh';
+    system("cp $opt{'QSUB.Template'} $script");
+    system("echo $cmd >> $script");
+    system('echo echo \$? DONERANDOM >> '. $script);
+    my $qsub_rt =`qsub $script`;
+    $qsub_rt =~ /Your job (\d+) /;
+    return $1;
+}
+
+##note startMCALL1 is inputing all reaplicates into one mcall program
+sub startMCALL2 ##(\$bam)
+{
+    my ($bam) = @_;
+    my $mcall = $opt{'MCALL.Path'};
+    
+    my $cmd = "$mcall -m $bam > moabs.mcall.$bam.log";
+
+    doSys($cmd);
+}
+
+sub startMCALL2_qsub ##(\$bam)
+{
+    my ($bam) = @_;
+    my $mcall = $opt{'MCALL.Path'};
+    
+    my $cmd = "$mcall -m $bam > moabs.mcall.$bam.log";
+    
+    my $script = $bam . '.mcall.sh';
+    system("cp $opt{'QSUB.Template'} $script");
+    system("echo $cmd >> $script");
+    system('echo echo \$? DONERANDOM >> '. $script);
+    my $qsub_rt =`qsub $script`;
+    $qsub_rt =~ /Your job (\d+) /;
+    return $1;
+}
+
+sub startMMERGE ##(\$in, $ou)
+{
+    my ($in, $ou) = @_;
+    my $mmerge = $opt{'MCOMP.Path'};
+    
+    my $cmd = "$mmerge -r $in -m $ou > moabs.mcall.$ou.log";
+
+    doSys($cmd);
+}
+
+
+sub startMMERGE_qsub ##(\$in, $ou)
+{
+    my ($in, $ou) = @_;
+    my $mmerge = $opt{'MCOMP.Path'};
+    
+    my $cmd = "$mmerge -r $in -m $ou > moabs.mcall.$ou.log";
+
+    my $script = $ou . '.mcall.sh';
+    system("cp $opt{'QSUB.Template'} $script");
+    system("echo $cmd >> $script");
+    system('echo echo \$? DONERANDOM >> '. $script);
+    my $qsub_rt =`qsub $script`;
+    $qsub_rt =~ /Your job (\d+) /;
+    return $1;
+}
+
+
+##note startMCALL is inputing all reaplicates into one mcall program
+sub startMCALL ##($in, $sampleName)
+{
+    my ($in, $sampleName) = @_;
+    my $mcall = $opt{'MCALL.Path'};
+    
+    my $others = getExePar("MCALL");
+    
+    my $cmd = "$mcall $in $others --sampleName $sampleName > moabs.mcall.$sampleName.log";
+
+    doSys($cmd);
+}
+
+sub startMCALL_qsub ##(\$bam)
+{
+    my ($in, $sampleName) = @_;
+    my $mcall = $opt{'MCALL.Path'};
+    
+    my $others = getExePar("MCALL");
+    
+    my $cmd = "$mcall $in $others --sampleName $sampleName > moabs.mcall.$sampleName.log";
+    
+    my $script = $sampleName . '.mcall.sh';
+    
+    system("cp $opt{'QSUB.Template'} $script");
+    system("echo $cmd >> $script");
+    system('echo echo \$? DONERANDOM >> '. $script);
+    my $qsub_rt =`qsub $script`;
+    $qsub_rt =~ /Your job (\d+) /;
+    return $1;
+}
+
+
+sub startMCOMP ##()
+{
+    my ($a, $b, $o) = @_;
+    if( -e $o ){
+        print STDOUT "File $o exists... skipping the MCOMP program...\n";
+        return 0;
+    }
+    
+    my $bin = $opt{'MCOMP.Path'};
+    
+    my $cmd = "$bin -r $a -r $b -c $o > moabs.mcomp.$o.log";
+
+    doSys($cmd);
+}
+
+sub startMCOMP_qsub ##()
+{
+    my ($a, $b, $o) = @_;
+    if( -e $o ){
+        print STDOUT "File $o exists... skipping the MCOMP program...\n";
+        return 0;
+    }
+    
+    my $bin = $opt{'MCOMP.Path'};
+    
+    my $cmd = "$bin -r $a -r $b -c $o > moabs.mcomp.$o.log";
+
+    
+    my $script = $o . '.mcomp.sh';
+    
+    system("cp $opt{'QSUB.Template'} $script");
+    system("echo $cmd >> $script");
+    system('echo echo \$? DONERANDOM >> '. $script);
+    my $qsub_rt =`qsub $script`;
+    $qsub_rt =~ /Your job (\d+) /;
+    return $1;
+}
+
+##print "DONE\n";
