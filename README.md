@@ -18,6 +18,8 @@ The source code, prebuilt binary on x86_64 Linux system, and test data
 
 https://s3.amazonaws.com/deqiangsun/software/moabs-v1.3.0.src.x86_64_Linux.data.tar.gz
 
+If you download the source from github: The data files in folder bin/ have been deleted in github repository due to size limit. Please make sure you download them and put them in bin/ folder.
+
 ##Installation of prebuilt binaries
 Download moabs-v1.3.0.src.x86_64_Linux.data.tar.gz to /your/path/, Add the bin/ to your $PATH variable by command export PATH=/your/path/moabs-v1.3.0.src.x86_64_Linux.data/bin/:$PATH, Then use the prebuilt executables in bin/ ! Note the moabs path need be in front of $PATH because there is a system program named mcomp too.
 
