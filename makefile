@@ -12,15 +12,17 @@ MOABS_ROOT = $(shell pwd)
 ##	SAMTOOLS=$(MOABS_ROOT)/src/bsmap/samtools
 ##endif
 
+CPAN=./.cpanm
 
 all:
-	@make -C src MOABS_ROOT=$(MOABS_ROOT) OPT=1
+#	@make -C src MOABS_ROOT=$(MOABS_ROOT) OPT=1
+	$(CPAN) -l PERLLIBS Config::Simple threads threads::shared
 
 install:
-	@make -C src MOABS_ROOT=$(MOABS_ROOT) OPT=1 install
+#	@make -C src MOABS_ROOT=$(MOABS_ROOT) OPT=1 install
 
 clean:
-	@make -C src MOABS_ROOT=$(MOABS_ROOT) clean
+#	@make -C src MOABS_ROOT=$(MOABS_ROOT) clean
 .PHONY: clean
 
 distclean: clean

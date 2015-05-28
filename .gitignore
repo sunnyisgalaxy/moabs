@@ -1,0 +1,9 @@
+# Mac Folder Attribute Files #
+##############################
+*.DS_Store
+*Thumbs.db
+
+# PM Distro #
+##############################
+*.gz
+PERLLIBS
