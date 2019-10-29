@@ -20,20 +20,17 @@ pSimDmc=1
 pSimDmr=1
 precision=3
 ratiosFiles=wt.G.bed ko.G.bed 
+reference=/home/dsun/moabs/ref/mm9.fa
 threads=6
 topRankByCDif=1
 topRankByPSim=1
-comp.wt.vs.ko.txt	6	1	1
-1,2,size of xVector=2
-wt.G.bed,ko.G.bed,size of labels=2
-wt.G.bed,ko.G.bed,size of ratiosFiles=2
-0	0	1	
-comp.wt.vs.ko.txt	6	1	1
-1,2,size of xVector=2
-wt.G.bed,ko.G.bed,size of labels=2
-wt.G.bed,ko.G.bed,size of ratiosFiles=2
-0	0	1	
+withVariance=0
 Starting to do comparisons.
+/home/dsun/moabs/moabs-v1.3.3.src.x86_64_Linux.data/bin
+Reading /home/dsun/moabs/moabs-v1.3.3.src.x86_64_Linux.data/bin/lut_pdiffInRegion.dat
+Reading /home/dsun/moabs/moabs-v1.3.3.src.x86_64_Linux.data/bin/lut_pdiffCI.dat
+Reading /home/dsun/moabs/moabs-v1.3.3.src.x86_64_Linux.data/bin/lut_fet.dat
+Finished loading lookup tables
 if no header #chom in file, default index order is #chrom, start, end, ratio, totalC, methC, strand, nextN
  finish reading file 0
 if no header #chom in file, default index order is #chrom, start, end, ratio, totalC, methC, strand, nextN
@@ -62,15 +59,23 @@ if no header #chom in file, default index order is #chrom, start, end, ratio, to
 Finished comparison.
 Start to call DMCs
 done0..1
-running: egrep -v '^track|^browser|^#' dmc_M1_wt.G.bed_vs_ko.G.bed.bed > dmc_M1_wt.G.bed_vs_ko.G.bed.temp && bedToBigBed dmc_M1_wt.G.bed_vs_ko.G.bed.temp /pillar_storage/pillar00/deqiangs/ref/mm9.chrom.sizes dmc_M1_wt.G.bed_vs_ko.G.bed.bb && rm dmc_M1_wt.G.bed_vs_ko.G.bed.temp
+running: egrep -v '^track|^browser|^#' dmc_M1_wt.G.bed_vs_ko.G.bed.bed > dmc_M1_wt.G.bed_vs_ko.G.bed.temp && bedToBigBed dmc_M1_wt.G.bed_vs_ko.G.bed.temp /home/dsun/moabs/ref/mm9.chrom.sizes dmc_M1_wt.G.bed_vs_ko.G.bed.bb && rm dmc_M1_wt.G.bed_vs_ko.G.bed.temp
+pass1 - making usageList (20 chroms): 0 millis
+pass2 - checking and writing primary data (1076 records, 9 fields): 2 millis
 0....1
 starting to call DMR
-running: egrep -v '^track|^browser|^#' dmr_M1_wt.G.bed_vs_ko.G.bed.bed > dmr_M1_wt.G.bed_vs_ko.G.bed.temp && bedToBigBed dmr_M1_wt.G.bed_vs_ko.G.bed.temp /pillar_storage/pillar00/deqiangs/ref/mm9.chrom.sizes dmr_M1_wt.G.bed_vs_ko.G.bed.bb
+running: egrep -v '^track|^browser|^#' dmr_M1_wt.G.bed_vs_ko.G.bed.bed > dmr_M1_wt.G.bed_vs_ko.G.bed.temp && bedToBigBed dmr_M1_wt.G.bed_vs_ko.G.bed.temp /home/dsun/moabs/ref/mm9.chrom.sizes dmr_M1_wt.G.bed_vs_ko.G.bed.bb
+pass1 - making usageList (20 chroms): 0 millis
+pass2 - checking and writing primary data (102 records, 9 fields): 1 millis
 done0..1
-running: egrep -v '^track|^browser|^#' dmc_M2_wt.G.bed_vs_ko.G.bed.bed > dmc_M2_wt.G.bed_vs_ko.G.bed.temp && bedToBigBed dmc_M2_wt.G.bed_vs_ko.G.bed.temp /pillar_storage/pillar00/deqiangs/ref/mm9.chrom.sizes dmc_M2_wt.G.bed_vs_ko.G.bed.bb && rm dmc_M2_wt.G.bed_vs_ko.G.bed.temp
+running: egrep -v '^track|^browser|^#' dmc_M2_wt.G.bed_vs_ko.G.bed.bed > dmc_M2_wt.G.bed_vs_ko.G.bed.temp && bedToBigBed dmc_M2_wt.G.bed_vs_ko.G.bed.temp /home/dsun/moabs/ref/mm9.chrom.sizes dmc_M2_wt.G.bed_vs_ko.G.bed.bb && rm dmc_M2_wt.G.bed_vs_ko.G.bed.temp
+pass1 - making usageList (20 chroms): 0 millis
+pass2 - checking and writing primary data (868 records, 9 fields): 2 millis
 0....1
 starting to call DMR
-running: egrep -v '^track|^browser|^#' dmr_M2_wt.G.bed_vs_ko.G.bed.bed > dmr_M2_wt.G.bed_vs_ko.G.bed.temp && bedToBigBed dmr_M2_wt.G.bed_vs_ko.G.bed.temp /pillar_storage/pillar00/deqiangs/ref/mm9.chrom.sizes dmr_M2_wt.G.bed_vs_ko.G.bed.bb
+running: egrep -v '^track|^browser|^#' dmr_M2_wt.G.bed_vs_ko.G.bed.bed > dmr_M2_wt.G.bed_vs_ko.G.bed.temp && bedToBigBed dmr_M2_wt.G.bed_vs_ko.G.bed.temp /home/dsun/moabs/ref/mm9.chrom.sizes dmr_M2_wt.G.bed_vs_ko.G.bed.bb
+pass1 - making usageList (20 chroms): 0 millis
+pass2 - checking and writing primary data (95 records, 9 fields): 1 millis
 start reading
 read done
 reading file completed. regionNum=205

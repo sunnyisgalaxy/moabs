@@ -33,7 +33,7 @@
 //#include <boost/date_time.hpp>
 
 //depth for saturation on statistics
-#define DEPTHSAT 20
+#define DEPTHSAT 40
 
 namespace po = boost::program_options;
 
@@ -1293,6 +1293,7 @@ int strandCombinedBed( string laneName, string ofile, string chromName, map<int,
 		string localSeq;
 		if(opts.reference != ""){
 			nn = dna[pos+2];
+			if(st == '-'){nn = rctable(dna[pos-2]);}
 			stringstream localSeqss;
 
 			//localSeqss << dna[pos-2] << dna[pos-1] << 'C' << next << nn;
@@ -2249,9 +2250,9 @@ int createHashFromFile(string file, string chromName, map<int, cMeth> & meth,  s
 	statsFile.close();
 	// need remove the blank files
 	if( opts.fullMode == 0 ){
-		system( ("rm " + ofile + "_strand.bed").c_str() );
-		system( ("rm " + ofile + "_skip.bed").c_str() );
-		system( ("rm " + ofile + ".bed").c_str() );
+		system( ("rm -rf " + ofile + "_strand.bed").c_str() );
+		system( ("rm -rf " + ofile + "_skip.bed").c_str() );
+		system( ("rm -rf " + ofile + ".bed").c_str() );
 	}
 
 
@@ -2433,7 +2434,7 @@ void initPrep(string file)
 	}
 
 	if(! found_XR_and_ZS(file, format)){
-		cerr << "XR:Z or ZR:Z:, or ZS:Z: field not found, please enable -R option in bsmap" <<endl;
+		cerr << "XR:Z or ZR:Z:, or ZS:Z: field not found, that is totally fine." <<endl;
 		//exit(1);
 		//todo:make this an internal decision
 	}

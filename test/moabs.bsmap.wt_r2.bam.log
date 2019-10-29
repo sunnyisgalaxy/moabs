@@ -1,0 +1,14 @@
+[bsmap] @Sun May 31 15:46:12 2015 	loading reference file: /home/dsun/moabs/ref/mm9.fa 	(format: FASTA)
+[bsmap] @Sun May 31 15:46:39 2015 	35 reference seqs loaded, total size 2725765481 bp. 27 secs passed
+[bsmap] @Sun May 31 15:48:09 2015 	create seed table. 117 secs passed
+[bsmap] @Sun May 31 15:48:09 2015 	Pair-end alignment(16 threads),
+	Input read file #1: s1_r2_1.fq 	(format: FASTQ)
+	Input read file #2: s1_r2_2.fq 	(format: FASTQ)
+	Output file: wt_r2.bam	 (format: SAM, automatically convert to BAM)
+[samopen] SAM header is present: 35 sequences.
+[bsmap] @Sun May 31 15:48:14 2015 	total read pairs: 8831 	total time consumed:  122 secs
+	aligned pairs: 8058 (91.2%), unique pairs: 7751 (87.8%), non-unique pairs: 307 (3.5%)
+	unpaired read #1: 553 (6.3%), unique reads: 524 (5.9%), non-unique reads: 29 (0.3%)
+	unpaired read #2: 340 (3.9%), unique reads: 287 (3.2%), non-unique reads: 53 (0.6%)
+Sorting BAM ...
+Indexing BAM ...

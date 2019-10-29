@@ -1,0 +1,72 @@
+##Your command is: /home/dsun/moabs/moabs-v1.3.3.src.x86_64_Linux.data/bin/moabs --cf invokeMcall.cfg
+$opt = {
+         'INPUT.s1_r1' => 'wt_r1.bam',
+         'INPUT.s1_r2' => 'wt_r2.bam',
+         'INPUT.s2_r1' => 'ko_r1.bam',
+         'INPUT.s2_r2' => 'ko_r2.bam',
+         'MCALL.Path' => '~/moabs/moabs-v1.3.3.src.x86_64_Linux.data/bin/mcall',
+         'MCALL.p' => '4',
+         'MCALL.r' => '~/moabs/ref/mm9.fa',
+         'MCOMP.Path' => '~/moabs/moabs-v1.3.3.src.x86_64_Linux.data/bin/mcomp',
+         'MCOMP.reference' => '~/moabs/ref/mm9.fa',
+         'MMAP.Path' => '~/moabs/moabs-v1.3.3.src.x86_64_Linux.data/bin/bsmap',
+         'MMAP.d' => '~/moabs/ref/mm9.fa',
+         'MMAP.p' => '16',
+         'QSUB.Template' => '~/moabs/moabs-v1.3.3.src.x86_64_Linux.data/bin/template_for_qsub',
+         'TASK.Label' => [
+                           'wt',
+                           'ko'
+                         ],
+         'TASK.Parallel' => 'THREAD',
+         'TASK.Program' => 'MCALL',
+         'cf' => 'invokeMcall.cfg',
+         'default.MOABS_BIN' => '/home/dsun/moabs/moabs-v1.3.3.src.x86_64_Linux.data/bin',
+         'default.MOABS_ROOT' => '~/moabs/moabs-v1.3.3.src.x86_64_Linux.data'
+       };
+Labels:	wt	ko
+$inputs = {
+            's1' => {
+                      'r1' => {
+                                '1' => 'wt_r1.bam'
+                              },
+                      'r2' => {
+                                '1' => 'wt_r2.bam'
+                              }
+                    },
+            's2' => {
+                      'r1' => {
+                                '1' => 'ko_r1.bam'
+                              },
+                      'r2' => {
+                                '1' => 'ko_r2.bam'
+                              }
+                    }
+          };
+$outputStem = {
+                'ko_r1.bam' => 'ko_r1',
+                'ko_r2.bam' => 'ko_r2',
+                'wt_r1.bam' => 'wt_r1',
+                'wt_r2.bam' => 'wt_r2'
+              };
+
+################################
+Started the MCALL
+Sun May 31 15:15:55 CDT 2015
+/home/dsun/moabs/moabs-v1.3.3.src.x86_64_Linux.data/bin/moabs: Start to execute   [~/moabs/moabs-v1.3.3.src.x86_64_Linux.data/bin/mcall  -m ko_r2.bam   -m ko_r1.bam    -p 4  -r ~/moabs/ref/mm9.fa  --sampleName ko > moabs.mcall.ko.log  2>&1] 
+Sun May 31 15:15:55 CDT 2015
+/home/dsun/moabs/moabs-v1.3.3.src.x86_64_Linux.data/bin/moabs: Start to execute   [~/moabs/moabs-v1.3.3.src.x86_64_Linux.data/bin/mcall  -m wt_r2.bam   -m wt_r1.bam    -p 4  -r ~/moabs/ref/mm9.fa  --sampleName wt > moabs.mcall.wt.log  2>&1] 
+/home/dsun/moabs/moabs-v1.3.3.src.x86_64_Linux.data/bin/moabs: Finished executing [~/moabs/moabs-v1.3.3.src.x86_64_Linux.data/bin/mcall  -m ko_r2.bam   -m ko_r1.bam    -p 4  -r ~/moabs/ref/mm9.fa  --sampleName ko > moabs.mcall.ko.log  2>&1] with doSys exit code 0
+Sun May 31 15:18:53 CDT 2015
+/home/dsun/moabs/moabs-v1.3.3.src.x86_64_Linux.data/bin/moabs: Finished executing [~/moabs/moabs-v1.3.3.src.x86_64_Linux.data/bin/mcall  -m wt_r2.bam   -m wt_r1.bam    -p 4  -r ~/moabs/ref/mm9.fa  --sampleName wt > moabs.mcall.wt.log  2>&1] with doSys exit code 0
+Sun May 31 15:19:02 CDT 2015
+Finished the MCALL
+################################
+
+################################
+Started the MCOMP
+Sun May 31 15:19:02 CDT 2015
+/home/dsun/moabs/moabs-v1.3.3.src.x86_64_Linux.data/bin/moabs: Start to execute   [~/moabs/moabs-v1.3.3.src.x86_64_Linux.data/bin/mcomp -r wt.G.bed -r ko.G.bed    --reference ~/moabs/ref/mm9.fa  -c comp.wt.vs.ko.txt > moabs.mcomp.comp.wt.vs.ko.txt.log  2>&1] 
+/home/dsun/moabs/moabs-v1.3.3.src.x86_64_Linux.data/bin/moabs: Finished executing [~/moabs/moabs-v1.3.3.src.x86_64_Linux.data/bin/mcomp -r wt.G.bed -r ko.G.bed    --reference ~/moabs/ref/mm9.fa  -c comp.wt.vs.ko.txt > moabs.mcomp.comp.wt.vs.ko.txt.log  2>&1] with doSys exit code 0
+Sun May 31 15:20:29 CDT 2015
+Finished the MCOMP
+################################

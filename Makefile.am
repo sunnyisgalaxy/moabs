@@ -1,0 +1,3 @@
+AUTOMAKE_OPTIONS = foreign
+EXTRA_DIST = README.md
+SUBDIRS = lib src

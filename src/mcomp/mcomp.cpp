@@ -9,6 +9,7 @@
 //TODO: statistics when merging ratio files
 #define ALPHA 0.05
 #define BATCHMAX 2000
+#define BUFFSIZE 2048000                          // 2000 batch size, each with 1024 bytes for current replicates
 //#include <RInside.h>                            // for the embedded R via RInside
 #include <vector>
 #include <string>
@@ -22,7 +23,7 @@
 #include <fstream>
 #include <iomanip>
 #include <time.h>
-#include <sys/auxv.h>
+//#include <sys/auxv.h>
 
 //#include "nr.h"
 //#include "nr3.h"
@@ -49,11 +50,37 @@
 #include <boost/program_options.hpp>
 //#include <boost/date_time.hpp>
 
+// For boost::process, not working in CentOS due to no automatic pipe closing
+// #include <boost/process.hpp>
+// #include <boost/regex.hpp>
+// #include <boost/asio/io_service.hpp>
+// #include <future>
+// #include <sstream>
+
 #include <math.h> //round() function
+
+// For two-way pipe
+#include <cstdlib>
+#include <cstdio>
+#include <cstring>
+#include <unistd.h>
+#include <sys/wait.h>
 
 namespace po = boost::program_options;
 using namespace std;
 
+
+// Moved to `types.h` and `types.cpp`
+// std::string do_readlink(std::string const& path) {
+//     char buff[1024];
+//     ssize_t len = ::readlink(path.c_str(), buff, sizeof(buff)-1);
+//     if (len != -1) {
+//       buff[len] = '\0';
+//       return std::string(buff);
+//     } else {
+//      /* handle error condition */
+//     }
+// }
 
 
 //RInside R;
@@ -71,7 +98,7 @@ public:
 	string webOutputDir;
 	string compFile;
 	string inGenome;
-	string outGenome;
+	string reference;
 	int precision;
 	int threads;
 	int lmFit;
@@ -105,7 +132,7 @@ public:
 		webOutputDir = "./";
 		compFile = "mSuite";
 		inGenome = "";
-		outGenome = "";
+		reference = "";
 		precision = 3;
 		threads = 1;
 		lmFit = 1;
@@ -130,10 +157,15 @@ public:
 		maxDistConsDmcs = 300;
 	};
 	void out(){
+		cout << endl;
+		cout << "Printing options for compFile, threads, lmFit, mergeNotIntersect " << endl;
+		cout << "labels, size of labels" << endl;
+		cout << "ratioFiles, size of ratioFiles" << endl;
+		cout << "doMergeRatioFiles, doStrandSpecificMeth, doComp" << endl;
 		cout << compFile << "\t" << threads << "\t" << lmFit << "\t" << mergeNotIntersect << endl;
 //		copy(xVector.begin(), xVector.end(), ostream_iterator<double>(cout, ",")); cout << "size of xVector=" << xVector.size() << endl;
-		copy(labels.begin(), labels.end(), ostream_iterator<string>(cout, ",")); cout << "size of labels=" << labels.size() << endl;
-		copy(ratiosFiles.begin(), ratiosFiles.end(), ostream_iterator<string>(cout, ",")); cout << "size of ratiosFiles=" << ratiosFiles.size() << endl;
+		copy(labels.begin(), labels.end(), ostream_iterator<string>(cout, "\t")); cout << "size of labels=" << labels.size() << endl;
+		copy(ratiosFiles.begin(), ratiosFiles.end(), ostream_iterator<string>(cout, "\t")); cout << "size of ratiosFiles=" << ratiosFiles.size() << endl;
 		cout << doMergeRatioFiles << "\t" << doStrandSpecifiMeth << "\t" << doComp << "\t" << endl;
 	}
 } opts;
@@ -154,13 +186,13 @@ int parse_options(int ac, char * av[]){
 	("webOutputDir",						po::value<string>(), "Specify the name of the web-accessible output directory for UCSC Genome Browser tracks;")
 	("compFile,c", 							po::value<string>(), "Name of the comparison file resulted from statistical tests;")
 	("inGenome", 							po::value<string>(), "Specify the UCSC Genome Browser identifier of source genome assembly;")
-	("outGenome", 							po::value<string>(), "Specify the UCSC Genome Browser identifier of destination genome assembly;")
+	("reference", 							po::value<string>(), "Specify the path to the reference genome for example mm9.fa; mm9.chrom.sizes must be in the same dir;")
 //	("xVector", 							po::value<string>(), "Specify the x vector for R.lm() function;x is comma(,) separated float numbers; default, 1.0,2.0,...,;")
 	("precision", 							po::value<int>()->default_value(3), "Specify the precision of float numbers in output files (default: 3);")
 	("threads,p", 							po::value<int>()->default_value(6), "Specify number of threads; suggest number 6-12; default 6;")
 	("lmFit", 								po::value<int>()->default_value(1), "Specify if lenear model fitting is performed; default true; Note that 'na' is generated if slope is 0;")
 	("mergeNotIntersect", 					po::value<int>()->default_value(1), "Specify if genomic locations are merged or intersected among samples; 1 for merge(default) and 0 for intersect;")
-	("withVariance", 						po::value<int>()->default_value(0), "Specify if there's individual variance among samples; default 0 for most animal models and 1 for most patient studies;")
+	("withVariance", 						po::value<int>()->default_value(0), "Specify if there's individual biological variance among the same condition; default 0; Should be 0 for most animal models 1 for most patient studies; WithVariance=1 is not effective if only 1 or 2 replicates.")
 	("doMergeRatioFiles", 					po::value<int>()->default_value(0), "Internal parameter. Is true when -m parameter is ',' separated and program will merge ratio Files that are separated by ',' and the output files are named according to option -x;")
 	("doStrandSpecifiMeth", 				po::value<int>()->default_value(0), "whether strand specific methylation analysis will be performed;")
 	("doComp", 								po::value<int>()->default_value(1), "doComp;")
@@ -290,8 +322,8 @@ int parse_options(int ac, char * av[]){
 			configFile 		<<	options[k].as<string>();
 			cout 			<<	options[k].as<string>();
 		}
-		else if( k == "outGenome"){
-			opts.outGenome 	= 	options[k].as<string>();
+		else if( k == "reference"){
+			opts.reference 	= 	options[k].as<string>();
 			configFile 		<<	options[k].as<string>();
 			cout 			<<	options[k].as<string>();
 		}
@@ -487,7 +519,7 @@ int parse_options(int ac, char * av[]){
 //		cout << "xVector size is not same as number of ratiosFiles." << endl;
 //		exit(1);
 //	}
-	opts.out();
+	//opts.out();
 	return 0;
 };
 
@@ -537,7 +569,7 @@ void readLaneToHash( string file, Opts & option, map <string, map<int, cMeth> > 
 	int colIdForStart = 1;
 	int colIdForStrand = 6;
 	int colIdForNext = 7;
-	cout << "if no header #chom in file, default index order is #chrom, start, end, ratio, totalC, methC, strand, nextN" << endl;
+	cout << "if no header #chom in file, default index order is #chrom, start, end, ratio, totalC, methC, strand, next" << endl;
 	string chrom;
 	int start;
 	int totalC;
@@ -1405,6 +1437,55 @@ void getDmr(string chr, vector<int> & allLocs, map<int, PairCompOut> & thisChr, 
 
 };
 
+// copied from void readLaneToStrandSpecificHash( string file, map <string, map<int, cMeth> > & methPs, map <string, map<int, cMeth> > & methMs)
+void readLaneToStrandSpecificHash( string file, map <string, map<int, cMeth> > & methPs, map <string, map<int, cMeth> > & methMs, string chr )
+{
+	int colIdForChr = 0;
+	int colIdForTotalCPs = 9;
+	int colIdForMethCPs = 10;
+	int colIdForTotalCMs = 12;
+	int colIdForMethCMs = 13;
+	int colIdForStart = 1;
+	//int colIdForStrand = -1;
+	int colIdForNext = 7;
+
+	string chrom;
+	int start;
+	int totalCPs;
+	int methCPs;
+	int totalCMs;
+	int methCMs;
+	char strand;
+	char next;
+
+	int count = 0;
+	string line = "";
+	ifstream inputf(file.c_str(), ios::in);
+	while (inputf.good()) {
+		getline(inputf, line);
+		if(line == ""){continue;}
+
+		vector <string> fields;
+		boost::split(fields, line, boost::is_any_of("\t"));
+		if( count == 0 )		//header line
+		{
+		} else {				//content
+			chrom = fields[colIdForChr];
+			if (chrom != chr) continue;
+			start = string_to_int(fields[colIdForStart]);
+			totalCPs = string_to_int(fields[colIdForTotalCPs]);
+			methCPs = string_to_int(fields[colIdForMethCPs]);
+			totalCMs = string_to_int(fields[colIdForTotalCMs]);
+			methCMs = string_to_int(fields[colIdForMethCMs]);
+			//strand = fields[colIdForStrand][0];
+			next = fields[colIdForNext][0];
+			if(totalCPs > 0){ methPs[chrom][start] = cMeth(totalCPs, methCPs, '+', next);}
+			if(totalCMs > 0){ methMs[chrom][start] = cMeth(totalCMs, methCMs, '-', next);}
+		}
+		count += 1 ;
+	}
+	inputf.close();
+}
 
 void readLaneToStrandSpecificHash( string file, map <string, map<int, cMeth> > & methPs, map <string, map<int, cMeth> > & methMs ) //read file back to hash //for around 6,000,000 records, this consumes 500M ram and takes 40 seconds.
 {
@@ -1544,31 +1625,37 @@ void doComp(map <int, map <string, map<int, cMeth> > > & lane, string fileName, 
 		//cout << chr << endl;
 	}
 	//if(option.threads == 0)//dsun
-	if(option.threads == 1)
-	{
-		//loop through all the genomic locations by chrom and then start.
-		for (set<string>::iterator pchr=chroms.begin(); pchr!=chroms.end(); pchr++)
-		{
-			string chr = *pchr;
-			//cout << "start chr" << endl;
+	/*
+	 * @ 20190804 by Jin Li
+	 * threads=1 will generate different comparison table with threads>1
+	 * only FET p-value is calculated when threads=1, which will cause segmentation fault in downstream DRM calling
+	 * Because both psim and pfet will be read in DMC and DMR calling
+	 */
+	// if(option.threads == 1)
+	// {
+	// 	//loop through all the genomic locations by chrom and then start.
+	// 	for (set<string>::iterator pchr=chroms.begin(); pchr!=chroms.end(); pchr++)
+	// 	{
+	// 		string chr = *pchr;
+	// 		//cout << "start chr" << endl;
 
-			//get all locations for current chrom
-			set <int> starts;
-			for(unsigned int i = 0; i < lane.size(); i++ ){
-				for(map<int, cMeth>::iterator it = lane[i][chr].begin(); it != lane[i][chr].end(); ++it) {
-				  starts.insert(it->first);
-				}
-			}
+	// 		//get all locations for current chrom
+	// 		set <int> starts;
+	// 		for(unsigned int i = 0; i < lane.size(); i++ ){
+	// 			for(map<int, cMeth>::iterator it = lane[i][chr].begin(); it != lane[i][chr].end(); ++it) {
+	// 			  starts.insert(it->first);
+	// 			}
+	// 		}
 
-			//do a single comparison for chr->start->cMeth
-			for(set<int>::iterator pstart = starts.begin(); pstart != starts.end(); pstart++ ){
-				int start = *pstart;
-				//cout << "this :" << chr << "..." << start << endl;
-				allCompFile << compOneLocSingleThread(lane, chr, start) << endl;
-			}
-		}
-	}
-	else 				// do a comparison of a batch of genomic sites
+	// 		//do a single comparison for chr->start->cMeth
+	// 		for(set<int>::iterator pstart = starts.begin(); pstart != starts.end(); pstart++ ){
+	// 			int start = *pstart;
+	// 			//cout << "this :" << chr << "..." << start << endl;
+	// 			allCompFile << compOneLocSingleThread(lane, chr, start) << endl;
+	// 		}
+	// 	}
+	// }
+	// else 				// do a comparison of a batch of genomic sites
 	{
 		//vector < vector<string> > outToPrint;
 		//vector<string> routToPrint;
@@ -1714,13 +1801,405 @@ void strandSpecificMethForLane( string inputFile )
 	//getStats(inFile);
 }
 
+string join_vec(vector<int> & vec){
+	std::ostringstream oss;
+	if (!vec.empty()){
+		std::copy(vec.begin(), vec.end()-1, std::ostream_iterator<int>(oss, " "));
+		oss << vec.back();
+	}
+	return oss.str();
+}
 
+string join_vec(vector<string> & vec){
+	std::ostringstream oss;
+	if (!vec.empty()){
+		std::copy(vec.begin(), vec.end()-1, std::ostream_iterator<string>(oss, " "));
+		oss << vec.back();
+	}
+	return oss.str();
+}
+
+int CallBetaBinomialFit(map< int, vector< vector <int> > > & tcmcs, map< int, BiKey > & fits) {
+	string input;
+	for (map< int, vector< vector <int> > > :: iterator it=tcmcs.begin(); it!=tcmcs.end(); ++it) {
+		input += to_string(it->first) + " " + join_vec(it->second[0]) + " " + join_vec(it->second[1]) + "\n";
+	}
+	std::cout << '.';
+	int fd1[2];
+	int fd2[2];
+	pid_t cid;
+	if(-1==pipe(fd1)) {
+		fprintf(stderr, "Pipe failed");
+		return 1;
+	}
+	if(-1==pipe(fd2)) {
+		fprintf(stderr, "Pipe failed");
+		return 1;
+	}
+
+	cid=fork();
+	if (cid==-1) {
+		fprintf(stderr, "Fork error");
+		return 1;
+	} else if (cid==0) {
+		char buff[BUFFSIZE]={'\0'};
+		string result;
+
+		close(fd1[1]);
+		read(fd1[0], buff, BUFFSIZE);
+		close(fd1[0]);
+
+		std::vector<string> lines;
+		boost::split(lines, buff, boost::is_any_of("\n"));
+		for (int lno=0; lno<lines.size(); lno++) {
+			if (lines[lno].empty()) continue;
+			std::vector<string> fields;
+			boost::split(fields, lines[lno], boost::is_any_of(" "));
+			std::vector<int> n;
+			std::vector<int> k;
+			int nums=fields.size();
+			for(int i=1; i<nums; i++){
+				if(i<=nums/2){
+					n.push_back(string_to_int(fields[i]));
+				} else {
+					k.push_back(string_to_int(fields[i]));
+				}
+			}
+
+			BiKey bk(-1,-1);
+			BetaBinomialFit(n, k, bk);
+			result += fields[0] + " " + to_string(bk.n1) + " " + to_string(bk.k1) + "\n";
+		}
+
+		close(fd2[0]);
+		write(fd2[1], result.c_str(), result.size()+1);
+		close(fd2[1]);
+		exit(0);
+	} else {
+		char buff[BUFFSIZE]={'\0'};
+
+		close(fd1[0]);
+		write(fd1[1], input.c_str(), input.size()+1);
+		close(fd1[1]);
+		wait(NULL);
+		close(fd2[1]);
+		read(fd2[0], buff, BUFFSIZE);
+		close(fd2[0]);
+
+		std::vector<string> lines;
+		boost::split(lines, buff, boost::is_any_of("\n"));
+		for (int lno=0; lno<lines.size(); lno++) {
+			if (lines[lno].empty()) continue;
+			std::vector<string> fields;
+			boost::split(fields, lines[lno], boost::is_any_of(" "));
+			if (fields.size()==3) {
+				int start=string_to_int(fields[0]);
+				fits[start].n1=string_to_int(fields[1]);
+				fits[start].k1=string_to_int(fields[2]);
+			}
+		}
+	}
+	return 0;
+}
+
+void mergeRatioFilesWorker(	map<int, map <string, map<int, cMeth> > >  & lanesPlus, map<int, map <string, map<int, cMeth> > >  & lanesMinus, string chr, set <int> & starts, int pstart, int batchSize, vector<string> & out, Opts & option)
+{
+
+		set <int>::iterator it = starts.begin();
+		for(int j = 0; j <  pstart; j++) it++; //now it points to starts.begin() + pstart// do not understand why "it=starts.begin() + pstart" does not compile.
+
+		map<int, MergeLaneElement> mergedstarts; // start -> merged lane elements
+		map<int, vector< vector< int > > > tcmcs; // start -> <tcs, mcs>
+
+		for(int k = 0; k < batchSize; k++){
+			int start = *it;
+			
+		//Todo:It's redundant to do summations for both options. Please detach into two "for" statements.
+		//for(set<int>::iterator pstart = starts.begin(); pstart != starts.end(); pstart++ ){
+		//	int start = *pstart;
+//			int tc;
+//			int mc;
+			char next = 'X';
+
+			//data structure for methC and totalC count values
+			//xx	total-1	plus-2	minus-3
+			//r1	x		x		x
+			//r2	x		x		x
+			//r3	x		x		x
+			map<int, map<char, int> > mcount; //laneId, strand ->mcount
+			map<int, map<char, int> > tcount; //laneId, strand ->tcount
+			for(int i = 0; i < lanesPlus.size(); i++){
+				mcount[i]['B'] = 0;
+				mcount[i]['+'] = 0;
+				mcount[i]['-'] = 0;
+				tcount[i]['B'] = 0;
+				tcount[i]['+'] = 0;
+				tcount[i]['-'] = 0;
+			}
+
+			int tcp = 0;
+			int mcp = 0;
+
+			for(unsigned int i = 0; i < lanesPlus.size(); i++ ){
+				if(lanesPlus[i].count(chr) != 0 && lanesPlus[i][chr].count(start) != 0 && lanesPlus[i][chr][start].totalC > 0 )
+				{
+					tcp += lanesPlus[i][chr][start].totalC;
+					mcp += lanesPlus[i][chr][start].methC;
+					tcount[i]['+'] = lanesPlus[i][chr][start].totalC;
+					mcount[i]['+'] = lanesPlus[i][chr][start].methC;
+					next = lanesPlus[i][chr][start].nextN;
+				}
+			}
+
+			int tcm = 0;
+			int mcm = 0;
+
+			for(unsigned int i = 0; i < lanesMinus.size(); i++ ){
+				if(lanesPlus[i].count(chr) != 0 && lanesMinus[i][chr].count(start) != 0 && lanesMinus[i][chr][start].totalC > 0 )
+				{
+					tcm += lanesMinus[i][chr][start].totalC;
+					mcm += lanesMinus[i][chr][start].methC;
+					tcount[i]['-'] = lanesMinus[i][chr][start].totalC;
+					mcount[i]['-'] = lanesMinus[i][chr][start].methC;
+					next = lanesMinus[i][chr][start].nextN;
+				}
+			}
+			
+			int end = (next == 'G') ? (start + 2) : (start + 1);
+			char strand = 'B';
+			if(tcp == 0){ strand = '-'; }
+			if(tcm == 0){ strand = '+'; }
+
+
+			vector <int> tci;
+			vector <int> mci;
+
+			//wrong. because tci and mci may have different sizes
+//			for(unsigned int i = 0; i < tcpi.size(); i++ ){
+//				tci.push_back(tcpi[i]+tcmi[i]);
+//				mci.push_back(mcpi[i]+mcmi[i]);
+//			}
+
+			//assign value to total column
+			int tc = 0;
+			for(int i = 0; i < lanesPlus.size(); i++){
+				mcount[i]['B'] = mcount[i]['+'] + mcount[i]['-'];
+				tcount[i]['B'] = tcount[i]['+'] + tcount[i]['-'];
+				if(tcount[i]['B']>0){
+					mci.push_back(mcount[i]['B']);
+					tci.push_back(tcount[i]['B']);
+					tc += tcount[i]['B'];
+				}
+			}
+//			cout << "nRep = " << tci.size() << endl;
+//
+//			std::cout	 	<< setprecision(3) << chr << "\t" << start << "\t" << end << "\t" << double(mcp+mcm)/(tcp+tcm)
+//							<< "\t" << tcp+tcm << "\t" << mcp+mcm << "\t" << strand << "\t" << next
+//							<< "\t+\t" << tcp << "\t" << mcp << "\t-\t" << tcm << "\t" << mcm << endl;
+			//for debug purpose
+			//std::cerr << chr << "\t" << start << "\t" << end << endl;
+			//int option_wi_variance = 1;
+
+			if(option.withVariance && tc >= option.minDepthForComp){
+				MergeLaneElement element;
+				element.start=start;
+				element.end=end;
+				element.tcp=tcp;
+				element.mcp=mcp;
+				element.tcm=tcm;
+				element.mcm=mcm;
+				element.strand=strand;
+				element.next=next;
+				element.chr=chr;
+
+				if(tci.size()>1){
+					if (isconsensus(tci, mci)) { // consistent replicates, no need to fit BBF
+						element.k=mcp+mcm;
+						element.n=tcp+tcm;
+					} else {
+						tcmcs[start].push_back(tci);
+						tcmcs[start].push_back(mci);
+					}
+				} else {
+					element.k=mci[0];
+					element.n=tci[0];
+				}
+
+				mergedstarts[start] = element;
+			} else if(tc >= option.minDepthForComp) {
+				MergeLaneElement element;
+				element.start=start;
+				element.end=end;
+				element.k=mcp+mcm;
+				element.n=tcp+tcm;
+				element.tcp=tcp;
+				element.mcp=mcp;
+				element.tcm=tcm;
+				element.mcm=mcm;
+				element.strand=strand;
+				element.next=next;
+				element.chr=chr;
+
+				mergedstarts[start] = element;
+			} else {
+				//less than minDepthForComp
+			}
+			it++;
+		}
+
+		map<int, BiKey > fits; // start -> BiKey
+		CallBetaBinomialFit(tcmcs, fits); // Calling Beta-binomial fitting sequentially
+
+		for(map<int, BiKey>::iterator it=fits.begin(); it!=fits.end(); ++it) {
+			mergedstarts[it->first].k=it->second.k1;
+			mergedstarts[it->first].n=it->second.n1;
+		}
+
+		for (map<int, MergeLaneElement> :: iterator it=mergedstarts.begin(); it!=mergedstarts.end(); ++it) {
+			MergeLaneElement e=it->second;
+			if (e.n>0) {
+				stringstream mergedLaneFile;
+				mergedLaneFile << setprecision(3) << e.chr << "\t" << e.start << "\t" << e.end << "\t" << double(e.k)/(e.n)
+					<< "\t" << e.n << "\t" << e.k << "\t" << e.strand << "\t" << e.next
+					<< "\t+\t" << e.tcp << "\t" << e.mcp << "\t-\t" << e.tcm << "\t" << e.mcm;
+				string moreThanDepthStr = mergedLaneFile.str();
+				if(!   moreThanDepthStr.empty() ) out.push_back(moreThanDepthStr);
+			}
+		}
+}
+
+// From readLaneToStrandSpecificHash
+void getChroms(vector<string> & filesToMerge, set<string> & chroms) {
+	for(unsigned int i=0; i<filesToMerge.size(); i++) {
+		int count = 0;
+		string line = "";
+		ifstream inputf(filesToMerge[i].c_str(), ios::in);
+		while (inputf.good()) {
+			getline(inputf, line);
+			if(line == ""){continue;}
+
+			vector <string> fields;
+			boost::split(fields, line, boost::is_any_of("\t"));
+			if( count == 0 ) { //header line
+			} else {				//content
+				chroms.insert(fields[0]);
+			}
+			count += 1;
+		}
+		inputf.close();
+	}
+}
+
+// copied from void mergeRatioFiles(vector<string> & filesToMerge, string outFileName, Opts & option)
+void mergeRatioFiles(vector<string> & filesToMerge, string outFileName, Opts & option, string & chr)
+{
+	map<int, map <string, map<int, cMeth> > > lanesPlus ; //laneId->chrom->loc->(totalC, methC, strand, nextN); for + strand;
+	map<int, map <string, map<int, cMeth> > > lanesMinus ; //laneId->chrom->loc->(totalC, methC, strand, nextN); for - strand;
+
+	for(unsigned int i = 0; i < filesToMerge.size(); i++ ){
+		cout << " start reading file " << filesToMerge[i] << " " << chr << endl;
+		map <string, map<int, cMeth> > methPs;
+		map <string, map<int, cMeth> > methMs;
+		readLaneToStrandSpecificHash( filesToMerge[i], methPs, methMs, chr );
+		lanesPlus[i] = methPs;
+		lanesMinus[i] = methMs;
+	}
+	cout << " finish reading" << endl;
+	
+	ofstream mergedLaneFile;
+	mergedLaneFile.open(outFileName.c_str(), ios_base::out);
+
+	//get all locations for current chrom
+	set <int> starts;
+	for(unsigned int i = 0; i < lanesPlus.size(); i++ ){
+		for(map<int, cMeth>::iterator it = lanesPlus[i][chr].begin(); it != lanesPlus[i][chr].end(); ++it) {
+			starts.insert(it->first);
+		}
+	}
+	for(unsigned int i = 0; i < lanesMinus.size(); i++ ){
+		for(map<int, cMeth>::iterator it = lanesMinus[i][chr].begin(); it != lanesMinus[i][chr].end(); ++it) {
+			starts.insert(it->first);
+		}
+	}
+
+	bool endOfChr = false;
+	int pstart = 0;
+	int batchSize = BATCHMAX;
+	boost::thread_group mergeio;
+	//this way of threading makes sure the output is still sorted
+	while( ! endOfChr )
+	{
+		boost::thread_group g;
+		vector < vector<string> > out;
+		out.resize(option.threads);
+		int thisStart = pstart;
+
+		int i = 0;
+		for( ; i < option.threads;  )
+		{
+			if(starts.size() - pstart < BATCHMAX)
+			{
+				batchSize = starts.size() - pstart;
+				boost::thread *tp = new boost::thread( mergeRatioFilesWorker, boost::ref(lanesPlus), boost::ref(lanesMinus),chr, boost::ref(starts), pstart, batchSize, boost::ref(out[i]), option );
+				g.add_thread(tp);
+				pstart = pstart + batchSize;
+				i++;
+				endOfChr = true;
+				break;//no more location in current chrom. breaks out of inner most for loop
+			} else
+			{
+				boost::thread *tp = new boost::thread( mergeRatioFilesWorker, boost::ref(lanesPlus), boost::ref(lanesMinus),chr, boost::ref(starts), pstart, batchSize, boost::ref(out[i]), option );
+				g.add_thread(tp);
+				pstart = pstart + batchSize;
+				i++;
+			}
+		}
+
+		vector<string> rout;
+
+		g.join_all();
+
+		//put both nonR and R calculation to file in a backgroud thread
+		mergeio.join_all();
+		//cout << "joined output thread" << endl;
+
+		boost::thread *tprout = new boost::thread( appendToFile, boost::ref(mergedLaneFile), out, rout);
+		mergeio.add_thread(tprout);
+		//cout << "added output thread" << endl;
+	}
+	///////////////////////////////////////////
+	mergeio.join_all();
+	mergedLaneFile.close();
+}
+
+void mergeRatioFilesByChrom(vector<string> & filesToMerge, string outFileName, Opts & option)
+{
+	set<string> chroms;
+	getChroms(filesToMerge, chroms);
+	vector< string > outfiles;
+	for (set<string>::iterator pchr=chroms.begin(); pchr!=chroms.end(); pchr++)
+	{
+		string chr = *pchr;
+		string outfile=outFileName+"_"+chr+".bed";
+		mergeRatioFiles(filesToMerge, outfile, option, chr);
+		outfiles.push_back(outfile);
+	}
+
+	ofstream mergedLaneFile;
+	mergedLaneFile.open(outFileName.c_str(), ios_base::out);
+	mergedLaneFile << "#chrom\tstart\tend\tratio\ttotalC\tmethC\tstrand\tnext\tPlus\ttcP\tmcP\tMinus\ttcM\tmcM" << endl;
+	mergedLaneFile.close();
+
+	string sysCmd;
+	sysCmd = "cat " + join_vec(outfiles) + " >> " + outFileName;
+	system(sysCmd.c_str());
+	sysCmd = "rm -f " + join_vec(outfiles);
+	system(sysCmd.c_str());
+}
 
 
 void mergeRatioFiles(vector<string> & filesToMerge, string outFileName, Opts & option)
 {
-	
-
 	map<int, map <string, map<int, cMeth> > > lanesPlus ; //laneId->chrom->loc->(totalC, methC, strand, nextN); for + strand;
 	map<int, map <string, map<int, cMeth> > > lanesMinus ; //laneId->chrom->loc->(totalC, methC, strand, nextN); for - strand;
 
@@ -1774,133 +2253,69 @@ void mergeRatioFiles(vector<string> & filesToMerge, string outFileName, Opts & o
 			}
 		}
 
-		//It's redundant to do summations for both options. Please detach into two "for" statements.
-		for(set<int>::iterator pstart = starts.begin(); pstart != starts.end(); pstart++ ){
-			int start = *pstart;
-//			int tc;
-//			int mc;
-			char next = 'X';
+		///////////////////////////////////////////
+		////////////////////////copied from docomp function. So there are marks for nonR calculation and similar stuff 
+		//mergeRatioFilesWorker();
+		bool endOfChr = false;
+		int pstart = 0;
+		int batchSize = BATCHMAX;
+		boost::thread_group mergeio;
+		//this way of threading makes sure the output is still sorted
+		while( ! endOfChr )
+		{
+			boost::thread_group g;
+			vector < vector<string> > out;
+			out.resize(option.threads);
+			int thisStart = pstart;
 
-
-			int tcp = 0;
-			int mcp = 0;
-//			vector <int> tcpi;
-//			vector <int> mcpi;
-			
-			//data structure for methC and totalC count values
-			//xx	total-1	plus-2	minus-3
-			//r1	x		x		x
-			//r2	x		x		x
-			//r3	x		x		x
-			map<int, map<char, int> > mcount; //laneId, strand ->mcount
-			map<int, map<char, int> > tcount; //laneId, strand ->tcount
-			for(int i = 0; i < lanesPlus.size(); i++){
-				mcount[i]['B'] = 0;
-				mcount[i]['+'] = 0;
-				mcount[i]['-'] = 0;
-				tcount[i]['B'] = 0;
-				tcount[i]['+'] = 0;
-				tcount[i]['-'] = 0;
-			}
-
-			for(unsigned int i = 0; i < lanesPlus.size(); i++ ){
-				if(lanesPlus[i].count(chr) != 0 && lanesPlus[i][chr].count(start) != 0 && lanesPlus[i][chr][start].totalC > 0 )
+			//start nonR calculation on threads
+			//cout << "starting subthreads" << endl;
+			int i = 0;
+			for( ; i < option.threads;  )
+			{
+				if(starts.size() - pstart < BATCHMAX)
 				{
-					tcp += lanesPlus[i][chr][start].totalC;
-					mcp += lanesPlus[i][chr][start].methC;
-//					tcpi.push_back( lanesPlus[i][chr][start].totalC);
-//					mcpi.push_back( lanesPlus[i][chr][start].methC);
-					tcount[i]['+'] = lanesPlus[i][chr][start].totalC;
-					mcount[i]['+'] = lanesPlus[i][chr][start].methC;
-					next = lanesPlus[i][chr][start].nextN;
-					//cout << "Plus i=" << i << " tcpi=" << lanesPlus[i][chr][start].totalC << endl;
-				}
-			}
-			//mergedLane[0][chr][start] = cMeth(tcp, mcp, '+', next);
-
-			int tcm = 0;
-			int mcm = 0;
-			vector <int> tcmi;
-			vector <int> mcmi;
-
-			for(unsigned int i = 0; i < lanesMinus.size(); i++ ){
-				if(lanesPlus[i].count(chr) != 0 && lanesMinus[i][chr].count(start) != 0 && lanesMinus[i][chr][start].totalC > 0 )
+					//cout << i << endl;
+					batchSize = starts.size() - pstart;
+					boost::thread *tp = new boost::thread( mergeRatioFilesWorker, boost::ref(lanesPlus), boost::ref(lanesMinus),chr, boost::ref(starts), pstart, batchSize, boost::ref(out[i]), option );
+					g.add_thread(tp);
+					//compBatchLoc(lane, chr, starts, pstart, batchSize, outStr[i]);
+					pstart = pstart + batchSize;
+					i++;
+					//cout << i << endl;
+					//cout << g.size() << endl;
+					endOfChr = true;
+					break;//no more location in current chrom. breaks out of inner most for loop
+				} else
 				{
-					tcm += lanesMinus[i][chr][start].totalC;
-					mcm += lanesMinus[i][chr][start].methC;
-//					tcmi.push_back( lanesMinus[i][chr][start].totalC);
-//					mcmi.push_back( lanesMinus[i][chr][start].methC);
-					tcount[i]['-'] = lanesMinus[i][chr][start].totalC;
-					mcount[i]['-'] = lanesMinus[i][chr][start].methC;
-					next = lanesMinus[i][chr][start].nextN;
-					//cout << "Minus i=" << i << " tcmi=" << lanesMinus[i][chr][start].totalC << endl;
+					//cout << i << endl;
+					boost::thread *tp = new boost::thread( mergeRatioFilesWorker, boost::ref(lanesPlus), boost::ref(lanesMinus),chr, boost::ref(starts), pstart, batchSize, boost::ref(out[i]), option );
+					g.add_thread(tp);
+					//compBatchLoc(lane, chr, starts, pstart, batchSize, outStr[i]);
+					pstart = pstart + batchSize;
+					i++;
+					//cout << i << endl;
+					//cout << g.size() << endl;
 				}
 			}
-			//mergedLane[1][chr][start] = cMeth(tcm, mcm, '-', next);
-			
-			int end = (next == 'G') ? (start + 2) : (start + 1);
-			char strand = 'B';
-			if(tcp == 0){ strand = '-'; }
-			if(tcm == 0){ strand = '+'; }
+
+			//start R calculation on main thread while nonR calculation is on backgroup thread
+			vector<string> rout;
+
+			g.join_all();
+			//cout << "sub trheads joined......waiting to join output thread" << endl;
 
 
-			vector <int> tci;
-			vector <int> mci;
+			//put both nonR and R calculation to file in a backgroud thread
+			mergeio.join_all();
+			//cout << "joined output thread" << endl;
 
-			//wrong. because tci and mci may have different sizes
-//			for(unsigned int i = 0; i < tcpi.size(); i++ ){
-//				tci.push_back(tcpi[i]+tcmi[i]);
-//				mci.push_back(mcpi[i]+mcmi[i]);
-//			}
-
-			//assign value to total column
-//			int nRep = 0;
-			int tc = 0;
-//			int mc = 0;
-			for(int i = 0; i < lanesPlus.size(); i++){
-				mcount[i]['B'] = mcount[i]['+'] + mcount[i]['-'];
-				tcount[i]['B'] = tcount[i]['+'] + tcount[i]['-'];
-				if(tcount[i]['B']>0){
-//					nRep ++;
-					mci.push_back(mcount[i]['B']);
-					tci.push_back(tcount[i]['B']);
-					tc += tcount[i]['B'];
-				}
-			}
-//			cout << "nRep = " << tci.size() << endl;
-//
-//			std::cout	 	<< setprecision(3) << chr << "\t" << start << "\t" << end << "\t" << double(mcp+mcm)/(tcp+tcm)
-//							<< "\t" << tcp+tcm << "\t" << mcp+mcm << "\t" << strand << "\t" << next
-//							<< "\t+\t" << tcp << "\t" << mcp << "\t-\t" << tcm << "\t" << mcm << endl;
-
-			//int option_wi_variance = 1;
-			if(option.withVariance && tc >= option.minDepthForComp){
-
-				//std::cout << "Fitting with BetaBinomial Model" << std::endl;
-
-				//cout << "Start Fitting" << endl;
-				BiKey fits(-1, -1);
-
-				if(tci.size() >1 ){
-					BetaBinomialFit(tci, mci, fits); //fits = <int> n1, <int> k1
-				} else {
-					fits.n1 = tci[0];
-					fits.k1 = mci[0];
-				}
-
-
-				mergedLaneFile 	<< setprecision(3) << chr << "\t" << start << "\t" << end << "\t" << double(fits.k1)/(fits.n1)
-								<< "\t" << fits.n1 << "\t" << fits.k1 << "\t" << strand << "\t" << next
-								<< "\t+\t" << tcp << "\t" << mcp << "\t-\t" << tcm << "\t" << mcm << endl;
-			} else if(tc >= option.minDepthForComp) {
-				mergedLaneFile 	<< setprecision(3) << chr << "\t" << start << "\t" << end << "\t" << double(mcp+mcm)/(tcp+tcm)
-								<< "\t" << tcp+tcm << "\t" << mcp+mcm << "\t" << strand << "\t" << next
-								<< "\t+\t" << tcp << "\t" << mcp << "\t-\t" << tcm << "\t" << mcm << endl;
-			} else {
-				//less than minDepthForComp
-			}
-
+			boost::thread *tprout = new boost::thread( appendToFile, boost::ref(mergedLaneFile), out, rout);
+			mergeio.add_thread(tprout);
+			//cout << "added output thread" << endl;
 		}
+		///////////////////////////////////////////
+		mergeio.join_all();
 	}
 	mergedLaneFile.close();
 }
@@ -2281,7 +2696,8 @@ void DmcDmrM1(int i, int j, map <int, map <string, map<int, PairCompOut> > > & p
 	}
 	dmcFile.close();
 	dmcTrack.close();
-	string dmcBigbed = "egrep -v '^track|^browser|^#' " + (dmcName + ".bed") + " > " + dmcName +".temp" + " && bedToBigBed " + dmcName + ".temp " + "/pillar_storage/pillar00/deqiangs/ref/mm9.chrom.sizes " + dmcName + ".bb" + " && rm " + dmcName + ".temp";
+	string chromsizes = option.reference.substr(0, option.reference.find_last_of(".")) + ".chrom.sizes"; 
+	string dmcBigbed = "egrep -v '^track|^browser|^#' " + (dmcName + ".bed") + " > " + dmcName +".temp" + " && bedToBigBed " + dmcName + ".temp " + chromsizes + " " + dmcName + ".bb" + " && rm " + dmcName + ".temp";
 	cout << "running: " << dmcBigbed << endl;
 	system(dmcBigbed.c_str());
 	cout << i << "...." << j <<endl;
@@ -2421,7 +2837,8 @@ void DmcDmrM1(int i, int j, map <int, map <string, map<int, PairCompOut> > > & p
 	}
 	dmrTable.close();
 	dmrTrack.close();
-	string dmrBigbed = "egrep -v '^track|^browser|^#' " + (dmrName + ".bed") + " > " + dmrName +".temp" + " && bedToBigBed " + dmrName + ".temp " + "/pillar_storage/pillar00/deqiangs/ref/mm9.chrom.sizes " + dmrName + ".bb";
+	chromsizes = option.reference.substr(0, option.reference.find_last_of(".")) + ".chrom.sizes"; 
+	string dmrBigbed = "egrep -v '^track|^browser|^#' " + (dmrName + ".bed") + " > " + dmrName +".temp" + " && bedToBigBed " + dmrName + ".temp " + chromsizes + " " + dmrName + ".bb";
 	cout << "running: " << dmrBigbed << endl;
 	system(dmrBigbed.c_str());
 	//combine DMCs first
@@ -2609,7 +3026,8 @@ void DmcDmrM2(int i, int j, map <int, map <string, map<int, PairCompOut> > > & p
 	}
 	dmcFile.close();
 	dmcTrack.close();
-	string dmcBigbed = "egrep -v '^track|^browser|^#' " + (dmcName + ".bed") + " > " + dmcName +".temp" + " && bedToBigBed " + dmcName + ".temp " + "/pillar_storage/pillar00/deqiangs/ref/mm9.chrom.sizes " + dmcName + ".bb" + " && rm " + dmcName + ".temp";
+	string chromsizes = option.reference.substr(0, option.reference.find_last_of(".")) + ".chrom.sizes"; 
+	string dmcBigbed = "egrep -v '^track|^browser|^#' " + (dmcName + ".bed") + " > " + dmcName +".temp" + " && bedToBigBed " + dmcName + ".temp " + chromsizes + " " + dmcName + ".bb" + " && rm " + dmcName + ".temp";
 	cout << "running: " << dmcBigbed << endl;
 	system(dmcBigbed.c_str());
 	cout << i << "...." << j <<endl;
@@ -2839,7 +3257,8 @@ void DmcDmrM2(int i, int j, map <int, map <string, map<int, PairCompOut> > > & p
 	}
 	dmrTable.close();
 	dmrTrack.close();
-	string dmrBigbed = "egrep -v '^track|^browser|^#' " + (dmrName + ".bed") + " > " + dmrName +".temp" + " && bedToBigBed " + dmrName + ".temp " + "/pillar_storage/pillar00/deqiangs/ref/mm9.chrom.sizes " + dmrName + ".bb";
+	chromsizes = option.reference.substr(0, option.reference.find_last_of(".")) + ".chrom.sizes"; 
+	string dmrBigbed = "egrep -v '^track|^browser|^#' " + (dmrName + ".bed") + " > " + dmrName +".temp" + " && bedToBigBed " + dmrName + ".temp " + chromsizes + " " + dmrName + ".bb";
 	cout << "running: " << dmrBigbed << endl;
 	system(dmrBigbed.c_str());
 	//combine DMCs first
@@ -3335,7 +3754,8 @@ void isPredefinedRegionDmr(string regFile, string fileName, int i, int j, map <i
     <<"\t"  << nRegionsInFeature <<"\t"<< meanRatioOfRegionsInFeature1 <<"\t"<< meanRatioOfRegionsInFeature2 <<"\t"<< meanRatioOfRegionsInFeature2 - meanRatioOfRegionsInFeature1 <<endl;
     dmrStat.close();
 
-	string dmrBigbed = "egrep -v '^track|^browser|^#' " + (dmrName + ".bed") + " > " + dmrName +".temp" + " && bedToBigBed " + dmrName + ".temp " + "/pillar_storage/pillar00/deqiangs/ref/mm9.chrom.sizes " + dmrName + ".bb";
+    string chromsizes = option.reference.substr(0, option.reference.find_last_of(".")) + ".chrom.sizes"; 
+	string dmrBigbed = "egrep -v '^track|^browser|^#' " + (dmrName + ".bed") + " > " + dmrName +".temp" + " && bedToBigBed " + dmrName + ".temp " + chromsizes + " " + dmrName + ".bb";
 	cout << "running: " << dmrBigbed << endl;
 	system(dmrBigbed.c_str());
 	//combine DMCs first
@@ -3607,6 +4027,8 @@ int load_lut(int num_threads, string exep)
 
 	} else {
 		cout << "Building " << exep << "/lut_pdiffInRegion.dat" << endl;
+		cout << "You should not see this message unless you are trying to build the database" << endl;
+		cout << "Check if lut_pdiffInRegion.dat is at the same location with mcomp" << endl;
 
 		int tableMax = 30;
 		//build
@@ -3691,64 +4113,65 @@ int load_lut(int num_threads, string exep)
 		fclose(fpLut);
 	}
 
+// Do not load `lut_fet` for now, since it is not used.
 
-	//build table for fisher exact test
-	if( boost::filesystem::exists( exep + "/lut_fet.dat" ) ){
-		cout << "Reading " << exep << "/lut_fet.dat" << endl;
-		//read
-		int tableMax;
-		FILE *FpLut=fopen((exep + "/lut_fet.dat").c_str(), "rb");
-
-		double value;
-		fread( &value, 1, sizeof(value), FpLut);
-		tableMax = (int) value;
-
-		for(int n1 = 1; n1 <= tableMax; n1 ++){
-			for(int k1 = 0; k1 <= n1; k1 ++){
-				for(int n2 = 1; n2 <= tableMax; n2 ++){
-					for(int k2 = 0; k2 <= n2; k2 ++){
-						MultiKey combi(n1,k1,n2,k2);
-						fread( &value, 1, sizeof(value), FpLut);
-						lut_fet[combi] = value;
-						//cout << std::setprecision(20);
-						//cout << n1 << "\t" << k1 << "\t" << n2 << "\t" << k2 << "\t" << lut_fet[combi] << endl;
-					}
-				}
-			}
-		}
-		fclose(FpLut);
-
-	} else {
-		cout << "Building " << exep << "/lut_fet.dat" << endl;
-		//build_lut_fet_singleThread(50);//takes 102 seconds on a 3.5Ghz CPU
-		//build_lut_fet_singleThread(60);//takes 203 seconds on a 3.5Ghz CPU
-		//build_lut_fet(100, 24); //using the CC version 'fisher.c', it takes 23 seconds on a 3.5Ghz CPU
-		int tableMax = 30;
-		//build
-		build_lut_fet(tableMax, num_threads); //The fexat.c is not thread safe.
-		//build_lut_fet_singleThread(tableMax);
-		//cout << "finish here" << endl;
-		//write
-		FILE *fpLut=fopen((exep + "/lut_fet.dat").c_str(), "wb");
-		double value=(double)tableMax;
-		fwrite(&value, 1, sizeof(value), fpLut); // table starts with tableMax;
-		for(int n1 = 1; n1 <= tableMax; n1 ++){
-			for(int k1 = 0; k1 <= n1; k1 ++){
-				for(int n2 = 1; n2 <= tableMax; n2 ++){
-					for(int k2 = 0; k2 <= n2; k2 ++){
-						//int varray[] = {k1, n1-k1, k2, n2-k2};
-						//fet_1k( value, varray, 2, 2 );
-						MultiKey combi(n1,k1,n2,k2);
-						value = lut_fet[combi];
-						fwrite(&value, 1, sizeof(value), fpLut);
-						//cout << std::setprecision(20);
-						//cout << n1 << "\t" << k1 << "\t" << n2 << "\t" << k2 << "\t" << value << endl;
-					}
-				}
-			}
-		}
-		fclose(fpLut);
-	}
+// 	//build table for fisher exact test
+// 	if( boost::filesystem::exists( exep + "/lut_fet.dat" ) ){
+// 		cout << "Reading " << exep << "/lut_fet.dat" << endl;
+// 		//read
+// 		int tableMax;
+// 		FILE *FpLut=fopen((exep + "/lut_fet.dat").c_str(), "rb");
+// 
+// 		double value;
+// 		fread( &value, 1, sizeof(value), FpLut);
+// 		tableMax = (int) value;
+// 
+// 		for(int n1 = 1; n1 <= tableMax; n1 ++){
+// 			for(int k1 = 0; k1 <= n1; k1 ++){
+// 				for(int n2 = 1; n2 <= tableMax; n2 ++){
+// 					for(int k2 = 0; k2 <= n2; k2 ++){
+// 						MultiKey combi(n1,k1,n2,k2);
+// 						fread( &value, 1, sizeof(value), FpLut);
+// 						lut_fet[combi] = value;
+// 						//cout << std::setprecision(20);
+// 						//cout << n1 << "\t" << k1 << "\t" << n2 << "\t" << k2 << "\t" << lut_fet[combi] << endl;
+// 					}
+// 				}
+// 			}
+// 		}
+// 		fclose(FpLut);
+// 
+// 	} else {
+// 		cout << "Building " << exep << "/lut_fet.dat" << endl;
+// 		//build_lut_fet_singleThread(50);//takes 102 seconds on a 3.5Ghz CPU
+// 		//build_lut_fet_singleThread(60);//takes 203 seconds on a 3.5Ghz CPU
+// 		//build_lut_fet(100, 24); //using the CC version 'fisher.c', it takes 23 seconds on a 3.5Ghz CPU
+// 		int tableMax = 30;
+// 		//build
+// 		build_lut_fet(tableMax, num_threads); //The fexat.c is not thread safe.
+// 		//build_lut_fet_singleThread(tableMax);
+// 		//cout << "finish here" << endl;
+// 		//write
+// 		FILE *fpLut=fopen((exep + "/lut_fet.dat").c_str(), "wb");
+// 		double value=(double)tableMax;
+// 		fwrite(&value, 1, sizeof(value), fpLut); // table starts with tableMax;
+// 		for(int n1 = 1; n1 <= tableMax; n1 ++){
+// 			for(int k1 = 0; k1 <= n1; k1 ++){
+// 				for(int n2 = 1; n2 <= tableMax; n2 ++){
+// 					for(int k2 = 0; k2 <= n2; k2 ++){
+// 						//int varray[] = {k1, n1-k1, k2, n2-k2};
+// 						//fet_1k( value, varray, 2, 2 );
+// 						MultiKey combi(n1,k1,n2,k2);
+// 						value = lut_fet[combi];
+// 						fwrite(&value, 1, sizeof(value), fpLut);
+// 						//cout << std::setprecision(20);
+// 						//cout << n1 << "\t" << k1 << "\t" << n2 << "\t" << k2 << "\t" << value << endl;
+// 					}
+// 				}
+// 			}
+// 		}
+// 		fclose(fpLut);
+// 	}
 
 
 
@@ -3787,40 +4210,46 @@ int main(int argc, char *argv[])
 //	build_lut_pdiffCI(30, 24);//this takes 430 seconds on 3.5Ghz Cpu.
 //	build_lut_pdiffInRegion_singleThread(20);
 //	exit(0);
-//	int v[2] = { 8,12 };
-//	std::vector<int> k(&v[0], &v[0]+2);
-//	int w[2] = { 25,25 };
-//	std::vector<int> n(&w[0], &w[0]+2);
+//	int v[3] = { 8,12, 16 };
+//	std::vector<int> k(&v[0], &v[0]+3);
+//	int w[3] = { 25,25, 40 };
+//	std::vector<int> n(&w[0], &w[0]+3);
 //	BiKey fits(-1, -1);
 //	BetaBinomialFit(n, k, fits); //fits = <int> n1, <int> k1
 //	cout << "fits=" << fits.n1 << ", " << fits.k1 << endl;
-
+//	exit(0);
 try{
 	parse_options(argc, argv);
 	Opts GO(opts);//global options
 
 
-	GO.out();
+	//GO.out();
 
 	if(GO.doMergeRatioFiles){
-		cout << "Start merging of ratio files" << endl;
+		cout << "#######################################" << endl;
+		cout << "Start    merging of ratio files for withVariance=" << GO.withVariance << endl;
 		for(unsigned int i = 0; i < GO.ratiosFiles.size(); i++ ){
 			vector <string> toMergeFiles;
 			boost::split(toMergeFiles, GO.ratiosFiles[i], boost::is_any_of(","));
-			mergeRatioFiles(toMergeFiles, GO.mergedRatiosFiles[i], GO);
+			// mergeRatioFiles(toMergeFiles, GO.mergedRatiosFiles[i], GO);
+			mergeRatioFilesByChrom(toMergeFiles, GO.mergedRatiosFiles[i], GO);
 			cout << " done merging of ratio files " << GO.ratiosFiles[i] << " into " << GO.mergedRatiosFiles[i] << endl;
 		}
-		cout << "Finished merging of ratio files" << endl;
+		cout << "Finished merging of ratio files for withVariance=" << GO.withVariance << endl;
+		cout << "#######################################" << endl << endl;
 	}
 
 
 	if(GO.doStrandSpecifiMeth){
+		cout << "#######################################" << endl;
 		cout << "Start strand specific methylation" << endl;
 		for(unsigned int i = 0; i < GO.mergedRatiosFiles.size(); i++ ){
 			strandSpecificMethForLane(GO.mergedRatiosFiles[i]);
 		}
 		cout << "Finished strand specific methylation" << endl;
+		cout << "#######################################" << endl;
 	}
+
 
 
 	if(GO.doComp){
@@ -3832,13 +4261,14 @@ try{
 
 		cout << "Starting to do comparisons." << endl;
 
-
-		string exep(  (char *)getauxval(AT_EXECFN) );
-		vector<string> splits;
-		boost::split(splits, exep, boost::is_any_of("/"));
-		splits.pop_back();
-		exep = boost::algorithm::join(splits, "/");
-		std::cout << exep << std::endl;
+// Refactored to `get_exepath()` in `types.h` and `types.cpp`
+// 		//string exep(  (char *)getauxval(AT_EXECFN) );
+// 		string exep = do_readlink("/proc/self/exe");
+// 		vector<string> splits;
+// 		boost::split(splits, exep, boost::is_any_of("/"));
+// 		splits.pop_back();
+// 		exep = boost::algorithm::join(splits, "/");
+// 		std::cout << exep << std::endl;
 //		boost::filesystem::path exepath(argv[0]);
 //		string exep = exepath.parent_path().string();
 //		if(exep == ""){ //that means argv[0] is just a command without path infomation
@@ -3861,6 +4291,7 @@ try{
 	    //this doesnot improve the situation like mcomp -r a.bed ...
 	    //if your current working dir is /pathA and mcomp is /pathB/mcomp, it returns "/pathA/mcomp" then "/pathA"
 
+		string exep = get_exepath();
 
 		load_lut(GO.threads, exep);
 		cout << "Finished loading lookup tables" << endl;

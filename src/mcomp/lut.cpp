@@ -268,89 +268,89 @@ void build_lut_singleCI(int  tableMax, int  numThreads)
 
 
 
-
-
-////because the c code from R for fisher.test ('fexact.c') is not thread safe. I replaced it fet_1k with functions from 'fisher.c'
-////Table for fisher exact test
-map<MultiKey, double> lut_fet;
-
-void build_lut_fet_singleThread(int tableMax)
-{
-	for(int n1 = 1; n1 <= tableMax; n1 ++){
-		//cout << n1 << endl;
-		for(int k1 = 0; k1 <= n1; k1 ++){
-
-			for(int n2 = 1; n2 <= tableMax; n2 ++){
-
-				for(int k2 = 0; k2 <= n2; k2 ++){
-
-					MultiKey combi(n1,k1,n2,k2);
-					double value = -1;
-					int varray[] = {k1, n1-k1, k2, n2-k2};
-					fet_1k( value, varray, 2, 2 );
-					lut_fet[combi] = value;
-					//cout << lut_pdiffInRegion[combi] << endl;
-				}
-			}
-		}
-	}
-}
-
-void build_lut_fet_init(int & tableMax)
-{
-	for(int n1 = 1; n1 <= tableMax; n1 ++){
-		//cout << n1 << endl;
-		for(int k1 = 0; k1 <= n1; k1 ++){
-
-			for(int n2 = 1; n2 <= tableMax; n2 ++){
-
-				for(int k2 = 0; k2 <= n2; k2 ++){
-
-					MultiKey combi(n1,k1,n2,k2);
-					//lut_pdiffInRegion[combi] = -1;//pdiffInRegion(k1,n1,k2,n2,DIFFDELTA);
-					lut_fet[combi] = -1;
-				}
-			}
-		}
-	}
-}
-
-void build_lut_fet_step(int & offset, int & step)
-{
-	map<MultiKey, double>::iterator it = lut_fet.begin();
-	//for(map<MultiKey, double>::iterator it = lut_fet.begin() + offset;it != lut_fet.end(); it += step ){ //it + x not allowd?
-	for(int i = 0; i < offset && it != lut_fet.end(); i++){
-				it++;
-	}
-	for( ;it != lut_fet.end();){
-		//double value = -1;
-		//int varray[] = {it->first.k1, it->first.n1 - it->first.k1, it->first.k2, it->first.n2 - it->first.k2};
-		//int varray[] = {k1, n1-k1, k2, n2-k2};
-		//fet_1k( value, varray, 2, 2 );
-		//cout << it->first.k1 << "\t" << it->first.n1 << "\t" << it->first.k2 << "\t" << it->first.n2 << "\t" << value << endl;
-		it->second = fet2x2(it->first.k1, it->first.n1 - it->first.k1, it->first.k2, it->first.n2 - it->first.k2); //value;
-		for(int i = 0; i < step && it != lut_fet.end(); i++){
-			it++;
-		}
-	}
-}
-
-
-void build_lut_fet(int  tableMax, int  numThreads)
-{
-	build_lut_fet_init(tableMax);
-	//int tableSize = lut_fet.size();
-	//cout << "finish init" << endl;
-	boost::thread_group g;
-
-	for(int i = 0; i < numThreads; i++){
-		boost::thread *tp = new boost::thread( build_lut_fet_step, i, numThreads);
-		g.add_thread(tp);
-	}
-	g.join_all();
-
-//	for(map<MultiKey, double>::iterator it = lut_fet.begin() ;it != lut_fet.end(); it ++ ){
-//		cout << it->second << endl;
-//	}
-}
-
+// `lut_fet` is not used, remove it for now
+//
+//      ////because the c code from R for fisher.test ('fexact.c') is not thread safe. I replaced it fet_1k with functions from 'fisher.c'
+//      ////Table for fisher exact test
+//      map<MultiKey, double> lut_fet;
+//      
+//      void build_lut_fet_singleThread(int tableMax)
+//      {
+//      	for(int n1 = 1; n1 <= tableMax; n1 ++){
+//      		//cout << n1 << endl;
+//      		for(int k1 = 0; k1 <= n1; k1 ++){
+//      
+//      			for(int n2 = 1; n2 <= tableMax; n2 ++){
+//      
+//      				for(int k2 = 0; k2 <= n2; k2 ++){
+//      
+//      					MultiKey combi(n1,k1,n2,k2);
+//      					double value = -1;
+//      					int varray[] = {k1, n1-k1, k2, n2-k2};
+//      					fet_1k( value, varray, 2, 2 );
+//      					lut_fet[combi] = value;
+//      					//cout << lut_pdiffInRegion[combi] << endl;
+//      				}
+//      			}
+//      		}
+//      	}
+//      }
+//      
+//      void build_lut_fet_init(int & tableMax)
+//      {
+//      	for(int n1 = 1; n1 <= tableMax; n1 ++){
+//      		//cout << n1 << endl;
+//      		for(int k1 = 0; k1 <= n1; k1 ++){
+//      
+//      			for(int n2 = 1; n2 <= tableMax; n2 ++){
+//      
+//      				for(int k2 = 0; k2 <= n2; k2 ++){
+//      
+//      					MultiKey combi(n1,k1,n2,k2);
+//      					//lut_pdiffInRegion[combi] = -1;//pdiffInRegion(k1,n1,k2,n2,DIFFDELTA);
+//      					lut_fet[combi] = -1;
+//      				}
+//      			}
+//      		}
+//      	}
+//      }
+//      
+//      void build_lut_fet_step(int & offset, int & step)
+//      {
+//      	map<MultiKey, double>::iterator it = lut_fet.begin();
+//      	//for(map<MultiKey, double>::iterator it = lut_fet.begin() + offset;it != lut_fet.end(); it += step ){ //it + x not allowd?
+//      	for(int i = 0; i < offset && it != lut_fet.end(); i++){
+//      				it++;
+//      	}
+//      	for( ;it != lut_fet.end();){
+//      		//double value = -1;
+//      		//int varray[] = {it->first.k1, it->first.n1 - it->first.k1, it->first.k2, it->first.n2 - it->first.k2};
+//      		//int varray[] = {k1, n1-k1, k2, n2-k2};
+//      		//fet_1k( value, varray, 2, 2 );
+//      		//cout << it->first.k1 << "\t" << it->first.n1 << "\t" << it->first.k2 << "\t" << it->first.n2 << "\t" << value << endl;
+//      		it->second = fet2x2(it->first.k1, it->first.n1 - it->first.k1, it->first.k2, it->first.n2 - it->first.k2); //value;
+//      		for(int i = 0; i < step && it != lut_fet.end(); i++){
+//      			it++;
+//      		}
+//      	}
+//      }
+//      
+//      
+//      void build_lut_fet(int  tableMax, int  numThreads)
+//      {
+//      	build_lut_fet_init(tableMax);
+//      	//int tableSize = lut_fet.size();
+//      	//cout << "finish init" << endl;
+//      	boost::thread_group g;
+//      
+//      	for(int i = 0; i < numThreads; i++){
+//      		boost::thread *tp = new boost::thread( build_lut_fet_step, i, numThreads);
+//      		g.add_thread(tp);
+//      	}
+//      	g.join_all();
+//      
+//      //	for(map<MultiKey, double>::iterator it = lut_fet.begin() ;it != lut_fet.end(); it ++ ){
+//      //		cout << it->second << endl;
+//      //	}
+//      }
+//      

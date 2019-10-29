@@ -1,0 +1,11 @@
+compFile=comp.wiVar.txt
+dmrMethods=7
+doComp=1
+doDmcScan=1
+doDmrScan=1
+doMergeRatioFiles=0
+doStrandSpecifiMeth=0
+filterCredibleDif=-10
+lmFit=1
+maxDistConsDmcs=300
+mergeNotIntersect=1

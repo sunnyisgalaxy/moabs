@@ -1,1 +1,1 @@
-nohup mcomp -c ../comp.wt.vs.ko.txt -f CGI.bed > mcomp.CGI.log
+nohup mcomp -c ../comp.wt.vs.ko.txt -f CGI.bed --reference ~/moabs/ref/mm9.fa > mcomp.CGI.log &
