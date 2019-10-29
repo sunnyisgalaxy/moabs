@@ -1,0 +1,33 @@
+##Your command is: /home/dsun/moabs/moabs-v1.3.3.src.x86_64_Linux.data/bin/moabs --cf invokeMcomp.cfg
+$opt = {
+         'MCALL.Path' => '~/moabs/moabs-v1.3.3.src.x86_64_Linux.data/bin/mcall',
+         'MCALL.p' => '4',
+         'MCALL.r' => '~/moabs/ref/mm9.fa',
+         'MCOMP.Path' => '~/moabs/moabs-v1.3.3.src.x86_64_Linux.data/bin/mcomp',
+         'MCOMP.reference' => '~/moabs/ref/mm9.fa',
+         'MMAP.Path' => '~/moabs/moabs-v1.3.3.src.x86_64_Linux.data/bin/bsmap',
+         'MMAP.d' => '~/moabs/ref/mm9.fa',
+         'MMAP.p' => '16',
+         'QSUB.Template' => '~/moabs/moabs-v1.3.3.src.x86_64_Linux.data/bin/template_for_qsub',
+         'TASK.Label' => [
+                           'wt',
+                           'ko'
+                         ],
+         'TASK.Parallel' => 'THREAD',
+         'TASK.Program' => 'MCOMP',
+         'cf' => 'invokeMcomp.cfg',
+         'default.MOABS_BIN' => '/home/dsun/moabs/moabs-v1.3.3.src.x86_64_Linux.data/bin',
+         'default.MOABS_ROOT' => '~/moabs/moabs-v1.3.3.src.x86_64_Linux.data'
+       };
+Labels:	wt	ko
+$inputs = {};
+$outputStem = {};
+
+################################
+Started the MCOMP
+Sun May 31 15:16:18 CDT 2015
+/home/dsun/moabs/moabs-v1.3.3.src.x86_64_Linux.data/bin/moabs: Start to execute   [~/moabs/moabs-v1.3.3.src.x86_64_Linux.data/bin/mcomp -r wt.G.bed -r ko.G.bed    --reference ~/moabs/ref/mm9.fa  -c comp.wt.vs.ko.txt > moabs.mcomp.comp.wt.vs.ko.txt.log  2>&1] 
+/home/dsun/moabs/moabs-v1.3.3.src.x86_64_Linux.data/bin/moabs: Finished executing [~/moabs/moabs-v1.3.3.src.x86_64_Linux.data/bin/mcomp -r wt.G.bed -r ko.G.bed    --reference ~/moabs/ref/mm9.fa  -c comp.wt.vs.ko.txt > moabs.mcomp.comp.wt.vs.ko.txt.log  2>&1] with doSys exit code 0
+Sun May 31 15:17:39 CDT 2015
+Finished the MCOMP
+################################

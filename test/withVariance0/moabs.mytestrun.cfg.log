@@ -1,0 +1,64 @@
+##Your command is: /home/dsun/moabs/moabs-v1.3.3.src.x86_64_Linux.data/bin/moabs --cf mytestrun.cfg
+$opt = {
+         'INPUT.s1_r1' => 's1_r1.fq',
+         'INPUT.s1_r2_1' => 's1_r2_1.fq',
+         'INPUT.s1_r2_2' => 's1_r2_2.fq',
+         'INPUT.s2_r1' => 'ko_r1.fq',
+         'INPUT.s2_r2_1' => 'ko_r2_1.fq',
+         'INPUT.s2_r2_2' => 'ko_r2_1.fq',
+         'MCALL.Path' => '/home/dsun/moabs/moabs-v1.3.3.src.x86_64_Linux.data/bin/mcall',
+         'MCALL.p' => '4',
+         'MCALL.r' => '~/moabs/ref/mm9.fa',
+         'MCOMP.Path' => '/home/dsun/moabs/moabs-v1.3.3.src.x86_64_Linux.data/bin/mcomp',
+         'MCOMP.reference' => '~/moabs/ref/mm9.fa',
+         'MCOMP.withVariance' => '0',
+         'MMAP.Path' => '/home/dsun/moabs/moabs-v1.3.3.src.x86_64_Linux.data/bin/bsmap',
+         'MMAP.d' => '~/moabs/ref/mm9.fa',
+         'MMAP.p' => '16',
+         'QSUB.Template' => '/home/dsun/moabs/moabs-v1.3.3.src.x86_64_Linux.data/bin/template_for_qsub',
+         'TASK.Label' => [
+                           'wt',
+                           'ko'
+                         ],
+         'TASK.Parallel' => 'THREAD',
+         'TASK.Program' => 'MCOMP',
+         'cf' => 'mytestrun.cfg',
+         'default.MOABS_BIN' => '/home/dsun/moabs/moabs-v1.3.3.src.x86_64_Linux.data/bin'
+       };
+Labels:	wt	ko
+$inputs = {
+            's1' => {
+                      'r1' => {
+                                '1' => 's1_r1.fq'
+                              },
+                      'r2' => {
+                                '1' => 's1_r2_1.fq',
+                                '2' => 's1_r2_2.fq'
+                              }
+                    },
+            's2' => {
+                      'r1' => {
+                                '1' => 'ko_r1.fq'
+                              },
+                      'r2' => {
+                                '1' => 'ko_r2_1.fq',
+                                '2' => 'ko_r2_1.fq'
+                              }
+                    }
+          };
+$outputStem = {
+                'ko_r1.fq' => 'ko_r1',
+                'ko_r2_1.fq' => 'ko_r2',
+                's1_r1.fq' => 'wt_r1',
+                's1_r2_1.fq' => 'wt_r2',
+                's1_r2_2.fq' => 'wt_r2'
+              };
+
+################################
+Started the MCOMP
+Sun May 31 17:04:25 CDT 2015
+/home/dsun/moabs/moabs-v1.3.3.src.x86_64_Linux.data/bin/moabs: Start to execute   [/home/dsun/moabs/moabs-v1.3.3.src.x86_64_Linux.data/bin/mcomp -r wt.G.bed -r ko.G.bed    --reference ~/moabs/ref/mm9.fa  --withVariance 0  -c comp.wt.vs.ko.txt > moabs.mcomp.comp.wt.vs.ko.txt.log  2>&1] 
+/home/dsun/moabs/moabs-v1.3.3.src.x86_64_Linux.data/bin/moabs: Finished executing [/home/dsun/moabs/moabs-v1.3.3.src.x86_64_Linux.data/bin/mcomp -r wt.G.bed -r ko.G.bed    --reference ~/moabs/ref/mm9.fa  --withVariance 0  -c comp.wt.vs.ko.txt > moabs.mcomp.comp.wt.vs.ko.txt.log  2>&1] with doSys exit code 0
+Sun May 31 17:05:55 CDT 2015
+Finished the MCOMP
+################################

@@ -1,0 +1,1 @@
+nohup ../../bin/mcomp -r wt_r1.bam.G.bed,wt_r2.bam.G.bed -r ko_r1.bam.G.bed,ko_r2.bam.G.bed -m wildtype -m knockout -c comp.wiVar.txt --withVariance 1 -p 4 --reference ~/moabs/ref/mm9.fa > moabs.mcomp.comp.wiVar.txt.log &

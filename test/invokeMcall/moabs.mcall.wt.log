@@ -9,7 +9,7 @@ minMMFragSize=0
 nextBaseMinScore=3
 processPEOverlapSeq=1
 qualityScoreBase=0
-reference=/lilab/deqiangs/data/moabs/ref/mm9.fa
+reference=/home/dsun/moabs/ref/mm9.fa
 reportCHX=X
 reportCpX=G
 requiredFlag=0
@@ -21,235 +21,228 @@ trimRRBSEndRepairSeq=2
 trimWGBSEndRepairPE1Seq=3
 trimWGBSEndRepairPE2Seq=3
 Program started
-From the extension of file wt_r1.bam, program is parsing file according to BAM foramt
 From the extension of file wt_r2.bam, program is parsing file according to BAM foramt
-For file wt_r2.bam, the quality score format is Sanger format based at 33!
+From the extension of file wt_r1.bam, program is parsing file according to BAM foramt
+XR:Z or ZR:Z:, or ZS:Z: field not found, that is totally fine.
+XR:Z or ZR:Z:, or ZS:Z: field not found, that is totally fine.
 For file wt_r1.bam, the quality score format is Sanger format based at 33!
-Protocol and read length are detected as WGBS and 100 bases for file wt_r2.bam
+For file wt_r2.bam, the quality score format is Sanger format based at 33!
 Protocol and read length are detected as WGBS and 100 bases for file wt_r1.bam
-For file wt_r2.bam the number of all reads is 16280 and the number of mapped reads is 16280
+Protocol and read length are detected as WGBS and 100 bases for file wt_r2.bam
 For file wt_r1.bam the number of all reads is 14248 and the number of mapped reads is 14248
+For file wt_r2.bam the number of all reads is 16280 and the number of mapped reads is 16280
 Start processing file wt_r2.bam on chrom chr1
 Start processing file wt_r1.bam on chrom chr1
-Writing strand specific statistics for file wt_r2.bam and chrom chr1
 Writing strand specific statistics for file wt_r1.bam and chrom chr1
-Writing strand combined statistics for file wt_r2.bam and chrom chr1
+Writing strand specific statistics for file wt_r2.bam and chrom chr1
 Writing strand combined statistics for file wt_r1.bam and chrom chr1
-Start processing file wt_r2.bam on chrom chr10
-Start processing file wt_r1.bam on chrom chr10
-Writing strand specific statistics for file wt_r2.bam and chrom chr10
-Writing strand specific statistics for file wt_r1.bam and chrom chr10
-Writing strand combined statistics for file wt_r2.bam and chrom chr10
-Writing strand combined statistics for file wt_r1.bam and chrom chr10
+Writing strand combined statistics for file wt_r2.bam and chrom chr1
 Start processing file wt_r2.bam on chrom chr11
 Start processing file wt_r1.bam on chrom chr11
-Writing strand specific statistics for file wt_r1.bam and chrom chr11
-Writing strand combined statistics for file wt_r1.bam and chrom chr11
 Writing strand specific statistics for file wt_r2.bam and chrom chr11
 Writing strand combined statistics for file wt_r2.bam and chrom chr11
-Finished processing file wt_r2.bam on chrom chr1
+Writing strand specific statistics for file wt_r1.bam and chrom chr11
+Writing strand combined statistics for file wt_r1.bam and chrom chr11
+Start processing file wt_r2.bam on chrom chr10
+Start processing file wt_r1.bam on chrom chr10
+Writing strand specific statistics for file wt_r1.bam and chrom chr10
+Writing strand combined statistics for file wt_r1.bam and chrom chr10
+Writing strand specific statistics for file wt_r2.bam and chrom chr10
+Writing strand combined statistics for file wt_r2.bam and chrom chr10
+Start processing file wt_r2.bam on chrom chr12
+Start processing file wt_r1.bam on chrom chr12
+Writing strand specific statistics for file wt_r1.bam and chrom chr12
+Writing strand combined statistics for file wt_r1.bam and chrom chr12
+Writing strand specific statistics for file wt_r2.bam and chrom chr12
+Writing strand combined statistics for file wt_r2.bam and chrom chr12
 Finished processing file wt_r1.bam on chrom chr1
+Finished processing file wt_r2.bam on chrom chr1
 For file wt, number of cytosines processed: 7686 for chrom chr1
 Writing strand specific statistics for file wt and chrom chr1
 Writing strand combined statistics for file wt and chrom chr1
-Start processing file wt_r2.bam on chrom chr12
-Start processing file wt_r1.bam on chrom chr12
-Writing strand specific statistics for file wt_r2.bam and chrom chr12
-Writing strand specific statistics for file wt_r1.bam and chrom chr12
-Writing strand combined statistics for file wt_r2.bam and chrom chr12
-Writing strand combined statistics for file wt_r1.bam and chrom chr12
-
-All files done for chrom chr1
 Finished processing file wt_r2.bam on chrom chr11
-Finished processing file wt_r2.bam on chrom chr10
-Finished processing file wt_r1.bam on chrom chr10
-For file wt, number of cytosines processed: 4265 for chrom chr10
-Writing strand specific statistics for file wt and chrom chr10
-Writing strand combined statistics for file wt and chrom chr10
 Finished processing file wt_r1.bam on chrom chr11
 For file wt, number of cytosines processed: 7308 for chrom chr11
 Writing strand specific statistics for file wt and chrom chr11
 Writing strand combined statistics for file wt and chrom chr11
+
+All files done for chrom chr1
+Finished processing file wt_r1.bam on chrom chr10
+Finished processing file wt_r2.bam on chrom chr10
+For file wt, number of cytosines processed: 4265 for chrom chr10
+Writing strand specific statistics for file wt and chrom chr10
+Writing strand combined statistics for file wt and chrom chr10
 Finished processing file wt_r2.bam on chrom chr12
 Finished processing file wt_r1.bam on chrom chr12
 For file wt, number of cytosines processed: 4486 for chrom chr12
 Writing strand specific statistics for file wt and chrom chr12
 Writing strand combined statistics for file wt and chrom chr12
 
+All files done for chrom chr11
+
 All files done for chrom chr10
 Start processing file wt_r2.bam on chrom chr13
 Start processing file wt_r1.bam on chrom chr13
-Writing strand specific statistics for file wt_r2.bam and chrom chr13
 Writing strand specific statistics for file wt_r1.bam and chrom chr13
-Writing strand combined statistics for file wt_r2.bam and chrom chr13
 Writing strand combined statistics for file wt_r1.bam and chrom chr13
-
-All files done for chrom chr11
+Writing strand specific statistics for file wt_r2.bam and chrom chr13
+Writing strand combined statistics for file wt_r2.bam and chrom chr13
 
 All files done for chrom chr12
+Start processing file wt_r2.bam on chrom chr15
+Start processing file wt_r1.bam on chrom chr15
+Writing strand specific statistics for file wt_r1.bam and chrom chr15
+Writing strand combined statistics for file wt_r1.bam and chrom chr15
+Writing strand specific statistics for file wt_r2.bam and chrom chr15
+Writing strand combined statistics for file wt_r2.bam and chrom chr15
 Start processing file wt_r2.bam on chrom chr14
 Start processing file wt_r1.bam on chrom chr14
 Writing strand specific statistics for file wt_r2.bam and chrom chr14
 Writing strand specific statistics for file wt_r1.bam and chrom chr14
 Writing strand combined statistics for file wt_r2.bam and chrom chr14
 Writing strand combined statistics for file wt_r1.bam and chrom chr14
-Finished processing file wt_r2.bam on chrom chr13
+Start processing file wt_r2.bam on chrom chr16
+Start processing file wt_r1.bam on chrom chr16
+Writing strand specific statistics for file wt_r1.bam and chrom chr16
+Writing strand combined statistics for file wt_r1.bam and chrom chr16
+Writing strand specific statistics for file wt_r2.bam and chrom chr16
+Writing strand combined statistics for file wt_r2.bam and chrom chr16
 Finished processing file wt_r1.bam on chrom chr13
+Finished processing file wt_r2.bam on chrom chr13
 For file wt, number of cytosines processed: 4148 for chrom chr13
 Writing strand specific statistics for file wt and chrom chr13
 Writing strand combined statistics for file wt and chrom chr13
-Start processing file wt_r2.bam on chrom chr15
-Start processing file wt_r1.bam on chrom chr15
-Writing strand specific statistics for file wt_r2.bam and chrom chr15
-Writing strand specific statistics for file wt_r1.bam and chrom chr15
-Writing strand combined statistics for file wt_r2.bam and chrom chr15
-Writing strand combined statistics for file wt_r1.bam and chrom chr15
-Start processing file wt_r2.bam on chrom chr16
-Start processing file wt_r1.bam on chrom chr16
-Writing strand specific statistics for file wt_r2.bam and chrom chr16
-Writing strand specific statistics for file wt_r1.bam and chrom chr16
-Writing strand combined statistics for file wt_r2.bam and chrom chr16
-Writing strand combined statistics for file wt_r1.bam and chrom chr16
-Finished processing file wt_r1.bam on chrom chr14
-Finished processing file wt_r2.bam on chrom chr14
-For file wt, number of cytosines processed: 5653 for chrom chr14
-Writing strand specific statistics for file wt and chrom chr14
-Writing strand combined statistics for file wt and chrom chr14
-
-All files done for chrom chr13
-Finished processing file wt_r2.bam on chrom chr15
 Finished processing file wt_r1.bam on chrom chr15
+Finished processing file wt_r2.bam on chrom chr15
 For file wt, number of cytosines processed: 3445 for chrom chr15
 Writing strand specific statistics for file wt and chrom chr15
 Writing strand combined statistics for file wt and chrom chr15
-Finished processing file wt_r1.bam on chrom chr16
-Start processing file wt_r2.bam on chrom chr17
-Start processing file wt_r1.bam on chrom chr17
-Writing strand specific statistics for file wt_r2.bam and chrom chr17
-Writing strand specific statistics for file wt_r1.bam and chrom chr17
-Writing strand combined statistics for file wt_r2.bam and chrom chr17
-Writing strand combined statistics for file wt_r1.bam and chrom chr17
+
+All files done for chrom chr13
+Finished processing file wt_r1.bam on chrom chr14
 Finished processing file wt_r2.bam on chrom chr16
+Finished processing file wt_r1.bam on chrom chr16
+Finished processing file wt_r2.bam on chrom chr14
 For file wt, number of cytosines processed: 3889 for chrom chr16
+For file wt, number of cytosines processed: 5653 for chrom chr14
 Writing strand specific statistics for file wt and chrom chr16
 Writing strand combined statistics for file wt and chrom chr16
-
-All files done for chrom chr14
+Writing strand specific statistics for file wt and chrom chr14
+Writing strand combined statistics for file wt and chrom chr14
 
 All files done for chrom chr15
-Finished processing file wt_r2.bam on chrom chr17
-Start processing file wt_r2.bam on chrom chr18
-Start processing file wt_r1.bam on chrom chr18
-Writing strand specific statistics for file wt_r2.bam and chrom chr18
-Writing strand specific statistics for file wt_r1.bam and chrom chr18
-Writing strand combined statistics for file wt_r2.bam and chrom chr18
-Writing strand combined statistics for file wt_r1.bam and chrom chr18
-Finished processing file wt_r1.bam on chrom chr17
-For file wt, number of cytosines processed: 4670 for chrom chr17
-Writing strand specific statistics for file wt and chrom chr17
-Writing strand combined statistics for file wt and chrom chr17
+Start processing file wt_r2.bam on chrom chr17
+Start processing file wt_r1.bam on chrom chr17
+Writing strand specific statistics for file wt_r1.bam and chrom chr17
+Writing strand combined statistics for file wt_r1.bam and chrom chr17
+Writing strand specific statistics for file wt_r2.bam and chrom chr17
+Writing strand combined statistics for file wt_r2.bam and chrom chr17
+
+All files done for chrom chr14
 
 All files done for chrom chr16
 Start processing file wt_r2.bam on chrom chr19
 Start processing file wt_r1.bam on chrom chr19
-Writing strand specific statistics for file wt_r2.bam and chrom chr19
 Writing strand specific statistics for file wt_r1.bam and chrom chr19
-Writing strand combined statistics for file wt_r2.bam and chrom chr19
 Writing strand combined statistics for file wt_r1.bam and chrom chr19
+Writing strand specific statistics for file wt_r2.bam and chrom chr19
+Writing strand combined statistics for file wt_r2.bam and chrom chr19
 Start processing file wt_r2.bam on chrom chr2
 Start processing file wt_r1.bam on chrom chr2
 Writing strand specific statistics for file wt_r1.bam and chrom chr2
-Writing strand specific statistics for file wt_r2.bam and chrom chr2
 Writing strand combined statistics for file wt_r1.bam and chrom chr2
+Writing strand specific statistics for file wt_r2.bam and chrom chr2
 Writing strand combined statistics for file wt_r2.bam and chrom chr2
+Finished processing file wt_r1.bam on chrom chr17
+Finished processing file wt_r2.bam on chrom chr17
+For file wt, number of cytosines processed: 4670 for chrom chr17
+Writing strand specific statistics for file wt and chrom chr17
+Writing strand combined statistics for file wt and chrom chr17
+Start processing file wt_r2.bam on chrom chr18
+Start processing file wt_r1.bam on chrom chr18
+Writing strand specific statistics for file wt_r1.bam and chrom chr18
+Writing strand combined statistics for file wt_r1.bam and chrom chr18
+Writing strand specific statistics for file wt_r2.bam and chrom chr18
+Writing strand combined statistics for file wt_r2.bam and chrom chr18
+Finished processing file wt_r1.bam on chrom chr19
+Finished processing file wt_r2.bam on chrom chr19
+For file wt, number of cytosines processed: 3385 for chrom chr19
+Writing strand specific statistics for file wt and chrom chr19
+Writing strand combined statistics for file wt and chrom chr19
 Finished processing file wt_r1.bam on chrom chr2
-
-All files done for chrom chr17
 Finished processing file wt_r2.bam on chrom chr2
 For file wt, number of cytosines processed: 17269 for chrom chr2
 Writing strand specific statistics for file wt and chrom chr2
 Writing strand combined statistics for file wt and chrom chr2
+
+All files done for chrom chr2
+
+All files done for chrom chr17
 Finished processing file wt_r1.bam on chrom chr18
 Finished processing file wt_r2.bam on chrom chr18
 For file wt, number of cytosines processed: 6651 for chrom chr18
 Writing strand specific statistics for file wt and chrom chr18
 Writing strand combined statistics for file wt and chrom chr18
 
-All files done for chrom chr2
+All files done for chrom chr19
+Start processing file wt_r2.bam on chrom chr6
+Start processing file wt_r1.bam on chrom chr6
+Writing strand specific statistics for file wt_r1.bam and chrom chr6
+Writing strand combined statistics for file wt_r1.bam and chrom chr6
+Writing strand specific statistics for file wt_r2.bam and chrom chr6
+Writing strand combined statistics for file wt_r2.bam and chrom chr6
 Start processing file wt_r2.bam on chrom chr3
 Start processing file wt_r1.bam on chrom chr3
-Writing strand specific statistics for file wt_r2.bam and chrom chr3
 Writing strand specific statistics for file wt_r1.bam and chrom chr3
-Writing strand combined statistics for file wt_r2.bam and chrom chr3
+Writing strand specific statistics for file wt_r2.bam and chrom chr3
 Writing strand combined statistics for file wt_r1.bam and chrom chr3
-Finished processing file wt_r1.bam on chrom chr19
-Finished processing file wt_r2.bam on chrom chr19
-For file wt, number of cytosines processed: 3385 for chrom chr19
-Writing strand specific statistics for file wt and chrom chr19
-Writing strand combined statistics for file wt and chrom chr19
+Writing strand combined statistics for file wt_r2.bam and chrom chr3
+Start processing file wt_r2.bam on chrom chr5
+Start processing file wt_r1.bam on chrom chr5
+Writing strand specific statistics for file wt_r1.bam and chrom chr5
+Writing strand combined statistics for file wt_r1.bam and chrom chr5
+Writing strand specific statistics for file wt_r2.bam and chrom chr5
+Writing strand combined statistics for file wt_r2.bam and chrom chr5
+
+All files done for chrom chr18
 Finished processing file wt_r1.bam on chrom chr3
 Finished processing file wt_r2.bam on chrom chr3
 For file wt, number of cytosines processed: 8835 for chrom chr3
 Writing strand specific statistics for file wt and chrom chr3
 Writing strand combined statistics for file wt and chrom chr3
-Start processing file wt_r2.bam on chrom chr6
-Start processing file wt_r1.bam on chrom chr6
-Writing strand specific statistics for file wt_r1.bam and chrom chr6
-Writing strand specific statistics for file wt_r2.bam and chrom chr6
-Writing strand combined statistics for file wt_r2.bam and chrom chr6
-Writing strand combined statistics for file wt_r1.bam and chrom chr6
-
-All files done for chrom chr18
-
-All files done for chrom chr3
-
-All files done for chrom chr19
-Finished processing file wt_r1.bam on chrom chr6
 Finished processing file wt_r2.bam on chrom chr6
+Finished processing file wt_r1.bam on chrom chr6
 For file wt, number of cytosines processed: 13897 for chrom chr6
 Writing strand specific statistics for file wt and chrom chr6
 Writing strand combined statistics for file wt and chrom chr6
-Start processing file wt_r1.bamStart processing file wt_r2.bam on chrom chr5
- on chrom chr5
-Writing strand specific statistics for file wt_r1.bam and chrom chr5
-Writing strand combined statistics for file wt_r1.bam and chrom chr5
-Writing strand specific statistics for file wt_r2.bam and chrom chr5
-Writing strand combined statistics for file wt_r2.bam and chrom chr5
-Start processing file wt_r2.bam on chrom chr4
-Start processing file wt_r1.bam on chrom chr4
-Writing strand specific statistics for file wt_r1.bam and chrom chr4
-Writing strand specific statistics for file wt_r2.bam and chrom chr4
-Writing strand combined statistics for file wt_r1.bam and chrom chr4
-Writing strand combined statistics for file wt_r2.bam and chrom chr4
-Start processing file wt_r1.bam on chrom Start processing file wt_r2.bam on chrom chr7chr7
-
-Writing strand specific statistics for file wt_r1.bam and chrom chr7
-Writing strand specific statistics for file wt_r2.bam and chrom chr7
-Writing strand combined statistics for file wt_r1.bam and chrom chr7
-Writing strand combined statistics for file wt_r2.bam and chrom chr7
-Finished processing file wt_r2.bam on chrom chr4
-Finished processing file wt_r1.bam on chrom chr4
-For file wt, number of cytosines processed: 9014 for chrom chr4
-Writing strand specific statistics for file wt and chrom chr4
-Writing strand combined statistics for file wt and chrom chr4
-Finished processing file wt_r1.bam on chrom chr5
 Finished processing file wt_r2.bam on chrom chr5
-
-All files done for chrom chr6
+Finished processing file wt_r1.bam on chrom chr5
 For file wt, number of cytosines processed: 17524 for chrom chr5
 Writing strand specific statistics for file wt and chrom chr5
 Writing strand combined statistics for file wt and chrom chr5
-Finished processing file wt_r2.bam on chrom chr7
-Finished processing file wt_r1.bam on chrom chr7
-For file wt, number of cytosines processed: 5454 for chrom chr7
-Writing strand specific statistics for file wt and chrom chr7
-Writing strand combined statistics for file wt and chrom chr7
+Start processing file wt_r2.bam on chrom chr4
+Start processing file wt_r1.bam on chrom chr4
+Writing strand specific statistics for file wt_r1.bam and chrom chr4
+Writing strand combined statistics for file wt_r1.bam and chrom chr4
+Writing strand specific statistics for file wt_r2.bam and chrom chr4
+Writing strand combined statistics for file wt_r2.bam and chrom chr4
 
-All files done for chrom chr4
+All files done for chrom chr3
+
+All files done for chrom chr6
 
 All files done for chrom chr5
-
-All files done for chrom chr7
+Finished processing file wt_r1.bam on chrom chr4
+Finished processing file wt_r2.bam on chrom chr4
+For file wt, number of cytosines processed: 9014 for chrom chr4
+Writing strand specific statistics for file wt and chrom chr4
+Writing strand combined statistics for file wt and chrom chr4
+Start processing file wt_r2.bam on chrom chr7
+Start processing file wt_r1.bam on chrom chr7
+Writing strand specific statistics for file wt_r2.bam and chrom chr7
+Writing strand specific statistics for file wt_r1.bam and chrom chr7
+Writing strand combined statistics for file wt_r2.bam and chrom chr7
+Writing strand combined statistics for file wt_r1.bam and chrom chr7
 Start processing file wt_r2.bam on chrom chrM
 Start processing file wt_r1.bam on chrom chrM
 Writing strand specific statistics for file wt_r2.bam and chrom chrM
@@ -263,43 +256,47 @@ Writing strand specific statistics for file wt and chrom chrM
 Writing strand combined statistics for file wt and chrom chrM
 
 All files done for chrom chrM
-Start processing file wt_r2.bam on chrom chr8
-Start processing file wt_r1.bam on chrom chr8
-Writing strand specific statistics for file wt_r2.bam and chrom chr8
-Writing strand specific statistics for file wt_r1.bam and chrom chr8
-Writing strand combined statistics for file wt_r2.bam and chrom chr8
-Writing strand combined statistics for file wt_r1.bam and chrom chr8
 Start processing file wt_r2.bam on chrom chr9
 Start processing file wt_r1.bam on chrom chr9
 Writing strand specific statistics for file wt_r1.bam and chrom chr9
-Writing strand specific statistics for file wt_r2.bam and chrom chr9
 Writing strand combined statistics for file wt_r1.bam and chrom chr9
+Writing strand specific statistics for file wt_r2.bam and chrom chr9
 Writing strand combined statistics for file wt_r2.bam and chrom chr9
-Finished processing file wt_r2.bam on chrom chr8
-Start processing file wt_r2.bam on chrom chrX
-Start processing file wt_r1.bam on chrom chrX
-Writing strand specific statistics for file wt_r2.bam and chrom chrX
-Writing strand combined statistics for file wt_r2.bam and chrom chrX
-Writing strand specific statistics for file wt_r1.bam and chrom chrX
-Writing strand combined statistics for file wt_r1.bam and chrom chrX
-Finished processing file wt_r1.bam on chrom chr8
-For file wt, number of cytosines processed: 4522 for chrom chr8
-Writing strand specific statistics for file wt and chrom chr8
-Writing strand combined statistics for file wt and chrom chr8
+
+All files done for chrom chr4
+Finished processing file wt_r1.bam on chrom chr7
+Finished processing file wt_r2.bam on chrom chr7
+For file wt, number of cytosines processed: 5454 for chrom chr7
+Writing strand specific statistics for file wt and chrom chr7
+Writing strand combined statistics for file wt and chrom chr7
 Finished processing file wt_r1.bam on chrom chr9
 Finished processing file wt_r2.bam on chrom chr9
 For file wt, number of cytosines processed: 6377 for chrom chr9
 Writing strand specific statistics for file wt and chrom chr9
 Writing strand combined statistics for file wt and chrom chr9
+Start processing file wt_r2.bam on chrom chr8
+Start processing file wt_r1.bam on chrom chr8
+Writing strand specific statistics for file wt_r1.bam and chrom chr8
+Writing strand combined statistics for file wt_r1.bam and chrom chr8
+Writing strand specific statistics for file wt_r2.bam and chrom chr8
+Writing strand combined statistics for file wt_r2.bam and chrom chr8
 
-All files done for chrom chr8
-Finished processing file wt_r2.bam on chrom chrX
+All files done for chrom chr7
+Finished processing file wt_r1.bam on chrom chr8
+Finished processing file wt_r2.bam on chrom chr8
+For file wt, number of cytosines processed: 4522 for chrom chr8
+Writing strand specific statistics for file wt and chrom chr8
+Writing strand combined statistics for file wt and chrom chr8
 
 All files done for chrom chr9
-Finished processing file wt_r1.bam on chrom chrX
-For file wt, number of cytosines processed: 11185 for chrom chrX
-Writing strand specific statistics for file wt and chrom chrX
-Writing strand combined statistics for file wt and chrom chrX
+Start processing file wt_r2.bam on chrom chrX
+Start processing file wt_r1.bam on chrom chrX
+Writing strand specific statistics for file wt_r1.bam and chrom chrX
+Writing strand combined statistics for file wt_r1.bam and chrom chrX
+Writing strand specific statistics for file wt_r2.bam and chrom chrX
+Writing strand combined statistics for file wt_r2.bam and chrom chrX
+
+All files done for chrom chr8
 Start processing file wt_r2.bam on chrom chrY
 Start processing file wt_r1.bam on chrom chrY
 Writing strand specific statistics for file wt_r2.bam and chrom chrY
@@ -313,6 +310,11 @@ Writing strand specific statistics for file wt and chrom chrY
 Writing strand combined statistics for file wt and chrom chrY
 
 All files done for chrom chrY
+Finished processing file wt_r1.bam on chrom chrX
+Finished processing file wt_r2.bam on chrom chrX
+For file wt, number of cytosines processed: 11185 for chrom chrX
+Writing strand specific statistics for file wt and chrom chrX
+Writing strand combined statistics for file wt and chrom chrX
 
 All files done for chrom chrX
 Program successfully finished

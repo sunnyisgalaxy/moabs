@@ -14,6 +14,7 @@ void build_lut_singleCI_singleThread(int tableMax);
 void build_lut_singleCI(int  tableMax, int  numThreads);
 
 
-extern std::map < MultiKey, double > lut_fet;
-void build_lut_fet(int  tableMax, int  numThreads);
-void build_lut_fet_singleThread(int tableMax);
+// `lut_fet` is not used
+// extern std::map < MultiKey, double > lut_fet;
+// void build_lut_fet(int  tableMax, int  numThreads);
+// void build_lut_fet_singleThread(int tableMax);

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #define TOLER 1e-10
 #define TENEPS 1e-16
 //you may change this to 1e-18 by change double to long double for toler in Adapt.h
@@ -22,7 +24,7 @@ class MultiKey {
     int  n2;
     int  k2;
 
-    MultiKey(long N1, int K1, long N2, long K2)
+    MultiKey(int N1, int K1, int N2, int K2)
       : n1(N1), k1(K1), n2(N2), k2(K2) {}
 
     bool operator<(const MultiKey &right) const
@@ -51,7 +53,10 @@ class BiKey {
     int  n1;
     int  k1;
 
-    BiKey(long N1, int K1)
+    BiKey()
+      : n1(-1), k1(-1) {}
+
+    BiKey(int N1, int K1)
       : n1(N1), k1(K1) {}
 
     bool operator<(const BiKey &right) const
@@ -63,6 +68,21 @@ class BiKey {
             return n1 < right.n1;
         }
     }
+};
+
+struct MergeLaneElement {
+	int start;
+	int end;
+	int k;
+	int n;
+	int tcp;
+	int mcp;
+	int tcm;
+	int mcm;
+	char strand;
+	char next;
+	std::string chr;
+	MergeLaneElement(): start(-1), end(-1), k(-1), n(-1), tcp(-1), mcp(-1), tcm(-1), mcm(-1), strand('x'), next('X') { }
 };
 
 
@@ -119,3 +139,6 @@ public:
 
 std::string itos(int i);
 int string_to_int( std::string s);
+std::string get_exepath();
+std::string do_readlink(std::string const& path);
+bool isconsensus(std::vector< int > & tcs, std::vector< int > & mcs, int depth=10); // depth>=10, max-min<0.1
