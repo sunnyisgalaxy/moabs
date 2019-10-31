@@ -2181,7 +2181,9 @@ void mergeRatioFilesByChrom(vector<string> & filesToMerge, string outFileName, O
 	{
 		string chr = *pchr;
 		string outfile=outFileName+"_"+chr+".bed";
-		mergeRatioFiles(filesToMerge, outfile, option, chr);
+		if (! boost::filesystem::exists(outfile)) {
+			mergeRatioFiles(filesToMerge, outfile, option, chr);
+		}
 		outfiles.push_back(outfile);
 	}
 

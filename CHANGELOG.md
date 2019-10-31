@@ -1,3 +1,9 @@
+# MOABS v1.3.7.8 @ 20191031
+
+## Feature improvement for `--withVariance` in mcomp
+
+- To speedup merge by skipping existing chromosome files
+
 # MOABS v1.3.7.7 @ 20191029
 
 ## Changes since v1.3.4
