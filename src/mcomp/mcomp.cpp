@@ -241,7 +241,7 @@ int parse_options(int ac, char * av[]){
 		configFile 	<<k<<"=";
 
 
-		if( k == "eamil"){
+		if( k == "email"){
 			opts.email 	= 	options[k].as<string>();
 			configFile 	<<	options[k].as<string>();
 			cout 		<<	options[k].as<string>();
