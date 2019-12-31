@@ -306,27 +306,27 @@ if($current_task eq "BSEQC2"){
 	print STDOUT "Started the $current_task\n";
 
 	foreach my $sample (keys %inputs){
-		my @bams = ();
-		my $condition = "";
 		foreach my $replicate (keys %{$inputs{$sample}}){
 			my @mates = values %{$inputs{$sample}{$replicate}};
 			my $bam = $ostem{$mates[0]} . '.bam';
-			push(@bams, " -i $bam ");
-			$condition = $label{$mates[0]};
-		}
-		my $in = join(" ", @bams);
-		my $out = "$condition.txt";
-		my $retcode=startBSEQC2($in, $out);
-		if ($retcode eq 1) {
-			print STDOUT "File $out failed in BSeQC2 ... terminating MOABS ...\n";
-		} else {
-			print STDOUT "File $out passed the BSeQC2 ... moving forward to other MOABS modules ...\n";
-			$current_task = 'MCALL';
+			my $in = "-i $bam";
+			my $out = $ostem{$mates[0]} . '.txt';
+			my $retcode=startBSEQC2($in, $out);
+			if ($retcode eq 1) {
+				print STDOUT "File $out failed in BSeQC2 ... skipped for downstream analysis ...\n";
+				delete $inputs{$sample}{$replicate};
+				if (!%{$inputs{$sample}}) {
+					delete $inputs{$sample};
+				}
+			} else {
+				print STDOUT "File $out passed the BSeQC2 ... retained for downstream analysis ...\n";
+			}
 		}
 	}
 
 	print STDOUT "Finished the $current_task\n";
 	print STDOUT "################################\n";
+	$current_task = 'MCALL';
 }
 
 ##print "NOW MMAP is done\n";
