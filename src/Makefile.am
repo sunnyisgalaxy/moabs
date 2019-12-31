@@ -1,1 +1,1 @@
-SUBDIRS = bsmap ExactNumCI mcall mcomp
+SUBDIRS = bsmap ExactNumCI mcall mcomp bseqc2

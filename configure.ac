@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([moabs], [1.3.4], [dsun@tamu.edu])
+AC_INIT([moabs], [1.3.8.0], [dsun@tamu.edu])
 AM_INIT_AUTOMAKE()
 AC_CONFIG_SRCDIR([src/bsmap/main.cpp])
 AC_CONFIG_HEADERS([config.h])
@@ -53,5 +53,6 @@ AC_CONFIG_FILES([
 	src/ExactNumCI/Makefile
 	src/mcall/Makefile
 	src/mcomp/Makefile
+	src/bseqc2/Makefile
 	])
 AC_OUTPUT
