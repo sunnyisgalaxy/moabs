@@ -23,8 +23,15 @@ sub doSys #( string command )
     
 }
 
-
-
-
+sub doSys2
+{
+	my $systemCommand = $_[0];
+	system("date");
+	print STDERR "$0: Start to execute   [$systemCommand] \n";
+	my $returnCode = system( $systemCommand )>>8; ## perl exit code has been multiplied by 256, thus revert back
+	print STDERR "$0: Finished executing [$systemCommand] with doSys exit code $returnCode\n";
+	system("date");
+	return $returnCode;
+}
 
 1;

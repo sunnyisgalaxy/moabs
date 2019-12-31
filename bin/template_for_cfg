@@ -41,11 +41,16 @@ Template=$MOABS_BIN/template_for_qsub
 [MMAP]
 Path=$MOABS_BIN/bsmap
 p=16
-d=~/moabs/ref/mm9.fa 
+d=~/moabs/ref/mm9.fa
+
+[BSEQC2]
+Path=$MOABS_BIN/bseqc2
+r=~/moabs/ref/mm9.fa
+l=100
 
 [MCALL]
 Path=$MOABS_BIN/mcall
-r=~/moabs/ref/mm9.fa 
+r=~/moabs/ref/mm9.fa
 p=4
 
 [MCOMP]
