@@ -52,7 +52,7 @@ int parse_options(int ac, const char ** av) {
 			("outfile,o", value<string>()->default_value(""), "Output BAM file. To save the filtered BAM file.")
 			("pico,p", "Pico library preparation protocol. Default: traditional protocol.")
 			("statsonly,s", "Report PE tag statistics only but not generate filtered BAM file. The statitics will show in stdout.")
-			("numthreads,t", value<int>()->default_value(1), "Number of threads. Ensure enough memory for many threads. Default: 1.")
+			("numthreads,t", value<int>()->default_value(1), "Number of threads. Ensure enough memory for many threads. One thread may occupy up to 5GB memory for a 50GB BAM file. Default: 1.")
 			("validtag,d", value< vector< string > >()->multitoken(), "Valid tag pair in the format as `tag1,tag2` for two ends. `N` means mapping not found. Multiple tag pairs can be specified. For example, `-d ++,+- -d -+,--`")
 			;
 
@@ -66,7 +66,7 @@ int parse_options(int ac, const char ** av) {
 			cout << "  " << av[0] << " -i in.bam -o out.bam -t 4" << endl;
 			cout << "  " << av[0] << " -i in.bam -s -t 4" << endl;
 			cout << endl;
-			cout << "Date: 2019/12/18" << endl;
+			cout << "Date: 2020/01/08" << endl;
 			cout << "Authors: Jin Li <lijin.abc@gmail.com>" << endl;
 			exit(1);
 		}
@@ -509,6 +509,23 @@ int mergebam(vector< string > & files, string & outfile) {
 	return 0;
 }
 
+int replacebam(string & infile, string & outfile) {
+	string cmd = "mv "+infile+" "+outfile;
+	cout << cmd << endl;
+	FILE *fp;
+	char info[10240];
+	fp = popen(cmd.c_str(), "r");
+	if (fp==NULL) {
+		fprintf(stderr, "popen error.\n");
+		return EXIT_FAILURE;
+	}
+	while (fgets(info, 10240, fp) != NULL) {
+		printf("%s", info);
+	}
+	pclose(fp);
+	return 0;
+}
+
 int rmtmpfiles(vector< string > & files) {
 	string cmd = "rm -f";
 	for (string &infile: files) {
@@ -564,7 +581,11 @@ int pefilter(string bamfile, string outfile)
 	for (string &chr: chroms) {
 		tmpfiles.push_back(outfile+"_"+chr+".bam");
 	}
-	mergebam(tmpfiles, outfile);
+	if (tmpfiles.size()>1) {
+		mergebam(tmpfiles, outfile);
+	} else { // single chromosome
+		replacebam(tmpfiles[0], outfile);
+	}
 	rmtmpfiles(tmpfiles);
 
 	map< string, int > tagsresult;
@@ -591,9 +612,35 @@ int pefilter(string bamfile, string outfile)
 	return 0;
 }
 
+// PE: true, SE: false
+bool estimatelayout(string & infile) {
+	samfile_t *in=0;
+	if ((in=samopen(infile.c_str(), "rb", 0))==0) {
+		cerr << "Error: not found " << infile << endl;
+		exit(-1);
+	}
+	int r=0;
+	int count=0;
+	bam1_t *b=bam_init1();
+	bool layoutpe=false;
+	while (count<1 && (r=samread(in, b))>=0) {
+		uint32_t flag=b->core.flag;
+		if (flag & 0x1) layoutpe=true;
+		count++;
+	}
+	samclose(in);
+	return layoutpe;
+}
+
 int main(int argc, const char ** argv)
 {
 	parse_options(argc, argv);
+	bool layoutpe=estimatelayout(opts.infile);
+	if (! layoutpe) {
+		cerr << "Single-end mapping detected. Skipping pefilter ..." <<endl;
+		return 1;
+	}
+
 	if (opts.statsonly) {
 		petagstats(opts.infile);
 	} else {

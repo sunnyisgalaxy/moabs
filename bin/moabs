@@ -12,7 +12,7 @@ use Config::Simple;
 use threads;
 use threads::shared;
 
-my $ver = "1.3.8.1";
+my $ver = "1.3.8.2";
 my $usage=<<"USAGE";
         Program : $0
         Version : $ver
@@ -305,7 +305,6 @@ if($current_task eq "BSEQC2"){
 	print STDOUT "\n################################\n";
 	print STDOUT "Started the $current_task\n";
 
-	my $layoutpe=0; # 0: single-end, 1: paired-end
 	foreach my $sample (keys %inputs){
 		foreach my $replicate (keys %{$inputs{$sample}}){
 			my @mates = values %{$inputs{$sample}{$replicate}};
@@ -320,20 +319,13 @@ if($current_task eq "BSEQC2"){
 				}
 			} else {
 				print STDOUT "File $out passed the BSeQC2 ... retained for downstream analysis ...\n";
-				if (@mates>1) {
-					$layoutpe=1;
-				}
 			}
 		}
 	}
 
 	print STDOUT "Finished the $current_task\n";
 	print STDOUT "################################\n";
-	if ($layoutpe eq 1) {
-		$current_task = 'PEFilter';
-	} else {
-		$current_task = 'MCALL';
-	}
+	$current_task = 'PEFilter';
 }
 
 if($current_task eq "PEFilter"){
@@ -887,7 +879,9 @@ sub startPEFILTER
 	my $retcode=doSys2($cmd);
 	if ($retcode eq 0) {
 		print STDOUT "File $o succeed, replace $in ...\n";
+		doSys2("rm -f $in $in.bai");
 		doSys2("mv $o $in");
+		doSys2("samtools index $in");
 	}
 }
 
