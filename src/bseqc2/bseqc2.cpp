@@ -587,7 +587,7 @@ int methbsr2file(ostream & out, bool pico, map< string, int > & tagstats, map< s
 	}
 
 	// 24 PE pairs
-	out << "tag" << '\t' << "numreads" << '\t' << "end1CG" << '\t' << "end1CH" << '\t' << "end2CG" << '\t' << "end2CH" << '\t' << "status" << endl;
+	out << "tag" << '\t' << "numreads" << '\t' << "end1CG" << '\t' << "end1CH" << '\t' << "end2CG" << '\t' << "end2CH" << '\t' << "bcrstatus" << endl;
 	for (map< string, int > :: iterator it=tagstats.begin(); it!=tagstats.end(); ++it) {
 		string tag=it->first;
 		int numreads=it->second;
