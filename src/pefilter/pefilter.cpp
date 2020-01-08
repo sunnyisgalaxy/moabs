@@ -612,9 +612,35 @@ int pefilter(string bamfile, string outfile)
 	return 0;
 }
 
+// PE: true, SE: false
+bool estimatelayout(string & infile) {
+	samfile_t *in=0;
+	if ((in=samopen(infile.c_str(), "rb", 0))==0) {
+		cerr << "Error: not found " << infile << endl;
+		exit(-1);
+	}
+	int r=0;
+	int count=0;
+	bam1_t *b=bam_init1();
+	bool layoutpe=false;
+	while (count<1 && (r=samread(in, b))>=0) {
+		uint32_t flag=b->core.flag;
+		if (flag & 0x1) layoutpe=true;
+		count++;
+	}
+	samclose(in);
+	return layoutpe;
+}
+
 int main(int argc, const char ** argv)
 {
 	parse_options(argc, argv);
+	bool layoutpe=estimatelayout(opts.infile);
+	if (! layoutpe) {
+		cerr << "Single-end mapping detected. Skipping pefilter ..." <<endl;
+		return 0;
+	}
+
 	if (opts.statsonly) {
 		petagstats(opts.infile);
 	} else {
