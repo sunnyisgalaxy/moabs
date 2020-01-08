@@ -638,7 +638,7 @@ int main(int argc, const char ** argv)
 	bool layoutpe=estimatelayout(opts.infile);
 	if (! layoutpe) {
 		cerr << "Single-end mapping detected. Skipping pefilter ..." <<endl;
-		return 0;
+		return 1;
 	}
 
 	if (opts.statsonly) {
