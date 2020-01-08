@@ -50,8 +50,8 @@ int parse_options(int ac, const char ** av) {
 			("help,h", "Produce help message.")
 			("infile,i", value<string>()->default_value(""), "Input BAM file. It should be indexed.")
 			("outfile,o", value<string>()->default_value(""), "Output statistics.")
-			("reference,r", value<string>()->default_value(""), "Reference FASTA file.")
-			("length,l", value<int>()->default_value(150), "Read length. Default: 150.")
+			("reference,r", value<string>()->default_value(""), "Reference FASTA file. This option is required.")
+			("length,l", value<int>()->default_value(150), "Read length. Length of the query sequence in the BAM file may be shorter than the read length, but the read length should ensure the longest mapping. Default: 150.")
 			("numreads,n", value<int>()->default_value(20000000), "Number of reads. First `n` reads will be examined. Be aware of extremely low CpG methylation levels when chrM is the first chromosome. Default: 20000000.")
 			("rscript,s", value<string>()->default_value(""), "Rscript for mbias plot. Default: `$bindir/bseqc2mbiasplot.R`.")
 			;
