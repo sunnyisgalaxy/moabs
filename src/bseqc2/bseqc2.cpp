@@ -556,13 +556,13 @@ string errorstatus(double meth1ch, double meth2ch) {
 		status="OK";
 	} else {
 		if (status1>=0) {
-			status=((status1==0)?"OK":"Alert");
+			status=(status1==0)?"OK":"Alert";
 			if (status2>=0) {
-				status+=","+((status2==0)?"OK":"Alert");
+				status+=","+(status2==0)?"OK":"Alert";
 			}
 		} else {
 			if (status2>=0) {
-				status=((status2==0)?"OK":"Alert");
+				status=(status2==0)?"OK":"Alert";
 			}
 		}
 	}
