@@ -48,7 +48,7 @@ int parse_options(int ac, const char ** av) {
 		options_description desc{"Allowed options"};
 		desc.add_options()
 			("help,h", "Produce help message.")
-			("infile,i", value<string>()->default_value(""), "Input BAM file. It should be indexed.")
+			("infile,i", value<string>()->default_value(""), "Input BAM file.")
 			("outfile,o", value<string>()->default_value(""), "Output statistics.")
 			("reference,r", value<string>()->default_value(""), "Reference FASTA file. This option is required.")
 			("length,l", value<int>()->default_value(150), "Read length. Length of the query sequence in the BAM file may be shorter than the read length, but the read length should ensure the longest mapping. Default: 150.")
