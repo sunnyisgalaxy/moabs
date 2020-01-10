@@ -958,17 +958,17 @@ sub strandQCconsistent
 	}
 	close(INF);
 
-	int exitcode=0;
+	my $exitcode=0;
 	foreach my $tag (keys %tagorg) {
 		if (exists $tagsplit{$tag}) {
 			my $diffmeth=$tagorg{$tag}-$tagsplit{$tag};
 			if ($diffmeth>0.05 or $diffmeth< -0.05) {
 				print STDOUT "Inconsitent tag: $tag with $diffmeth methylation difference ...\n";
-				exitcode=1;
+				$exitcode=1;
 			}
 		}
 	}
-	return exitcode;
+	return $exitcode;
 }
 
 sub startPEFILTER
