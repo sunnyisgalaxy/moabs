@@ -989,7 +989,7 @@ sub startPEFILTER
 	my $cmd = "$pefilter -i $in -o $o $others > moabs.pefilter.$o.log 2>&1";
 	my $retcode=doSys2($cmd);
 	if ($retcode eq 0) {
-		print STDOUT "File $o succeed, replace $in ...\n";
+		print STDOUT "File $o succeed, mv $in ...\n";
 		doSys2("mv -f $in $in.beforepefilter.bam");
 		doSys2("mv -f $in.bai $in.beforepefilter.bam.bai");
 		doSys2("mv $o $in");
@@ -1001,9 +1001,9 @@ sub mergesplitBAM
 {
 	my ($in, $splitbam) = @_;
 	print STDOUT "Merge $splitbam to $in ...\n";
-	doSys2("rm -f $in.bai");
-	doSys2("mv $in $in.org.bam");
-	doSys2("samtools merge $in $in.org.bam $splitbam");
+	doSys2("mv $in $in.beforemerge.bam");
+	doSys2("mv $in.bai $in.beforemerge.bam.bai");
+	doSys2("samtools merge $in $in.beforemerge.bam $splitbam");
 	doSys2("samtools index $in");
 }
 
