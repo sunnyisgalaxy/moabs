@@ -985,7 +985,8 @@ sub startPEFILTER
 	my $retcode=doSys2($cmd);
 	if ($retcode eq 0) {
 		print STDOUT "File $o succeed, replace $in ...\n";
-		doSys2("rm -f $in $in.bai");
+		doSys2("mv -f $in $in.beforepefilter.bam");
+		doSys2("mv -f $in.bai $in.beforepefilter.bam.bai");
 		doSys2("mv $o $in");
 		doSys2("samtools index $in");
 	}
