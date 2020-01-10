@@ -326,7 +326,7 @@ if($current_task eq "BSEQC2"){
 	print STDOUT "Finished the $current_task\n";
 	print STDOUT "################################\n";
 
-	if ((exists $opt{'TASK.RunLibis'}) && ($opt{'TASK.RunLibis'} eq "1")){
+	if ((exists $opt{'TASK.RunLiBis'}) && ($opt{'TASK.RunLiBis'} eq "1")){
 		$current_task='LiBis';
 	} else {
 		$current_task='PEFilter';
