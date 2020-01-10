@@ -981,6 +981,11 @@ sub startPEFILTER
 
 	my $pefilter = $opt{'PEFILTER.Path'};
 	my $others = getExePar("PEFILTER");
+
+	if (! -e "$in.bai") {
+		doSys2("samtools index $in");
+	}
+
 	my $cmd = "$pefilter -i $in -o $o $others > moabs.pefilter.$o.log 2>&1";
 	my $retcode=doSys2($cmd);
 	if ($retcode eq 0) {
