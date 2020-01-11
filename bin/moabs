@@ -926,7 +926,7 @@ sub startLIBIS
 
 	my $libis = $opt{'LIBIS.Path'};
 	my $others = getExePar("LIBIS");
-	my $cmd = "$libis -bam $in -n $name $others > moabs.libis.$o.log 2>&1";
+	my $cmd = "$libis -module -bam $in -n $name $others > moabs.libis.$o.log 2>&1";
 	return doSys2($cmd);
 }
 
