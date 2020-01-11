@@ -12,7 +12,7 @@ use Config::Simple;
 use threads;
 use threads::shared;
 
-my $ver = "1.3.8.2";
+my $ver = "1.3.8.3";
 my $usage=<<"USAGE";
         Program : $0
         Version : $ver
@@ -309,7 +309,7 @@ if($current_task eq "BSEQC2"){
 		foreach my $replicate (keys %{$inputs{$sample}}){
 			my @mates = values %{$inputs{$sample}{$replicate}};
 			my $in = $ostem{$mates[0]} . '.bam';
-			my $out = $ostem{$mates[0]} . '.txt';
+			my $out = $ostem{$mates[0]} . '.bseqc.txt';
 			my $retcode=startBSEQC2($in, $out);
 			if ($retcode eq 1) {
 				print STDOUT "File $out failed in BSeQC2 ... skipped for downstream analysis ...\n";
@@ -325,7 +325,53 @@ if($current_task eq "BSEQC2"){
 
 	print STDOUT "Finished the $current_task\n";
 	print STDOUT "################################\n";
-	$current_task = 'PEFilter';
+
+	if ((exists $opt{'TASK.RunLiBis'}) && ($opt{'TASK.RunLiBis'} eq "1")){
+		$current_task='LiBis';
+	} else {
+		$current_task='PEFilter';
+	}
+}
+
+my %splitbam=(); # split bam from LiBis
+
+if($current_task eq "LiBis"){
+	print STDOUT "\n################################\n";
+	print STDOUT "Started the $current_task\n";
+
+	foreach my $sample (keys %inputs){
+		foreach my $replicate (keys %{$inputs{$sample}}){
+			my @mates = values %{$inputs{$sample}{$replicate}};
+			next if (@mates<1); # Empty fastq can not run LiBis
+			my $bname = $ostem{$mates[0]};
+			my $in = $bname . '.bam';
+			my $name = join ',', @mates;
+			my $out = $bname . '_split.bam';
+			my $retcode=startLIBIS($in, $name, $out);
+			if ($retcode eq 0) {
+				my $splitqc = $bname . '_split.bseqc.txt';
+				my $retcodesplit=startBSEQC2($out, $splitqc);
+				if ($retcodesplit eq 1) {
+					print STDOUT "File $splitqc failed in BSeQC2 . $out will not be merged ...\n";
+				} else {
+					my $orgqc = $bname . '.bseqc.txt';
+					my $consistentqc=strandQCconsistent($orgqc, $splitqc);
+					if ($consistentqc eq 0) {
+						print STDOUT "File $splitqc and $orgqc have consistent strand QC. $out to be merged ...\n";
+						$splitbam{$bname}=$out;
+					} else {
+						print STDOUT "File $splitqc and $orgqc do not have consistent strand QC. $out will not be merged ...\n";
+					}
+				}
+			} else {
+				print STDOUT "File $out failed in LiBis ...\n";
+			}
+		}
+	}
+
+	print STDOUT "Finished the $current_task\n";
+	print STDOUT "################################\n";
+	$current_task='PEFilter';
 }
 
 if($current_task eq "PEFilter"){
@@ -335,9 +381,14 @@ if($current_task eq "PEFilter"){
 	foreach my $sample (keys %inputs){
 		foreach my $replicate (keys %{$inputs{$sample}}){
 			my @mates = values %{$inputs{$sample}{$replicate}};
-			my $in = $ostem{$mates[0]} . '.bam';
-			my $out = $ostem{$mates[0]} . '.pe.bam';
+			my $bname = $ostem{$mates[0]};
+			my $in = $bname . '.bam';
+			my $out = $bname . '.pe.bam';
 			startPEFILTER($in, $out);
+
+			if (exists $splitbam{$bname}) {
+				mergesplitBAM($in, $splitbam{$bname});
+			}
 		}
 	}
 
@@ -865,6 +916,61 @@ sub startBSEQC2
 	return doSys2($cmd);
 }
 
+sub startLIBIS
+{
+	my ($in, $name, $o) = @_;
+	if( -e "$o" ){
+		print STDOUT "File $o exists... skipping the LIBIS program...\n";
+		return 0;
+	}
+
+	my $libis = $opt{'LIBIS.Path'};
+	my $others = getExePar("LIBIS");
+	my $cmd = "$libis -bam $in -n $name $others > moabs.libis.$o.log 2>&1";
+	return doSys2($cmd);
+}
+
+sub strandQCconsistent
+{
+	my ($orgqc, $splitqc) = @_;
+	my %tagorg=();
+	open(INF, $orgqc) or die;
+	while(<INF>)
+	{
+		chomp;
+		my @fields=split("\t", $_);
+		if (@fields==3 or @fields==4) {
+			next if ($fields[0] eq "tag");
+			$tagorg{$fields[0]}=$fields[(@fields==3)?1:2];
+		}
+	}
+	close(INF);
+	my %tagsplit=();
+	open(INF, $splitqc) or die;
+	while(<INF>)
+	{
+		chomp;
+		my @fields=split("\t", $_);
+		if (@fields==3 or @fields==4) {
+			next if ($fields[0] eq "tag");
+			$tagsplit{$fields[0]}=$fields[(@fields==3)?1:2];
+		}
+	}
+	close(INF);
+
+	my $exitcode=0;
+	foreach my $tag (keys %tagorg) {
+		if (exists $tagsplit{$tag}) {
+			my $diffmeth=$tagorg{$tag}-$tagsplit{$tag};
+			if ($diffmeth>0.05 or $diffmeth< -0.05) {
+				print STDOUT "Inconsitent tag: $tag with $diffmeth methylation difference ...\n";
+				$exitcode=1;
+			}
+		}
+	}
+	return $exitcode;
+}
+
 sub startPEFILTER
 {
 	my ($in, $o) = @_;
@@ -875,14 +981,30 @@ sub startPEFILTER
 
 	my $pefilter = $opt{'PEFILTER.Path'};
 	my $others = getExePar("PEFILTER");
+
+	if (! -e "$in.bai") {
+		doSys2("samtools index $in");
+	}
+
 	my $cmd = "$pefilter -i $in -o $o $others > moabs.pefilter.$o.log 2>&1";
 	my $retcode=doSys2($cmd);
 	if ($retcode eq 0) {
-		print STDOUT "File $o succeed, replace $in ...\n";
-		doSys2("rm -f $in $in.bai");
+		print STDOUT "File $o succeed, mv $in ...\n";
+		doSys2("mv -f $in $in.beforepefilter.bam");
+		doSys2("mv -f $in.bai $in.beforepefilter.bam.bai");
 		doSys2("mv $o $in");
 		doSys2("samtools index $in");
 	}
+}
+
+sub mergesplitBAM
+{
+	my ($in, $splitbam) = @_;
+	print STDOUT "Merge $splitbam to $in ...\n";
+	doSys2("mv $in $in.beforemerge.bam");
+	doSys2("mv $in.bai $in.beforemerge.bam.bai");
+	doSys2("samtools merge $in $in.beforemerge.bam $splitbam");
+	doSys2("samtools index $in");
 }
 
 ##print "DONE\n";
