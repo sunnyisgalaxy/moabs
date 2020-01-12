@@ -28,6 +28,8 @@ Parallel=THREAD
 #Parallel=QSUB
 #Parallel=NONE
 
+## 1: call LiBis; 0: do not call LiBis
+RunLiBis=0
 
 [QSUB]
 Template=$MOABS_BIN/template_for_qsub
@@ -40,19 +42,31 @@ Template=$MOABS_BIN/template_for_qsub
 
 [MMAP]
 Path=$MOABS_BIN/bsmap
-p=16
 d=~/moabs/ref/mm9.fa
+r=0
+n=1
+S=1234
+p=16
 
 [BSEQC2]
 Path=$MOABS_BIN/bseqc2
-r=~/moabs/ref/mm9.fa
 l=100
+
+[LIBIS]
+Path=LiBis
+r=~/moabs/ref/mm9.fa
+p=16
+
+[PEFILTER]
+Path=$MOABS_BIN/pefilter
+t=4
 
 [MCALL]
 Path=$MOABS_BIN/mcall
 r=~/moabs/ref/mm9.fa
-p=4
+p=16
 
 [MCOMP]
 Path=$MOABS_BIN/mcomp
 reference=~/moabs/ref/mm9.fa
+p=16
