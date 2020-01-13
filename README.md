@@ -16,16 +16,6 @@ conda install moabs
 
 MOABS has been depolyed in https://usegalaxy.eu/root?tool_id=moabs for public usage.
 
-## To use LiBis
-
-LiBis aims to rescue unmapped reads in low input bisulfite experiments. See more at https://github.com/Dangertrip/LiBis
-
-In order to invoke LiBis as a module in MOABS, LiBis should be installed separately. I.e.,
-
-```
-conda install libis
-```
-
 ## Abstract
 
 MOABS seamlessly integrates alignment, methylation calling, identification of hypomethylation for one sample and differential methylation for multiple samples, and other downstream analysis.
