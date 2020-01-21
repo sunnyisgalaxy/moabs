@@ -1293,12 +1293,14 @@ int strandCombinedBed( string laneName, string ofile, string chromName, map<int,
 		string localSeq;
 		if(opts.reference != ""){
 			nn = dna[pos+2];
-			if(st == '-'){nn = rctable(dna[pos-2]);}
+			if(st == '-' && pos>1){nn = rctable(dna[pos-2]);}
 			stringstream localSeqss;
 
 			//localSeqss << dna[pos-2] << dna[pos-1] << 'C' << next << nn;
 			//this is error because when it is not CG methylation, that happened asymmetric.
-			localSeqss << dna[pos-2] << dna[pos-1] << dna[pos] << dna[pos+1] << dna[pos+2];
+			char cpos1=(pos>1)?dna[pos-2]:'N';
+			char cpos2=(pos>0)?dna[pos-1]:'N';
+			localSeqss << cpos1 << cpos2 << dna[pos] << dna[pos+1] << dna[pos+2];
 
 			localSeq = localSeqss.str();
 		}
