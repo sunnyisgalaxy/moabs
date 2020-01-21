@@ -62,6 +62,7 @@ Param::Param()
     nt3=0;
     pipe_out=0;
     verbose_level=1;
+    unsort=0;
 
 };
 

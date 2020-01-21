@@ -206,6 +206,7 @@ cerr<<"Usage:	bsmap [options]\n"
 		<<"       -o  <str>   output alignment file, BSP/SAM/BAM format, if omitted, the output will be written to STDOUT in SAM format.\n"
 		<<"\n  Options for alignment:\n"
 		<<"       -s  <int>   seed size, default=16(WGBS mode), 12(RRBS mode). min=8, max=16.\n"
+    <<"       -U  <int>   leave the output bam unsorted(reads will follow the order of the input fastq files), default="<<param.unsort<<"\n\n"		
 		<<"       -v  <float> if this value is between 0 and 1, it's interpreted as the mismatch rate w.r.t to the read length.\n"
 		<<"                   otherwise it's interpreted as the maximum number of mismatches allowed on a read, <="<<MAXSNPS<<".\n"
 		<<"                   example: -v 5 (max #mismatches = 5), -v 0.1 (max #mismatches = read_length * 10%)\n" 
@@ -346,6 +347,7 @@ int mGetOptions(int rgc, char *rgv[])
             case 'L': if(rgv[i][2]==0) param.max_readlen = atoi(rgv[++i]); else if(rgv[i][2]=='=') param.max_readlen = atoi(rgv[i]+3); else return i; break;
             case 'N': if(rgv[i][2]==0) param.N_mis=1; else return i; break;
             case 'S': if(rgv[i][2]==0) param.randseed = atoi(rgv[++i]);  else if(rgv[i][2]=='=') param.randseed = atoi(rgv[i]+3); else return i; break;	        
+            case 'U': if(rgv[i][2]==0) param.unsort=1; else return i; break; 
 			case 'h':usage();   //usage information
             default: return i;
 		}
@@ -614,7 +616,7 @@ int main(int argc, char *argv[]) {
 	if(param.pairend) cerr<<" pairs per sec."<<endl;
 	else cerr<<"s per sec."<<endl;
 	*/
-    if(param.out_sam==2&&param.pipe_out==1){
+    if(param.out_sam==2&&param.pipe_out==1&&param.unsort==0){
 		char sys_cmd[PATH_MAX+20], abs_bam_file[PATH_MAX];
 		char *res=realpath(out_align_file.c_str(), abs_bam_file);
 		if(res) {
