@@ -1,3 +1,15 @@
+# MOABS v1.3.8.5 @ 20200122
+
+Feature releases and minor bug fixes.
+
+1. Add LiBis to support low input bisufilte experiments.
+
+2. Add an option `-U` to `BSMAP` to turn off the automatic BAM sort.
+
+3. Bug fix for `MCALL` with out-of-range local seq.
+
+4. Fix warning message report for `bseqc2`.
+
 # MOABS v1.3.8.2 @ 20200108
 
 ## Two newly added features

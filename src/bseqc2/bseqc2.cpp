@@ -558,7 +558,8 @@ string errorstatus(double meth1ch, double meth2ch) {
 		if (status1>=0) {
 			status=(status1==0)?"OK":"Alert";
 			if (status2>=0) {
-				status+=","+(status2==0)?"OK":"Alert";
+				status+= ",";
+				status+=(status2==0)?"OK":"Alert";
 			}
 		} else {
 			if (status2>=0) {
@@ -679,6 +680,11 @@ int failureqc(ostream & out, double errorrate, bool pico, map< string, vector< d
 	if (maxmeth-minmeth>0.05) {
 		out << "We detected library error (failure): inconsistent average methylation level in four strands" << endl;
 		failure=1;
+	} else if (maxmeth-minmeth>0.02) {
+		out << "We detected library error (warning): relatively inconsistent average methylation level in four strands" << endl;
+		if (failure==0) {
+			failure=2;
+		}
 	}
 
 	if (pico) {
@@ -854,6 +860,11 @@ int failureqc(ostream & out, map< string, vector< double > > &methbsrstrand) {
 	if (maxmeth-minmeth>0.05) {
 		out << "We detected library error (failure): inconsistent average methylation level in four strands" << endl;
 		failure=1;
+	} else if (maxmeth-minmeth>0.02) {
+		out << "We detected library error (warning): relatively inconsistent average methylation level in four strands" << endl;
+		if (failure==0) {
+			failure=2;
+		}
 	}
 
 	if (failure==0) {

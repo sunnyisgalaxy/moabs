@@ -12,7 +12,7 @@ use Config::Simple;
 use threads;
 use threads::shared;
 
-my $ver = "1.3.8.4";
+my $ver = "1.3.8.5";
 my $usage=<<"USAGE";
         Program : $0
         Version : $ver
@@ -356,11 +356,11 @@ if($current_task eq "LiBis"){
 				} else {
 					my $orgqc = $bname . '.bseqc.txt';
 					my $consistentqc=strandQCconsistent($orgqc, $splitqc);
-					if ($consistentqc eq 0) {
-						print STDOUT "File $splitqc and $orgqc have consistent strand QC. $out to be merged ...\n";
-						$splitbam{$bname}=$out;
-					} else {
+					if ($consistentqc eq 1) {
 						print STDOUT "File $splitqc and $orgqc do not have consistent strand QC. $out will not be merged ...\n";
+					} else {
+						print STDOUT "File $splitqc and $orgqc have consistent (or, sufficiently) strand QC. $out to be merged ...\n";
+						$splitbam{$bname}=$out;
 					}
 				}
 			} else {
@@ -963,8 +963,11 @@ sub strandQCconsistent
 		if (exists $tagsplit{$tag}) {
 			my $diffmeth=$tagorg{$tag}-$tagsplit{$tag};
 			if ($diffmeth>0.05 or $diffmeth< -0.05) {
-				print STDOUT "Inconsitent tag: $tag with $diffmeth methylation difference ...\n";
+				print STDOUT "We detect inconsitent tag (error): $tag with $diffmeth methylation difference ...\n";
 				$exitcode=1;
+			} elsif ($diffmeth>0.02 or $diffmeth< -0.02) {
+				print STDOUT "We detect inconsitent tag (warning): $tag with $diffmeth methylation difference ...\n";
+				$exitcode=2;
 			}
 		}
 	}
