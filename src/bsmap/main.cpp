@@ -250,6 +250,7 @@ cerr<<"Usage:	bsmap [options]\n"
 		<<"       -H          do not print header information in SAM format output\n"
 		<<"       -V  [0,1,2] verbose level: 0=no message displayed (quiet mode); \n"
 		<<"                   1=major message (default); 2=detailed message.\n" 
+        <<"       -U          leave the output bam unsorted(reads will follow the order of the input fastq files), default=off\n"
 		<<"\n  Options for pair-end alignment:\n"
 		<<"       -b  <str>   query b file\n"
 		<<"       -m  <int>   minimal insert size allowed, default="<<param.min_insert<<"\n"
@@ -346,6 +347,7 @@ int mGetOptions(int rgc, char *rgv[])
             case 'L': if(rgv[i][2]==0) param.max_readlen = atoi(rgv[++i]); else if(rgv[i][2]=='=') param.max_readlen = atoi(rgv[i]+3); else return i; break;
             case 'N': if(rgv[i][2]==0) param.N_mis=1; else return i; break;
             case 'S': if(rgv[i][2]==0) param.randseed = atoi(rgv[++i]);  else if(rgv[i][2]=='=') param.randseed = atoi(rgv[i]+3); else return i; break;	        
+            case 'U': if(rgv[i][2]==0) param.unsort=1; else return i; break; 
 			case 'h':usage();   //usage information
             default: return i;
 		}
@@ -614,7 +616,7 @@ int main(int argc, char *argv[]) {
 	if(param.pairend) cerr<<" pairs per sec."<<endl;
 	else cerr<<"s per sec."<<endl;
 	*/
-    if(param.out_sam==2&&param.pipe_out==1){
+    if(param.out_sam==2&&param.pipe_out==1&&param.unsort==0){
 		char sys_cmd[PATH_MAX+20], abs_bam_file[PATH_MAX];
 		char *res=realpath(out_align_file.c_str(), abs_bam_file);
 		if(res) {
