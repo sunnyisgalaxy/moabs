@@ -61,9 +61,9 @@ public:
 
     //cache line 2
     bit32_t min_read_size, n_adapter, read_start, read_end; // 16 byte
-    bit32_t out_sam, out_ref, out_unmap, report_repeat_hits; //32 byte   
+    bit32_t out_sam, out_ref, out_unmap, report_repeat_hits, unsort; //32 byte   
     bit32_t sam_header, max_readlen; bit16_t *_T; //48 byte
-    int input_format, output_format, gz_input, gz_ref; // 64 byte    
+    int input_format, output_format, gz_input, gz_ref; // 64 byte   
 
     //cache line 3
     bit32_t max_dbseq_size, append_dbseq_size, total_ref_seq;
