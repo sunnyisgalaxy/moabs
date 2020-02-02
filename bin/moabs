@@ -12,7 +12,7 @@ use Config::Simple;
 use threads;
 use threads::shared;
 
-my $ver = "1.3.8.6";
+my $ver = "1.3.8.7";
 my $usage=<<"USAGE";
         Program : $0
         Version : $ver
@@ -234,7 +234,8 @@ if($current_task eq 'MMAP'){
 
 		foreach my $sample (keys %inputs){
 			foreach my $replicate (keys %{$inputs{$sample}}){
-				my @mates = values %{$inputs{$sample}{$replicate}};
+				my %h=%{$inputs{$sample}{$replicate}};
+				my @mates = @h{sort keys %h};
 				my $o = $ostem{$mates[0]} . '.bam';
 				#				if(scalar(keys %{$inputs{$sample}}) == 1) {
 				#		    		$o = $opt{'TASK.Label'}->[$sid] . '.bam';
@@ -249,7 +250,8 @@ if($current_task eq 'MMAP'){
 		my @jids = ();
 		foreach my $sample (keys %inputs){
 			foreach my $replicate (keys %{$inputs{$sample}}){
-				my @mates = values %{$inputs{$sample}{$replicate}};
+				my %h=%{$inputs{$sample}{$replicate}};
+				my @mates = @h{sort keys %h};
 				my $o = $ostem{$mates[0]} . '.bam';
 				#				if(scalar(keys %{$inputs{$sample}}) == 1) {
 				#		    		$o = $opt{'TASK.Label'}->[$sid] . '.bam';
@@ -274,7 +276,8 @@ if($current_task eq 'MMAP'){
 		my @thr = ();
 		foreach my $sample (keys %inputs){
 			foreach my $replicate (keys %{$inputs{$sample}}){
-				my @mates = values %{$inputs{$sample}{$replicate}};
+				my %h=%{$inputs{$sample}{$replicate}};
+				my @mates = @h{sort keys %h};
 				my $o = $ostem{$mates[0]} . '.bam';
 				#				if(scalar(keys %{$inputs{$sample}}) == 1) {
 				#		    		$o = $opt{'TASK.Label'}->[$sid] . '.bam';
@@ -341,7 +344,8 @@ if($current_task eq "LiBis"){
 
 	foreach my $sample (keys %inputs){
 		foreach my $replicate (keys %{$inputs{$sample}}){
-			my @mates = values %{$inputs{$sample}{$replicate}};
+			my %h=%{$inputs{$sample}{$replicate}};
+			my @mates = @h{sort keys %h};
 			next if (@mates<1); # Empty fastq can not run LiBis
 			my $bname = $ostem{$mates[0]};
 			my $in = $bname . '.bam';
