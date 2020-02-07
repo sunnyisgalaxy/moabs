@@ -1,3 +1,11 @@
+# MOABS v1.3.8.7 @ 20200207
+
+Feature release and bug fixes.
+
+1. Multiple `-A` is implemented to BSMAP in MOABS configuration file.
+2. Bug fix for the sorted FASTQ files to BSMAP.
+3. Bug fix for creating directory in BSeQC2.
+
 # MOABS v1.3.8.5 @ 20200122
 
 Feature releases and minor bug fixes.

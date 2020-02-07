@@ -65,7 +65,7 @@ int parse_options(int ac, const char ** av) {
 			cout << "Examples:" <<endl;
 			cout << "  " << av[0] << " -i in.bam -o result.txt -r hg38.fa" << endl;
 			cout << endl;
-			cout << "Date: 2020/01/08" << endl;
+			cout << "Date: 2020/02/07" << endl;
 			cout << "Authors: Jin Li <lijin.abc@gmail.com>" << endl;
 			exit(1);
 		}
@@ -725,6 +725,8 @@ int bseqc_pe() {
 	bool pico=false;
 	double errorrate=-1;
 	estimateprotocol(tagstats, pico, errorrate);
+
+	boost::filesystem::create_directories(boost::filesystem::absolute(opts.outfile).parent_path());
 	ofstream fout(opts.outfile);
 	if (pico) {
 		fout << "Pico library construction detected. 12 positive PE mapping pairs:\n(++,+-), (+-,++), (-+,--), (--,-+), (++,N), (N,++), (+-,N), (N,+-), (-+,N), (N,-+), (--,N), (N,--)" << endl;
@@ -742,7 +744,6 @@ int bseqc_pe() {
 	}
 	file2tagreadcounts(opts.infile, readtags, tagreadcounts);
 
-	boost::filesystem::create_directories(boost::filesystem::absolute(opts.outfile).parent_path());
 	string obname=boost::filesystem::path(opts.outfile).replace_extension().string();
 	string outtagrcfile=obname+"_mbias_pe.txt";
 	tagrc2file(outtagrcfile, tagreadcounts);
@@ -875,6 +876,7 @@ int failureqc(ostream & out, map< string, vector< double > > &methbsrstrand) {
 
 
 int bseqc_se() {
+	boost::filesystem::create_directories(boost::filesystem::absolute(opts.outfile).parent_path());
 	ofstream fout(opts.outfile);
 	fout << "Single-end mapping detected. Strand QC will be examined only." << endl;
 
@@ -888,9 +890,7 @@ int bseqc_se() {
 	}
 	file2tagreadcounts(opts.infile, tagreadcounts);
 
-	boost::filesystem::create_directories(boost::filesystem::absolute(opts.outfile).parent_path());
 	string obname=boost::filesystem::path(opts.outfile).replace_extension().string();
-
 	string outtagrcstrandfile=obname+"_mbias_strand.txt";
 	tagrcstrand2file(outtagrcstrandfile, tagreadcounts);
 	string outtagrcstrandplot=obname+"_mbias_strand.pdf";
