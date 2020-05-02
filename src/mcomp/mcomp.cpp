@@ -3739,13 +3739,13 @@ void isPredefinedRegionDmr(string regFile, string fileName, int i, int j, map <i
     ofstream dmrStat;
     dmrStat.open((dmrName + ".stat").c_str(), ios_base::out);
 
-    dmrStat    << "nCpgsInFeature" <<"\t"<< "meanRatioOfCpgsInFeatureA" <<"\t"<< "meanRatioOfCpgsInFeatureB" <<"\t"<< "meanRatioOfCpgsInFeatureB-meanRatioOfCpgsInFeatureA"
+    dmrStat    << "nCpgsInFeature" <<"\t"<< "meanS1RatioOfCpgsInFeature" <<"\t"<< "meanS2RatioOfCpgsInFeature" <<"\t"<< "meanRatioOfCpgsInS2-meanRatioOfCpgsInS1"
 	<<"\t"	<< "meanCDifOfCpgsInFeature"
 	<<"\t"  << "nDmcsInFeatureM1" <<"\t"<< "nHypoDmcsInFeatureM1" <<"\t"<< "nHyperDmcsInFeatureM1"
 	<<"\t"  << "nDmcsInFeatureM1/nCpgsInFeature" <<"\t"<< "nHypoDmcsInFeatureM1/nCpgsInFeature" <<"\t"<< "nHyperDmcsInFeatureM1/nCpgsInFeature" <<"\t"<< "nHypoDmcsInFeatureM1/nDmcsInFeatureM1"
 	<<"\t"  << "nDmcsInFeatureM2" <<"\t"<< "nHypoDmcsInFeatureM2" <<"\t"<< "nHyperDmcsInFeatureM2"
 	<<"\t"  << "nDmcsInFeatureM2/nCpgsInFeature" <<"\t"<< "nHypoDmcsInFeatureM2/nCpgsInFeature" <<"\t"<< "nHyperDmcsInFeatureM2/nCpgsInFeature" <<"\t"<< "nHypoDmcsInFeatureM2/nDmcsInFeatureM2"
-	<<"\t"  << "nRegionsInFeature" <<"\t"<< "meanRatioOfRegionsInFeatureA" <<"\t"<< "meanRatioOfRegionsInFeatureB" <<"\t"<< "meanRatioOfRegionsInFeatureB - meanRatioOfRegionsInFeatureA" <<endl;
+	<<"\t"  << "nRegionsInFeature" <<"\t"<< "meanS1RatioOfRegionsInFeature" <<"\t"<< "meanS2RatioOfRegionsInFeature" <<"\t"<< "meanRatioOfRegionsInS2 - meanRatioOfRegionsInS1" <<endl;
 
     dmrStat    << nCpgsInFeature <<"\t"<< meanS1RatioOfCpgsInFeature <<"\t"<< meanS2RatioOfCpgsInFeature <<"\t"<< meanS2RatioOfCpgsInFeature - meanS1RatioOfCpgsInFeature
     <<"\t"	<< meanCDifOfCpgsInFeature / nCpgsInFeature
