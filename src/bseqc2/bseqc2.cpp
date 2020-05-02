@@ -135,13 +135,24 @@ bool estimatelayout(string & infile) {
 	return layoutpe;
 }
 
+string fastaheader2id(const string & header) {
+	string id;
+	if (header.empty() || header[0]!='>') return id;
+	vector< string > fields;
+	boost::split(fields, header, boost::is_any_of(" \t")); // space before possible descriptions
+	if (!fields.empty()) {
+		id=fields[0].substr(1);
+	}
+	return id;
+}
+
 int refbychr(string infile, string chr, string & ref)
 {
 	ifstream fin(infile);
 	string line;
 	while ((fin.good() && !fin.eof()) && getline(fin, line)) {
 		if (line.empty()) continue;
-		if (line==">"+chr) {
+		if (line[0]=='>' && fastaheader2id(line)==chr) {
 			while ((fin.good() && !fin.eof()) && getline(fin, line)) {
 				if (line.empty()) continue;
 				if (line[0]=='>') break;
