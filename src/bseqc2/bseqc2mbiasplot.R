@@ -1,5 +1,6 @@
 # vim: set noexpandtab tabstop=2:
 
+pdf(NULL)
 suppressPackageStartupMessages(library(ggplot2))
 suppressPackageStartupMessages(library(gridExtra))
 plotstrand=function() {
