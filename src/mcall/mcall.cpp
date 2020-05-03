@@ -58,7 +58,16 @@ string itos(int i)
     return s.str();
 }
 
-
+string fastaheader2id(const string & header) {
+	string id;
+	if (header.empty() || header[0]!='>') return id;
+	vector< string > fields;
+	boost::split(fields, header, boost::is_any_of(" \t")); // space before possible descriptions
+	if (!fields.empty()) {
+		id=fields[0].substr(1);
+	}
+	return id;
+}
 
 //read DNA file once and create map chrom -> sequence takes about 2.5GB for mm9.
 //to save some RAM is why I do it by chrom.
@@ -104,7 +113,7 @@ void dnaByChr(string FILE_NAME, string chrom, string & fatable, vector <int> & n
 
 			fatable += line;
 		}
-		if( found == 0 && line == ">" + chrom ){ //start reading
+		if( found == 0 && line[0]=='>' && fastaheader2id(line)==chrom ){ //start reading
 			found = 1;
 		}
 	}

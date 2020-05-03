@@ -1,9 +1,21 @@
+# MOABS v1.3.8.8 @ 20200502
+
+Feature release and bug fixes.
+
+1. Support a reference FASTA header with additional descriptions in MCALL and BSeQC2.
+
+2. Remove `Rplots.pdf` in BSeQC methyaltion bias plots.
+
+3. Refine the output header in statistics file of the `-f|--predefinedFeature` option in MCOMP.
+
 # MOABS v1.3.8.7 @ 20200207
 
 Feature release and bug fixes.
 
 1. Multiple `-A` is implemented to BSMAP in MOABS configuration file.
+
 2. Bug fix for the sorted FASTQ files to BSMAP.
+
 3. Bug fix for creating directory in BSeQC2.
 
 # MOABS v1.3.8.5 @ 20200122
