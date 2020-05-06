@@ -744,7 +744,7 @@ int bseqc_pe() {
 	} else {
 		fout << "Traditional library construction detected. 6 positive PE mapping pairs:\n(++,+-), (-+,--), (++,N), (N,+-), (-+,N), (N,--)" << endl;
 	}
-	if (errorrate>0) {
+	if (errorrate>=0) {
 		fout << "Estimated error rate: " << errorrate << ", positive rate: " << 1-errorrate << endl;
 	}
 
@@ -843,10 +843,19 @@ int methbsr2file(ostream & out, map< string, int > & tagstats, map< string, vect
 	return 0;
 }
 
-int failureqc(ostream & out, map< string, vector< double > > &methbsrstrand) {
+int failureqc_se(ostream & out, double errorrate, bool pico, map< string, vector< double > > &methbsrstrand) {
 	int failure=0; // 0: pass, 1: failure, 2: warning
 
+	if (errorrate>0.05) {
+		out << "We detected library error (failure): too high of the mapping error rate " << errorrate << endl;
+		failure=1;
+	} else if (errorrate>0.02) {
+		out << "We detected library error (warning): a little high of the mapping error rate " << errorrate << endl;
+		failure=2;
+	}
+
 	for (map< string, vector< double > > :: iterator it=methbsrstrand.begin(); it!=methbsrstrand.end(); ++it) {
+		if (!pico && (it->first=="+-" || it->first=="--")) continue; // traditional library should not check +- and --
 		double bcr=1.0-it->second[1];
 		if (bcr<0.95) {
 			out << "We detected library error (failure): too low of the bisulfite conversion rate " << bcr << " for strand " << it->first << endl;
@@ -862,6 +871,7 @@ int failureqc(ostream & out, map< string, vector< double > > &methbsrstrand) {
 	double minmeth=1.0;
 	double maxmeth=0;
 	for (map< string, vector< double > > :: iterator it=methbsrstrand.begin(); it!=methbsrstrand.end(); ++it) {
+		if (!pico && (it->first=="+-" || it->first=="--")) continue; // traditional library should not check +- and --
 		if (it->second[0]>maxmeth) {
 			maxmeth=it->second[0];
 		}
@@ -870,10 +880,18 @@ int failureqc(ostream & out, map< string, vector< double > > &methbsrstrand) {
 		}
 	}
 	if (maxmeth-minmeth>0.05) {
-		out << "We detected library error (failure): inconsistent average methylation level in four strands" << endl;
+		if (pico) {
+			out << "We detected library error (failure): inconsistent average methylation level in four strands" << endl;
+		} else {
+			out << "We detected library error (failure): inconsistent average methylation level in two strands" << endl;
+		}
 		failure=1;
 	} else if (maxmeth-minmeth>0.02) {
-		out << "We detected library error (warning): relatively inconsistent average methylation level in four strands" << endl;
+		if (pico) {
+			out << "We detected library error (warning): relatively inconsistent average methylation level in four strands" << endl;
+		} else {
+			out << "We detected library error (warning): relatively inconsistent average methylation level in two strands" << endl;
+		}
 		if (failure==0) {
 			failure=2;
 		}
@@ -885,6 +903,45 @@ int failureqc(ostream & out, map< string, vector< double > > &methbsrstrand) {
 	return failure;
 }
 
+int estimateprotocol_se(map< string, int > & tagstats, bool & pico, double & errorrate) {
+	pico=false;
+	if ((tagstats.end()!=tagstats.find("++")
+				&& tagstats.end()!=tagstats.find("+-")
+				&& tagstats["++"]<10*tagstats["+-"]
+				&& tagstats["+-"]<10*tagstats["++"])
+			|| (tagstats.end()!=tagstats.find("-+")
+				&& tagstats.end()!=tagstats.find("--")
+				&& tagstats["-+"]<10*tagstats["--"]
+				&& tagstats["--"]<10*tagstats["-+"]
+				))
+	{
+		pico=true;
+	}
+
+	int total=0;
+	for(map< string, int > :: iterator it=tagstats.begin(); it!=tagstats.end(); ++it) {
+		total+=it->second;
+	}
+	if (total==0) return 1;
+	// error rate:
+	// 1. pico library
+	//   four valid strands: ++, +-, -+, --
+	//   no more evidence to exclude any of 4 strands
+	// 2. traditional library
+	//   two valid strands: ++ and -+
+	if (! pico) {
+		int postivenumber=0;
+		vector < string > tradtags {"++", "-+"};
+		for (string &tag : tradtags) {
+			map< string, int > :: iterator it=tagstats.find(tag);
+			if (tagstats.end()!=it) {
+				postivenumber+=it->second;
+			}
+		}
+		errorrate=1.0-1.0*postivenumber/total;
+	}
+	return 0;
+}
 
 int bseqc_se() {
 	boost::filesystem::create_directories(boost::filesystem::absolute(opts.outfile).parent_path());
@@ -893,6 +950,19 @@ int bseqc_se() {
 
 	map< string, int > tagstats; // tag->number
 	file2tagstats(opts.infile, tagstats);
+
+	bool pico=false;
+	double errorrate=-1;
+	estimateprotocol_se(tagstats, pico, errorrate);
+
+	if (pico) {
+		fout << "Pico library construction detected. 4 strands mapping are positive: ++, +-, -+, --" << endl;
+	} else {
+		fout << "Traditional library construction detected. 2 strands are positive: ++ and -+" << endl;
+	}
+	if (errorrate>=0) {
+		fout << "Estimated error rate: " << errorrate << ", positive rate: " << 1-errorrate << endl;
+	}
 
 	map< string, vector< vector< int > > > tagreadcounts; // tag->[CG_C, CG_T, CH_C, CH_T]=[[c1,...,clength],[t1,...,tlength]]
 	for (map< string, int > :: iterator it=tagstats.begin(); tagstats.end()!=it; ++it) {
@@ -911,7 +981,7 @@ int bseqc_se() {
 	tagrcs2methbsrstrand(tagreadcounts, methbsrstrand);
 
 	methbsr2file(fout, tagstats, methbsrstrand);
-	int exit_code=failureqc(fout, methbsrstrand);
+	int exit_code=failureqc_se(fout, errorrate, pico, methbsrstrand);
 	return exit_code;
 }
 
