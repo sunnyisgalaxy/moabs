@@ -12,7 +12,7 @@ use Config::Simple;
 use threads;
 use threads::shared;
 
-my $ver = "1.3.8.9";
+my $ver = "1.3.9.0";
 my $usage=<<"USAGE";
         Program : $0
         Version : $ver
@@ -315,6 +315,41 @@ if($current_task eq "BSEQC2"){
 			my $out = $ostem{$mates[0]} . '.bseqc.txt';
 			my $retcode=startBSEQC2($in, $out);
 			if ($retcode eq 1) {
+				## @20200506
+				## Do not skip downstream analysis
+				# print STDOUT "File $out failed in BSeQC2 ... skipped for downstream analysis ...\n";
+				# delete $inputs{$sample}{$replicate};
+				# if (!%{$inputs{$sample}}) {
+				# 	delete $inputs{$sample};
+				# }
+				print STDOUT "File $out failed in BSeQC2 ... but continue the downstream analysis ...\n";
+			} else {
+				print STDOUT "File $out passed the BSeQC2 ... retained for downstream analysis ...\n";
+			}
+		}
+	}
+
+	print STDOUT "Finished the $current_task\n";
+	print STDOUT "################################\n";
+	$current_task='PEFilter';
+}
+
+if($current_task eq "PEFilter"){
+	print STDOUT "\n################################\n";
+	print STDOUT "Started the $current_task\n";
+
+	foreach my $sample (keys %inputs){
+		foreach my $replicate (keys %{$inputs{$sample}}){
+			my @mates = values %{$inputs{$sample}{$replicate}};
+			my $bname = $ostem{$mates[0]};
+			my $in = $bname . '.bam';
+			my $out = $bname . '.pe.bam';
+			startPEFILTER($in, $out);
+
+			print STDOUT "Started the BSEQC2 on the PEfilter BAM\n";
+			my $out = $bname . '.pefilter.bseqc.txt';
+			my $retcode=startBSEQC2($in, $out);
+			if ($retcode eq 1) {
 				print STDOUT "File $out failed in BSeQC2 ... skipped for downstream analysis ...\n";
 				delete $inputs{$sample}{$replicate};
 				if (!%{$inputs{$sample}}) {
@@ -323,6 +358,7 @@ if($current_task eq "BSEQC2"){
 			} else {
 				print STDOUT "File $out passed the BSeQC2 ... retained for downstream analysis ...\n";
 			}
+			print STDOUT "Finished the BSEQC2 on the PEfilter BAM\n";
 		}
 	}
 
@@ -332,11 +368,9 @@ if($current_task eq "BSEQC2"){
 	if ((exists $opt{'TASK.RunLiBis'}) && ($opt{'TASK.RunLiBis'} eq "1")){
 		$current_task='LiBis';
 	} else {
-		$current_task='PEFilter';
+		$current_task='MCALL';
 	}
 }
-
-my %splitbam=(); # split bam from LiBis
 
 if($current_task eq "LiBis"){
 	print STDOUT "\n################################\n";
@@ -364,7 +398,7 @@ if($current_task eq "LiBis"){
 						print STDOUT "File $splitqc and $orgqc do not have consistent strand QC. $out will not be merged ...\n";
 					} else {
 						print STDOUT "File $splitqc and $orgqc have consistent (or, sufficiently) strand QC. $out to be merged ...\n";
-						$splitbam{$bname}=$out;
+						mergesplitBAM($in, $out); ## Merge split BAM
 					}
 				}
 			} else {
@@ -375,32 +409,8 @@ if($current_task eq "LiBis"){
 
 	print STDOUT "Finished the $current_task\n";
 	print STDOUT "################################\n";
-	$current_task='PEFilter';
-}
-
-if($current_task eq "PEFilter"){
-	print STDOUT "\n################################\n";
-	print STDOUT "Started the $current_task\n";
-
-	foreach my $sample (keys %inputs){
-		foreach my $replicate (keys %{$inputs{$sample}}){
-			my @mates = values %{$inputs{$sample}{$replicate}};
-			my $bname = $ostem{$mates[0]};
-			my $in = $bname . '.bam';
-			my $out = $bname . '.pe.bam';
-			startPEFILTER($in, $out);
-
-			if (exists $splitbam{$bname}) {
-				mergesplitBAM($in, $splitbam{$bname});
-			}
-		}
-	}
-
-	print STDOUT "Finished the $current_task\n";
-	print STDOUT "################################\n";
 	$current_task = 'MCALL';
 }
-
 
 ##print "NOW MMAP is done\n";
 
@@ -468,8 +478,6 @@ if($current_task eq 'MCALL2'){
 }
 
 ##print "Now MCALL2 is done\n";
-
-
 
 
 ##print "Start MMERGE program\n";
