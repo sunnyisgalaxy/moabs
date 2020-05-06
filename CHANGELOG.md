@@ -1,3 +1,7 @@
+# MOABS v1.3.8.9 @ 20200502
+
+Bug fix: enable quality control for single-end mapping in BSeQC2.
+
 # MOABS v1.3.8.8 @ 20200502
 
 Feature release and bug fixes.
