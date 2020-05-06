@@ -347,7 +347,7 @@ if($current_task eq "PEFilter"){
 			startPEFILTER($in, $out);
 
 			print STDOUT "Started the BSEQC2 on the PEfilter BAM\n";
-			my $out = $bname . '.pefilter.bseqc.txt';
+			$out = $bname . '.pefilter.bseqc.txt';
 			my $retcode=startBSEQC2($in, $out);
 			if ($retcode eq 1) {
 				print STDOUT "File $out failed in BSeQC2 ... skipped for downstream analysis ...\n";
