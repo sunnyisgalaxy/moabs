@@ -1,4 +1,8 @@
-# MOABS v1.3.8.9 @ 20200502
+# MOABS v1.3.9.0 @ 20200506
+
+New feature: add a second quality control for the PEFilter BAM.
+
+# MOABS v1.3.8.9 @ 20200505
 
 Bug fix: enable quality control for single-end mapping in BSeQC2.
 
