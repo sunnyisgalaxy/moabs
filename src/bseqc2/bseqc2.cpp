@@ -65,7 +65,7 @@ int parse_options(int ac, const char ** av) {
 			cout << "Examples:" <<endl;
 			cout << "  " << av[0] << " -i in.bam -o result.txt -r hg38.fa" << endl;
 			cout << endl;
-			cout << "Date: 2020/05/06" << endl;
+			cout << "Date: 2020/05/17" << endl;
 			cout << "Authors: Jin Li <lijin.abc@gmail.com>" << endl;
 			exit(1);
 		}
@@ -843,7 +843,7 @@ int methbsr2file(ostream & out, map< string, int > & tagstats, map< string, vect
 	return 0;
 }
 
-int failureqc_se(ostream & out, double errorrate, bool pico, map< string, vector< double > > &methbsrstrand) {
+int failureqc_se(ostream & out, double errorrate, int protocol, map< string, vector< double > > &methbsrstrand) {
 	int failure=0; // 0: pass, 1: failure, 2: warning
 
 	if (errorrate>0.05) {
@@ -855,7 +855,8 @@ int failureqc_se(ostream & out, double errorrate, bool pico, map< string, vector
 	}
 
 	for (map< string, vector< double > > :: iterator it=methbsrstrand.begin(); it!=methbsrstrand.end(); ++it) {
-		if (!pico && (it->first=="+-" || it->first=="--")) continue; // traditional library should not check +- and --
+		if (protocol==0 && (it->first=="+-" || it->first=="--")) continue; // traditional library by shotgun should not check +- and --
+		if (protocol==1 && (it->first=="++" || it->first=="-+")) continue; // traditional library by Nextera transposase should not check ++ and -+
 		double bcr=1.0-it->second[1];
 		if (bcr<0.95) {
 			out << "We detected library error (failure): too low of the bisulfite conversion rate " << bcr << " for strand " << it->first << endl;
@@ -871,7 +872,8 @@ int failureqc_se(ostream & out, double errorrate, bool pico, map< string, vector
 	double minmeth=1.0;
 	double maxmeth=0;
 	for (map< string, vector< double > > :: iterator it=methbsrstrand.begin(); it!=methbsrstrand.end(); ++it) {
-		if (!pico && (it->first=="+-" || it->first=="--")) continue; // traditional library should not check +- and --
+		if (protocol==0 && (it->first=="+-" || it->first=="--")) continue; // traditional library by shotgun should not check +- and --
+		if (protocol==1 && (it->first=="++" || it->first=="-+")) continue; // traditional library by Nextera transposase should not check ++ and -+
 		if (it->second[0]>maxmeth) {
 			maxmeth=it->second[0];
 		}
@@ -880,14 +882,14 @@ int failureqc_se(ostream & out, double errorrate, bool pico, map< string, vector
 		}
 	}
 	if (maxmeth-minmeth>0.05) {
-		if (pico) {
+		if (protocol==2) {
 			out << "We detected library error (failure): inconsistent average methylation level in four strands" << endl;
 		} else {
 			out << "We detected library error (failure): inconsistent average methylation level in two strands" << endl;
 		}
 		failure=1;
 	} else if (maxmeth-minmeth>0.02) {
-		if (pico) {
+		if (protocol==2) {
 			out << "We detected library error (warning): relatively inconsistent average methylation level in four strands" << endl;
 		} else {
 			out << "We detected library error (warning): relatively inconsistent average methylation level in two strands" << endl;
@@ -903,8 +905,11 @@ int failureqc_se(ostream & out, double errorrate, bool pico, map< string, vector
 	return failure;
 }
 
-int estimateprotocol_se(map< string, int > & tagstats, bool & pico, double & errorrate) {
-	pico=false;
+int estimateprotocol_se(map< string, int > & tagstats, int & protocol, double & errorrate) {
+	// 0: traditional library based on shotgun approach
+	// 1: traditional library based on Nextera transposase approach
+	// 2: pico
+	protocol=0;
 	if ((tagstats.end()!=tagstats.find("++")
 				&& tagstats.end()!=tagstats.find("+-")
 				&& tagstats["++"]<10*tagstats["+-"]
@@ -915,7 +920,16 @@ int estimateprotocol_se(map< string, int > & tagstats, bool & pico, double & err
 				&& tagstats["--"]<10*tagstats["-+"]
 				))
 	{
-		pico=true;
+		protocol=2;
+	} else if ((tagstats.end()!=tagstats.find("++")
+				&& tagstats.end()!=tagstats.find("+-")
+				&& tagstats["+-"]>tagstats["++"]
+			|| (tagstats.end()!=tagstats.find("-+")
+				&& tagstats.end()!=tagstats.find("--")
+				&& tagstats["--"]>tagstats["-+"]
+				))
+	{
+		protocol=1;
 	}
 
 	int total=0;
@@ -928,10 +942,21 @@ int estimateprotocol_se(map< string, int > & tagstats, bool & pico, double & err
 	//   four valid strands: ++, +-, -+, --
 	//   no more evidence to exclude any of 4 strands
 	// 2. traditional library
-	//   two valid strands: ++ and -+
-	if (! pico) {
+	//   Two valid strands for shotgun approach: ++ and -+
+	//   Two valid strands for Nextera transposase: +- and --
+	if (protocol==0) { // shotgun
 		int postivenumber=0;
 		vector < string > tradtags {"++", "-+"};
+		for (string &tag : tradtags) {
+			map< string, int > :: iterator it=tagstats.find(tag);
+			if (tagstats.end()!=it) {
+				postivenumber+=it->second;
+			}
+		}
+		errorrate=1.0-1.0*postivenumber/total;
+	} else if (protocol==1) { // Nextera transposase
+		int postivenumber=0;
+		vector < string > tradtags {"+-", "--"};
 		for (string &tag : tradtags) {
 			map< string, int > :: iterator it=tagstats.find(tag);
 			if (tagstats.end()!=it) {
@@ -951,14 +976,16 @@ int bseqc_se() {
 	map< string, int > tagstats; // tag->number
 	file2tagstats(opts.infile, tagstats);
 
-	bool pico=false;
+	int protocol=0;
 	double errorrate=-1;
-	estimateprotocol_se(tagstats, pico, errorrate);
+	estimateprotocol_se(tagstats, protocol, errorrate);
 
-	if (pico) {
+	if (protocol==2) {
 		fout << "Pico library construction detected. 4 strands mapping are positive: ++, +-, -+, --" << endl;
-	} else {
-		fout << "Traditional library construction detected. 2 strands are positive: ++ and -+" << endl;
+	} else if (protocol==0) {
+		fout << "Traditional library construction based on shotgun approach detected. 2 strands are positive: ++ and -+" << endl;
+	} else if (protocol==1) {
+		fout << "Traditional library construction based on Nextera transposase approach detected. 2 strands are positive: +- and --" << endl;
 	}
 	if (errorrate>=0) {
 		fout << "Estimated error rate: " << errorrate << ", positive rate: " << 1-errorrate << endl;
@@ -981,7 +1008,7 @@ int bseqc_se() {
 	tagrcs2methbsrstrand(tagreadcounts, methbsrstrand);
 
 	methbsr2file(fout, tagstats, methbsrstrand);
-	int exit_code=failureqc_se(fout, errorrate, pico, methbsrstrand);
+	int exit_code=failureqc_se(fout, errorrate, protocol, methbsrstrand);
 	return exit_code;
 }
 
