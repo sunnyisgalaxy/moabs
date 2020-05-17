@@ -485,8 +485,12 @@ int estimateprotocol(map< string, int > & tagstats, int & protocol, double & err
 				&& tagstats["+-,++"]>tagstats["++,+-"])
 			|| (tagstats.end()!=tagstats.find("-+,--")
 				&& tagstats.end()!=tagstats.find("--,-+")
-				&& tagstats["--,-+"]>tagstats["-+,--"]
-				))
+				&& tagstats["--,-+"]>tagstats["-+,--"])
+			|| (tagstats.end()!=tagstats.find("+-,++")
+				&& tagstats.end()==tagstats.find("++,+-"))
+			|| (tagstats.end()!=tagstats.find("--,-+")
+				&& tagstats.end()==tagstats.find("-+,--"))
+			)
 	{
 		protocol=1;
 	}
@@ -969,8 +973,12 @@ int estimateprotocol_se(map< string, int > & tagstats, int & protocol, double & 
 				&& tagstats["+-"]>tagstats["++"])
 			|| (tagstats.end()!=tagstats.find("-+")
 				&& tagstats.end()!=tagstats.find("--")
-				&& tagstats["--"]>tagstats["-+"]
-				))
+				&& tagstats["--"]>tagstats["-+"])
+			|| (tagstats.end()!=tagstats.find("+-")
+				&& tagstats.end()==tagstats.find("++"))
+			|| (tagstats.end()!=tagstats.find("--")
+				&& tagstats.end()==tagstats.find("-+"))
+			)
 	{
 		protocol=1;
 	}
