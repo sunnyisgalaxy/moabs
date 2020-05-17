@@ -966,7 +966,7 @@ int estimateprotocol_se(map< string, int > & tagstats, int & protocol, double & 
 		protocol=2;
 	} else if ((tagstats.end()!=tagstats.find("++")
 				&& tagstats.end()!=tagstats.find("+-")
-				&& tagstats["+-"]>tagstats["++"]
+				&& tagstats["+-"]>tagstats["++"])
 			|| (tagstats.end()!=tagstats.find("-+")
 				&& tagstats.end()!=tagstats.find("--")
 				&& tagstats["--"]>tagstats["-+"]
