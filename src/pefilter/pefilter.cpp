@@ -349,8 +349,12 @@ void estimatelibtype(string & infile) {
 					&& tagstatstop["+-,++"]>tagstatstop["++,+-"])
 				|| (tagstatstop.end()!=tagstatstop.find("-+,--")
 					&& tagstatstop.end()!=tagstatstop.find("--,-+")
-					&& tagstatstop["--,-+"]>tagstatstop["-+,--"]
-					))
+					&& tagstatstop["--,-+"]>tagstatstop["-+,--"])
+				|| (tagstatstop.end()!=tagstatstop.find("+-,++")
+					&& tagstatstop.end()==tagstatstop.find("++,+-"))
+				|| (tagstatstop.end()!=tagstatstop.find("--,-+")
+					&& tagstatstop.end()==tagstatstop.find("-+,--"))
+				)
 		{
 			detectprotocol=1;
 		}
