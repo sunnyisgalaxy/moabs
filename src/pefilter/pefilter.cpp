@@ -16,7 +16,7 @@ class Opts {
 	public:
 		string infile;
 		string outfile;
-		bool pico;
+		int protocol;
 		bool statsonly;
 		int numthreads;
 		set< string > validtags;
@@ -24,14 +24,14 @@ class Opts {
 		Opts():
 			infile("")
 			, outfile("")
-			, pico(false)
+			, protocol(0)
 			, statsonly(false)
 			, numthreads(1) { }
 	public:
 		void out() {
 			cout << "infile: " << infile << endl;
 			cout << "outfile: " << outfile << endl;
-			cout << "pico: " << std::boolalpha << pico << endl;
+			cout << "protocol: " << protocol << endl;
 			cout << "statsonly: " << std::boolalpha << statsonly << endl;
 			cout << "numthreads: " << numthreads << endl;
 			cout << "validtags:";
@@ -50,7 +50,7 @@ int parse_options(int ac, const char ** av) {
 			("help,h", "Produce help message.")
 			("infile,i", value<string>()->default_value(""), "Input BAM file. It should be indexed.")
 			("outfile,o", value<string>()->default_value(""), "Output BAM file. To save the filtered BAM file.")
-			("pico,p", "Pico library preparation protocol. Default: traditional protocol.")
+			("protocol,p", "Library preparation protocol. 0: traditional library protocol by shotgun approach; 1: traditional library protocol by Nextera transposase approach; 2: Pico. Default: traditional protocol by shotgun.")
 			("statsonly,s", "Report PE tag statistics only but not generate filtered BAM file. The statitics will show in stdout.")
 			("numthreads,t", value<int>()->default_value(1), "Number of threads. Ensure enough memory for many threads. One thread may occupy up to 5GB memory for a 50GB BAM file. Default: 1.")
 			("validtag,d", value< vector< string > >()->multitoken(), "Valid tag pair in the format as `tag1,tag2` for two ends. `N` means mapping not found. Multiple tag pairs can be specified. For example, `-d ++,+- -d -+,--`")
@@ -66,7 +66,7 @@ int parse_options(int ac, const char ** av) {
 			cout << "  " << av[0] << " -i in.bam -o out.bam -t 4" << endl;
 			cout << "  " << av[0] << " -i in.bam -s -t 4" << endl;
 			cout << endl;
-			cout << "Date: 2020/01/08" << endl;
+			cout << "Date: 2020/05/17" << endl;
 			cout << "Authors: Jin Li <lijin.abc@gmail.com>" << endl;
 			exit(1);
 		}
@@ -79,8 +79,8 @@ int parse_options(int ac, const char ** av) {
 				opts.outfile=vm[k].as<string>();
 			} else if( k == "numthreads"){
 				opts.numthreads=vm[k].as<int>();
-			} else if( k == "pico"){
-				opts.pico=true;
+			} else if( k == "protocol"){
+				opts.protocol=vm[k].as<int>();
 			} else if( k == "statsonly"){
 				opts.statsonly=true;
 			} else if( k == "validtag"){
@@ -239,13 +239,13 @@ int petagstats(string bamfile)
 	return 0;
 }
 
-void calpostiverate(map< string, int > & tagstats, bool pico, int & total, int & postivenumber) {
+void calpostiverate(map< string, int > & tagstats, int protocol, int & total, int & postivenumber) {
 	total=0;
 	postivenumber=0;
 	for(map< string, int > :: iterator it=tagstats.begin(); it!=tagstats.end(); ++it) {
 		total += it->second;
 	}
-	if (pico) {
+	if (protocol==2) {
 		vector < string > picotags {
 			"++,+-", "+-,++", "-+,--", "--,-+"
 				, "++,N", "N,++", "+-,N", "N,+-"
@@ -257,11 +257,23 @@ void calpostiverate(map< string, int > & tagstats, bool pico, int & total, int &
 				postivenumber+=it->second;
 			}
 		}
-	} else {
+	} else if (protocol==0) {
 		vector < string > tradtags {
 			"++,+-", "-+,--"
 				, "++,N", "N,+-"
 				, "-+,N", "N,--"
+		};
+		for (string &tag : tradtags) {
+			map< string, int > :: iterator it=tagstats.find(tag);
+			if (tagstats.end()!=it) {
+				postivenumber+=it->second;
+			}
+		}
+	} else if (protocol==1) {
+		vector < string > tradtags {
+			"+-,++", "--,-+"
+				, "N,++", "+-,N"
+				, "N,-+", "--,N"
 		};
 		for (string &tag : tradtags) {
 			map< string, int > :: iterator it=tagstats.find(tag);
@@ -320,7 +332,7 @@ void estimatelibtype(string & infile) {
 		}
 		read2tagtop.clear();
 
-		bool detectpico=false;
+		int detectprotocol=0;
 		if ((tagstatstop.end()!=tagstatstop.find("++,+-")
 					&& tagstatstop.end()!=tagstatstop.find("+-,++")
 					&& tagstatstop["++,+-"]<10*tagstatstop["+-,++"]
@@ -331,7 +343,16 @@ void estimatelibtype(string & infile) {
 					&& tagstatstop["--,-+"]<10*tagstatstop["-+,--"]
 					))
 		{
-			detectpico=true;
+			detectprotocol=2;
+		} else if ((tagstatstop.end()!=tagstatstop.find("++,+-")
+					&& tagstatstop.end()!=tagstatstop.find("+-,++")
+					&& tagstatstop["+-,++"]>tagstatstop["++,+-"])
+				|| (tagstatstop.end()!=tagstatstop.find("-+,--")
+					&& tagstatstop.end()!=tagstatstop.find("--,-+")
+					&& tagstatstop["--,-+"]>tagstatstop["-+,--"]
+					))
+		{
+			detectprotocol=1;
 		}
 
 		cout << "Number of PE tags in first 1 million mappings:" << endl;
@@ -341,31 +362,33 @@ void estimatelibtype(string & infile) {
 
 		int total=0;
 		int postivenumber=0;
-		calpostiverate(tagstatstop, detectpico, total, postivenumber);
+		calpostiverate(tagstatstop, detectprotocol, total, postivenumber);
 		cout << "total reads: " << total << "; positive reads: " << postivenumber << endl;
 		if (total>0) {
 			double rate=1.0*postivenumber/total;
 			cout << "Positive rate: " << rate << endl;
 		}
 
-		if (detectpico) {
+		if (detectprotocol==2) {
 			cout << "Pico library construction detected. Retain 12 PE mapping pairs:\n(++,+-), (+-,++), (-+,--), (--,-+), (++,N), (N,++), (+-,N), (N,+-), (-+,N), (N,-+), (--,N), (N,--)" << endl;
-		} else {
-			cout << "Traditional library construction detected. Retain 6 PE mapping pairs:\n(++,+-), (-+,--), (++,N), (N,+-), (-+,N), (N,--)" << endl;
+		} else if (detectprotocol==0) {
+			cout << "Traditional library construction by shotgun approach detected. Retain 6 PE mapping pairs:\n(++,+-), (-+,--), (++,N), (N,+-), (-+,N), (N,--)" << endl;
+		} else if (detectprotocol==1) {
+			cout << "Traditional library construction by Nextera transposase approach detected. Retain 6 PE mapping pairs:\n(+-,++), (--,-+), (N,++), (+-,N), (N,-+), (--,N)" << endl;
 		}
-		opts.pico=detectpico;
+		opts.protocol=detectprotocol;
 	} else {
 		cout << "Using customized PE tags" << endl;
 	}
 }
 
-// Six true PE mappings in traditional library preparation:
-set< string > validtags_trad {
+// Six true PE mappings in traditional library preparation by shotgun approach:
+set< string > validtags_tradshotgun {
 	"++,+-", "-+,--"
 		, "++,N", "N,+-"
 		, "-+,N", "N,--"
 };
-static int filter_trad(const bam1_t *b, void *data) {
+static int filter_tradshotgun(const bam1_t *b, void *data) {
 	string qname=string((char*)bam1_qname(b));
 	uint32_t tid=b->core.tid;
 	map< string, vector< string > > &read2tagchr=read2tag[tid];
@@ -373,13 +396,36 @@ static int filter_trad(const bam1_t *b, void *data) {
 	// skip multiple mapping in both ends
 	if (read2tagchr.end()!=it) {
 		string tags=it->second[0]+","+it->second[1];
-		set< string > :: iterator sit=validtags_trad.find(tags);
-		if (validtags_trad.end()!=sit) {
+		set< string > :: iterator sit=validtags_tradshotgun.find(tags);
+		if (validtags_tradshotgun.end()!=sit) {
 			samwrite((samfile_t*)data, b);
 		}
 	}
 	return 0;
 }
+
+// Six true PE mappings in traditional library preparation by Nextera transposase approach:
+set< string > validtags_tradnextera {
+	"+-,++", "--,-+"
+		, "N,++", "+-,N"
+		, "N,-+", "--,N"
+};
+static int filter_tradnextera(const bam1_t *b, void *data) {
+	string qname=string((char*)bam1_qname(b));
+	uint32_t tid=b->core.tid;
+	map< string, vector< string > > &read2tagchr=read2tag[tid];
+	map< string, vector< string > > :: iterator it=read2tagchr.find(qname);
+	// skip multiple mapping in both ends
+	if (read2tagchr.end()!=it) {
+		string tags=it->second[0]+","+it->second[1];
+		set< string > :: iterator sit=validtags_tradnextera.find(tags);
+		if (validtags_tradnextera.end()!=sit) {
+			samwrite((samfile_t*)data, b);
+		}
+	}
+	return 0;
+}
+
 // 12 true PE mappings in Pico library preparation:
 set< string > validtags_pico {
 	"++,+-", "+-,++", "-+,--", "--,-+"
@@ -460,10 +506,12 @@ void pefilterchrbatch(string bamfile, string outfile, vector< string > chrs) {
 		// 2. Second scan to filter false paired mapping
 		if (! opts.validtags.empty()) {
 			result=bam_fetch(in->x.bam, idx, tid, beg, end, out, filter_input);
-		} else if (opts.pico) {
+		} else if (opts.protocol==2) {
 			result=bam_fetch(in->x.bam, idx, tid, beg, end, out, filter_pico);
-		} else {
-			result=bam_fetch(in->x.bam, idx, tid, beg, end, out, filter_trad);
+		} else if (opts.protocol==0) {
+			result=bam_fetch(in->x.bam, idx, tid, beg, end, out, filter_tradshotgun);
+		} else if (opts.protocol==1) {
+			result=bam_fetch(in->x.bam, idx, tid, beg, end, out, filter_tradnextera);
 		}
 		if (result<0) {
 			cerr << "Error: failed to filter region " << chr << endl;
@@ -602,7 +650,7 @@ int pefilter(string bamfile, string outfile)
 	if (opts.validtags.empty()) { // Positive rate is not meaningful for customized tags
 		int total=0;
 		int postivenumber=0;
-		calpostiverate(tagsresult, opts.pico, total, postivenumber);
+		calpostiverate(tagsresult, opts.protocol, total, postivenumber);
 		cout << "total reads: " << total << "; positive reads: " << postivenumber << endl;
 		if (total>0) {
 			double rate=1.0*postivenumber/total;
