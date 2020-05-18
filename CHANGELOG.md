@@ -1,3 +1,7 @@
+# MOABS v1.3.9.1 @ 20200517
+
+A new feature for BSeQC2 and PEFilter: add a traditional construction protocol by Nextera transposase-based approach.
+
 # MOABS v1.3.9.0 @ 20200506
 
 New feature: add a second quality control for the PEFilter BAM.
