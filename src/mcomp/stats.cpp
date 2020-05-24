@@ -2,6 +2,9 @@
 //#include <boost/format.hpp>
 #include <iostream>
 #include <boost/math/distributions.hpp>
+// Gauss-Kronrod quadrature
+#include <boost/math/quadrature/gauss_kronrod.hpp>
+
 //#include "nr3.h"
 #include "types.h"
 #include "lut.h"
@@ -11,8 +14,7 @@
 using namespace std;
 using namespace boost;
 using namespace boost::math;
-
-
+using namespace boost::math::quadrature;
 
 ////////////////////adapt.h##################
 struct Adapt {
@@ -204,13 +206,28 @@ double pdiff(int  k1, int  n1, int  k2, int  n2, double  d, double tolerance=TOL
 	double lower = max( max(mean1-no_std_dev*sd1, mean2-no_std_dev*sd2), max(0.0, d) );
 	double upper = min( mean1 + no_std_dev*sd1, 1.0 );
 	
-	Adapt Ad(tolerance); 
-
-	double mainpart = Ad.integrate(jointProb, lower, upper);
 	if(lower > upper){ double tmp = lower; lower = upper; upper = tmp; }
-	
-	double testLower = Ad.integrate( jointProb, max(0.0, lower - no_std_dev * sd1), lower );
-	double testUpper = Ad.integrate( jointProb, upper, min(1.0, upper + no_std_dev * sd1) );
+	// Adapt Ad(tolerance);
+	// double mainpart = Ad.integrate(jointProb, lower, upper);
+	// double testLower = Ad.integrate( jointProb, max(0.0, lower - no_std_dev * sd1), lower );
+	// double testUpper = Ad.integrate( jointProb, upper, min(1.0, upper + no_std_dev * sd1) );
+
+	double left=max(0.0, lower - no_std_dev * sd1);
+	double right=min(1.0, upper + no_std_dev * sd1);
+
+	double mainpart=0.0;
+	if (lower<upper) {
+		mainpart=gauss_kronrod<double, GaussKronrodN>::integrate(jointProb, lower, upper, GaussKronrodMAXDEPTH, GaussKronrodTOLER);
+	}
+	double testLower=0.0;
+	if (left<lower) {
+		testLower=gauss_kronrod<double, GaussKronrodN>::integrate(jointProb, left, lower, GaussKronrodMAXDEPTH, GaussKronrodTOLER);
+	}
+	double testUpper=0.0;
+	if (upper<right) {
+		testUpper=gauss_kronrod<double, GaussKronrodN>::integrate(jointProb, upper, right, GaussKronrodMAXDEPTH, GaussKronrodTOLER);
+	}
+
 	if( testLower + testUpper > tolerance && testLower + testUpper > 0.001*mainpart ){ 
 		std::cerr<<"please increase no_std_dev at this tolerance for pdiff:" << k1 <<","<< n1 <<","<< k2 <<","<< n2 <<","<< d << " AT "<< testLower <<","<< testUpper <<","<< mainpart <<"\t" << tolerance << endl;
 		std::cerr << "For " << mean1 << "\t" << sd1 << "\t" << mean2 << "\t" << sd2 << "\t" << lower << "\t" << upper << endl;
