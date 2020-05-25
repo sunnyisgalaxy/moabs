@@ -9,7 +9,10 @@
 #define DIFFDELTA 0.01
 //make it option?
 
-
+// Gauss-Kronrod quadrature
+#define GaussKronrodN 15
+#define GaussKronrodMAXDEPTH 5
+#define GaussKronrodTOLER 1e-10
 
 struct CI
 {

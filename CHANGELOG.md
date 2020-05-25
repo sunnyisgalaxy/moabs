@@ -1,3 +1,7 @@
+# MOABS v1.3.9.2 @ 20200524
+
+A feature improvement to speedup numerical integral for big counts in pdiff() using Gauss-Kronrod quadrature.
+
 # MOABS v1.3.9.1 @ 20200517
 
 A new feature for BSeQC2 and PEFilter: add a traditional construction protocol by Nextera transposase-based approach.
