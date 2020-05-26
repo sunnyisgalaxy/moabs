@@ -1,3 +1,11 @@
+# MOABS v1.3.9.3 @ 20200526
+
+Compiling fixes on Mac OS X.
+
+1. To rename version to version.txt under gzstream, to avoid name clash with STL by clang.
+
+2. To suppress the diagnosis on narrow conversions in BSMAP using `-Wno-narrowing` under OSX. Otherwise, clang fails the compilation due to narrow conversions.
+
 # MOABS v1.3.9.2 @ 20200524
 
 A feature improvement to speedup numerical integral for big counts in pdiff() using Gauss-Kronrod quadrature.
