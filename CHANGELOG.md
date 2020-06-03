@@ -1,3 +1,7 @@
+# MOABS v1.3.9.4 @ 20200603
+
+Minor release: add notes about usage of `-i` and `--def`.
+
 # MOABS v1.3.9.3 @ 20200526
 
 Compiling fixes on Mac OS X.
