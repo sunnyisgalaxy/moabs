@@ -169,7 +169,7 @@ int addtag(const bam1_t *b, string & ref, vector< vector< int > > & readcounts) 
 
 	size_t qlen=b->core.l_qseq;
 	if (opts.length<qlen) {
-		cerr << "Error: the input length (-l|--length) is less than the read length "
+		cerr << "Error: the input length (-l|--length) is less than the length of query sequence. "
 			<< opts.length << "<" << qlen
 			<< ". Please increase the input length and run the program again." << endl;
 		exit(1);
