@@ -21,6 +21,7 @@
 #include <vector>
 #include <algorithm>
 #include <map>
+#include <set>
 //#include <valarray>
 //#include <numeric>
 #include <iterator>
@@ -176,6 +177,10 @@ public:
 	int reportStrand;		//output *_strand.bed? //this file has been incorporated in *bam.bed file and is only for debuging purpose now.
 	int reportSkip; 		//output *_skip.bed?
 	int reportCombined; 	//output *.bed?
+	int statSplit;   //report is splited into 3 parts: chrom1(human), chrom2(lambda), chrom3(virus)
+	set<string> splitChrom1;
+	set<string> splitChrom2;
+	
 	Opts(){
 		threads = 1;
 		outputDir = "./";
@@ -202,6 +207,7 @@ public:
 		reportStrand = 0;
 		reportSkip = 0;
 		reportCombined = 0;
+		statSplit = 0;
 	};
 } opts;
 
@@ -233,7 +239,8 @@ int parse_options(int ac, char * av[]){
 	("reportCHX", 							po::value<char>()->default_value('X'), "X=G generates a file for CHG methylation; A/C/T generates file for CHA/CHC/CHT meth; This file is large;")
 	("fullMode,a", 							po::value<int>()->default_value(0), "Specify whether to turn on full mode. Off(0): only *.G.bed, *.HG.bed and *_stat.txt are allowed to be generated. On(1): file *.HG.bed, *.bed, *_skip.bed, and *_strand.bed are forced to be generated. Extremely large files will be generated at fullMode.")
 	("statsOnly", 							po::value<int>()->default_value(0), "Off(0): no effect. On(1): only *_stat.txt is generated.")
-	("keepTemp", 							po::value<int>()->default_value(0), "Specify whether to keep temp files;")
+    ("statSplit",                           po::value<string>(), "2 group of chromosome should be specifiied to split the stat file into 3. Format: chr1,chr2,chr3;chrLambda   The example setting will split the original stat into 3 files: one for chr1,2,3; one for chrLambda; one for all the other chromsomes.")
+    ("keepTemp", 							po::value<int>()->default_value(0), "Specify whether to keep temp files;")
 	("threads,p",							po::value<int>()->default_value(1),"Number of threads on all mapped file. Suggest 1~8 on EACH input file depending RAM size and disk speed.")
 	;
 	//toadd
@@ -398,6 +405,33 @@ int parse_options(int ac, char * av[]){
 			configFile 				<<	options[k].as<int>();
 			cout 					<<	options[k].as<int>();
 		}
+        else if(k == "statSplit"){
+            opts.statSplit          =   1; // Split stats marker
+            string inputChromSplit = options[k].as<string>(); // Get the input string
+            char *iCSc = new char[inputChromSplit.length()+1];
+            strcpy(iCSc, inputChromSplit.c_str());
+            //const char *groupspliter = ";";
+            //const char *chromspliter = ",";
+            // Split the string and store all input chromsomes from chromArr1, chromArr2 into opts.splitChrom1 and opts.splitChrom2    
+            char *chromArr1 = strtok(iCSc, ";");
+            char *chromArr2 = strtok(NULL, ";");
+            char *chrom = strtok(chromArr1, ",");
+            opts.splitChrom1.insert(string(chrom));
+            while (chrom){
+                chrom = strtok(NULL, ",");
+                opts.splitChrom1.insert(string(chrom));
+            }
+
+            chrom = strtok(chromArr2, ",");
+            opts.splitChrom2.insert(string(chrom));
+            while (chrom){
+                chrom = strtok(NULL, ",");
+                opts.splitChrom2.insert(string(chrom));
+            }
+            
+            configFile      <<  options[k].as<string>();
+            cout            <<  options[k].as<string>();
+        }
 		else if( k == "keepTemp"){
 			opts.keepTemp 			= 	options[k].as<int>();
 			configFile 				<<	options[k].as<int>();
@@ -1487,7 +1521,7 @@ int strandCombinedBed( string laneName, string ofile, string chromName, map<int,
 	return 0;
 };
 
-void mergeStatbVec( string laneName, ofstream & statsFile )
+void mergeStatbVec( string laneName, ofstream & statsFile, set<string> chroms={} )
 {
 	statsFile << endl;
 	statsFile << "Strand combined stats where CGs on two strands are regarded as one Cytosine." << endl;
@@ -1508,10 +1542,13 @@ void mergeStatbVec( string laneName, ofstream & statsFile )
 		for(map < string, map<char, stat> >::iterator it = statbByLane[laneName].begin(); it != statbByLane[laneName].end(); it++)
 		{
 			string chromName = it->first;
-			xsites 	+= statbByLane[laneName][chromName][ nexts[n] ].sites;
-			xmean 	+= statbByLane[laneName][chromName][ nexts[n] ].sites * statbByLane[laneName][chromName][ nexts[n] ].mean;
-			xtotalC += statbByLane[laneName][chromName][ nexts[n] ].totalC;
-			xmethC 	+= statbByLane[laneName][chromName][ nexts[n] ].methC;
+			if (chroms.empty() || chroms.find(chromName)!=chroms.end()) 
+			{
+			    xsites 	+= statbByLane[laneName][chromName][ nexts[n] ].sites;
+			    xmean 	+= statbByLane[laneName][chromName][ nexts[n] ].sites * statbByLane[laneName][chromName][ nexts[n] ].mean;
+			    xtotalC += statbByLane[laneName][chromName][ nexts[n] ].totalC;
+			    xmethC 	+= statbByLane[laneName][chromName][ nexts[n] ].methC;
+			}
 		}
 		xmean = xmean / xsites;
 		globalRatio = double(xmethC) / xtotalC;
@@ -1535,11 +1572,15 @@ void mergeStatbVec( string laneName, ofstream & statsFile )
 	if(opts.reference != ""){
 		for(map<string, vector<int> >::iterator it = numcByChrom.begin(); it != numcByChrom.end(); it++){
 			vector <int> numc = it->second;
-			nc += numc[0];
-			ncg += numc[1];
-			nch += numc[2];
-			nchg += numc[3];
-			nchh += numc[4];
+			string chromName = it->first;
+            if (chroms.empty() || chroms.find(chromName)!=chroms.end())
+            {
+			    nc += numc[0];
+			    ncg += numc[1];
+			    nch += numc[2];
+			    nchg += numc[3];
+			    nchh += numc[4];
+			}
 		}
 		statsFile << "0(genome)" <<"\t"<< nc <<"\t"<< ncg <<"\t"<< nch <<"\t"<< nchg <<"\t"<< nchh <<"\t"<< "NA\tNA\tNA\tNA\tNA" << endl;
 	}
@@ -1550,18 +1591,21 @@ void mergeStatbVec( string laneName, ofstream & statsFile )
 		for(map < string, map<int, statByDepth> >::iterator it = statbByDepthByLane[laneName].begin(); it != statbByDepthByLane[laneName].end(); it++)
 		{
 			string chromName = it->first;
+            if (chroms.empty() || chroms.find(chromName)!=chroms.end())
+            {
+			    nc 		+= statbByDepthByLane[laneName][chromName][ d ].nc;
+			    ncg 	+= statbByDepthByLane[laneName][chromName][ d ].ncg;
+			    nch 	+= statbByDepthByLane[laneName][chromName][ d ].nch;
+			    nchg 	+= statbByDepthByLane[laneName][chromName][ d ].nchg;
+			    nchh 	+= statbByDepthByLane[laneName][chromName][ d ].nchh;
 
-			nc 		+= statbByDepthByLane[laneName][chromName][ d ].nc;
-			ncg 	+= statbByDepthByLane[laneName][chromName][ d ].ncg;
-			nch 	+= statbByDepthByLane[laneName][chromName][ d ].nch;
-			nchg 	+= statbByDepthByLane[laneName][chromName][ d ].nchg;
-			nchh 	+= statbByDepthByLane[laneName][chromName][ d ].nchh;
-
-			if( statbByDepthByLane[laneName][chromName][ d ].nc   > 0 ) rc 		+= statbByDepthByLane[laneName][chromName][ d ].nc 	 * statbByDepthByLane[laneName][chromName][ d ].rc;
-			if( statbByDepthByLane[laneName][chromName][ d ].ncg  > 0 ) rcg 	+= statbByDepthByLane[laneName][chromName][ d ].ncg	 * statbByDepthByLane[laneName][chromName][ d ].rcg;
-			if( statbByDepthByLane[laneName][chromName][ d ].nch  > 0 ) rch 	+= statbByDepthByLane[laneName][chromName][ d ].nch  * statbByDepthByLane[laneName][chromName][ d ].rch;
-			if( statbByDepthByLane[laneName][chromName][ d ].nchg > 0 ) rchg	+= statbByDepthByLane[laneName][chromName][ d ].nchg * statbByDepthByLane[laneName][chromName][ d ].rchg;
-			if( statbByDepthByLane[laneName][chromName][ d ].nchh > 0 ) rchh 	+= statbByDepthByLane[laneName][chromName][ d ].nchh * statbByDepthByLane[laneName][chromName][ d ].rchh;
+    			if( statbByDepthByLane[laneName][chromName][ d ].nc   > 0 ) rc 		+= statbByDepthByLane[laneName][chromName][ d ].nc 	 * statbByDepthByLane[laneName][chromName][ d ].rc;
+    			if( statbByDepthByLane[laneName][chromName][ d ].ncg  > 0 ) rcg 	+= statbByDepthByLane[laneName][chromName][ d ].ncg	 * statbByDepthByLane[laneName][chromName][ d ].rcg;
+    			if( statbByDepthByLane[laneName][chromName][ d ].nch  > 0 ) rch 	+= statbByDepthByLane[laneName][chromName][ d ].nch  * statbByDepthByLane[laneName][chromName][ d ].rch;
+    			if( statbByDepthByLane[laneName][chromName][ d ].nchg > 0 ) rchg	+= statbByDepthByLane[laneName][chromName][ d ].nchg * statbByDepthByLane[laneName][chromName][ d ].rchg;
+    			if( statbByDepthByLane[laneName][chromName][ d ].nchh > 0 ) rchh 	+= statbByDepthByLane[laneName][chromName][ d ].nchh * statbByDepthByLane[laneName][chromName][ d ].rchh;
+		
+		    }
 		}
 
 		rc 	 = rc 	/ nc;
@@ -1651,7 +1695,7 @@ int strandSpecificBed(string laneName, string ofile, string chromName, map<int, 
 	return 0;
 };
 
-void mergeStatsVec( string laneName, ofstream & statsFile )
+void mergeStatsVec( string laneName, ofstream & statsFile, set<string> chroms={} )
 {
 	statsFile << "Strand specific stats where CGs on two strands are regarded as two Cytosines." << endl;
 	statsFile << "next\tstrand\tsites\tmean\ttotalC\tmethC\tglobal\tdepth\n";
@@ -1676,10 +1720,12 @@ void mergeStatsVec( string laneName, ofstream & statsFile )
 			for(map < string, map< char, map<char, stat> > >::iterator it = statsByLane[laneName].begin(); it != statsByLane[laneName].end(); it++)
 			{
 				string chromName = it->first;
-				xsites 	+= statsByLane[laneName][chromName][strand][ next ].sites;
-				xmean 	+= statsByLane[laneName][chromName][strand][ next ].sites * statsByLane[laneName][chromName][strand][ next ].mean;
-				xtotalC += statsByLane[laneName][chromName][strand][ next ].totalC;
-				xmethC 	+= statsByLane[laneName][chromName][strand][ next ].methC;
+				if (chroms.empty() || chroms.find(chromName)!=chroms.end()){
+				    xsites 	+= statsByLane[laneName][chromName][strand][ next ].sites;
+				    xmean 	+= statsByLane[laneName][chromName][strand][ next ].sites * statsByLane[laneName][chromName][strand][ next ].mean;
+				    xtotalC += statsByLane[laneName][chromName][strand][ next ].totalC;
+				    xmethC 	+= statsByLane[laneName][chromName][strand][ next ].methC;
+				}
 			}
 			xmean = xmean / xsites;
 			globalRatio = double(xmethC) / xtotalC;
@@ -2390,11 +2436,46 @@ void mergeChroms(string file){
 	}
 
 	ofstream statsFile;
-	statsFile.open((file + "_stat.txt").c_str(), ios_base::out);
-	statsFile << endl << "All reads = " << propertiesByLane[file].nAllReads << "; Mapped reads = " << propertiesByLane[file].nMappedReads << endl << endl;
-	mergeStatsVec(file, statsFile);
-	mergeStatbVec(file, statsFile);
-	statsFile.close();
+	if (opts.statSplit==0) {
+	    statsFile.open((file + "_stat.txt").c_str(), ios_base::out);
+	    statsFile << endl << "All reads = " << propertiesByLane[file].nAllReads << "; Mapped reads = " << propertiesByLane[file].nMappedReads << endl << endl;
+	    mergeStatsVec(file, statsFile);
+	    mergeStatbVec(file, statsFile);
+	    statsFile.close();
+    }
+    else {
+        // The split marker is opts.statSplit: 0:no split; 1: split;
+        // Currently we have 2 sets of chromsomes for chromsomes group 1(opts.splitChrom1) and chromsomes group 2(opts.splitChrom2), but we need to
+        // generate the 3rd set.
+        set<string> splitChrom3;
+        for(map < string, map< char, map<char, stat> > >::iterator it = statsByLane[file].begin(); it != statsByLane[file].end(); it++)
+        {
+            string chromName =  it->first;
+            if (opts.splitChrom1.find(chromName)==opts.splitChrom1.end() && opts.splitChrom2.find(chromName)==opts.splitChrom2.end())
+            {
+                splitChrom3.insert(chromName);
+            }
+        }
+
+        // Chromsomes group 1
+ 	    statsFile.open((file + "_stat1.txt").c_str(), ios_base::out);
+	    statsFile << endl << "All reads = " << propertiesByLane[file].nAllReads << "; Mapped reads = " << propertiesByLane[file].nMappedReads << endl << endl;
+	    mergeStatsVec(file, statsFile, opts.splitChrom1);
+	    mergeStatbVec(file, statsFile, opts.splitChrom1);
+	    statsFile.close();
+        // Chromsomes group 2
+ 	    statsFile.open((file + "_stat2.txt").c_str(), ios_base::out);
+	    statsFile << endl << "All reads = " << propertiesByLane[file].nAllReads << "; Mapped reads = " << propertiesByLane[file].nMappedReads << endl << endl;
+	    mergeStatsVec(file, statsFile, opts.splitChrom2);
+	    mergeStatbVec(file, statsFile, opts.splitChrom2);
+	    statsFile.close();
+        // Chromsomes group 3
+ 	    statsFile.open((file + "_stat3.txt").c_str(), ios_base::out);
+	    statsFile << endl << "All reads = " << propertiesByLane[file].nAllReads << "; Mapped reads = " << propertiesByLane[file].nMappedReads << endl << endl;
+	    mergeStatsVec(file, statsFile, splitChrom3);
+	    mergeStatbVec(file, statsFile, splitChrom3);
+	    statsFile.close();
+    }
 
 	if(opts.fullMode == 1){
 			ofstream bBedFile;
