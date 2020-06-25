@@ -1538,7 +1538,7 @@ void mergeStatbVec( string laneName, ofstream & statsFile, set<string> chroms={}
 		for(map < string, map<char, stat> >::iterator it = statbByLane[laneName].begin(); it != statbByLane[laneName].end(); it++)
 		{
 			string chromName = it->first;
-			if (chroms.empty() || chroms.find(chromName)!=chroms.end()) 
+			if (opts.statSplit==0 || (!chroms.empty() && chroms.find(chromName)!=chroms.end())) 
 			{
 			    xsites 	+= statbByLane[laneName][chromName][ nexts[n] ].sites;
 			    xmean 	+= statbByLane[laneName][chromName][ nexts[n] ].sites * statbByLane[laneName][chromName][ nexts[n] ].mean;
@@ -1569,7 +1569,7 @@ void mergeStatbVec( string laneName, ofstream & statsFile, set<string> chroms={}
 		for(map<string, vector<int> >::iterator it = numcByChrom.begin(); it != numcByChrom.end(); it++){
 			vector <int> numc = it->second;
 			string chromName = it->first;
-            if (chroms.empty() || chroms.find(chromName)!=chroms.end())
+            if (opts.statSplit==0 || (!chroms.empty() && chroms.find(chromName)!=chroms.end()))
             {
 			    nc += numc[0];
 			    ncg += numc[1];
@@ -1587,7 +1587,7 @@ void mergeStatbVec( string laneName, ofstream & statsFile, set<string> chroms={}
 		for(map < string, map<int, statByDepth> >::iterator it = statbByDepthByLane[laneName].begin(); it != statbByDepthByLane[laneName].end(); it++)
 		{
 			string chromName = it->first;
-            if (chroms.empty() || chroms.find(chromName)!=chroms.end())
+            if (opts.statSplit==0 || (!chroms.empty() && chroms.find(chromName)!=chroms.end()))
             {
 			    nc 		+= statbByDepthByLane[laneName][chromName][ d ].nc;
 			    ncg 	+= statbByDepthByLane[laneName][chromName][ d ].ncg;
@@ -1716,7 +1716,7 @@ void mergeStatsVec( string laneName, ofstream & statsFile, set<string> chroms={}
 			for(map < string, map< char, map<char, stat> > >::iterator it = statsByLane[laneName].begin(); it != statsByLane[laneName].end(); it++)
 			{
 				string chromName = it->first;
-				if (chroms.empty() || chroms.find(chromName)!=chroms.end()){
+				if (opts.statSplit==0 || (!chroms.empty() && chroms.find(chromName)!=chroms.end())){
 				    xsites 	+= statsByLane[laneName][chromName][strand][ next ].sites;
 				    xmean 	+= statsByLane[laneName][chromName][strand][ next ].sites * statsByLane[laneName][chromName][strand][ next ].mean;
 				    xtotalC += statsByLane[laneName][chromName][strand][ next ].totalC;
