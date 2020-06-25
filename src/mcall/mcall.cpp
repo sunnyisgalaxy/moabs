@@ -239,7 +239,7 @@ int parse_options(int ac, char * av[]){
 	("reportCHX", 							po::value<char>()->default_value('X'), "X=G generates a file for CHG methylation; A/C/T generates file for CHA/CHC/CHT meth; This file is large;")
 	("fullMode,a", 							po::value<int>()->default_value(0), "Specify whether to turn on full mode. Off(0): only *.G.bed, *.HG.bed and *_stat.txt are allowed to be generated. On(1): file *.HG.bed, *.bed, *_skip.bed, and *_strand.bed are forced to be generated. Extremely large files will be generated at fullMode.")
 	("statsOnly", 							po::value<int>()->default_value(0), "Off(0): no effect. On(1): only *_stat.txt is generated.")
-    ("statSplit",                           po::value<string>(), "2 group of chromosome should be specifiied to split the stat file into 3. Format: chr1,chr2,chr3;chrLambda   The example setting will split the original stat into 3 files: one for chr1,2,3; one for chrLambda; one for all the other chromsomes.")
+    ("statSplit",                           po::value<string>(), "2 group of chromosome should be specifiied to split the stat file into 3. Format: chr1,chr2,chr3/chrLambda   The example setting will split the original stat into 3 files: one for chr1,2,3; one for chrLambda; one for all the other chromsomes.")
     ("keepTemp", 							po::value<int>()->default_value(0), "Specify whether to keep temp files;")
 	("threads,p",							po::value<int>()->default_value(1),"Number of threads on all mapped file. Suggest 1~8 on EACH input file depending RAM size and disk speed.")
 	;
@@ -413,22 +413,18 @@ int parse_options(int ac, char * av[]){
             //const char *groupspliter = ";";
             //const char *chromspliter = ",";
             // Split the string and store all input chromsomes from chromArr1, chromArr2 into opts.splitChrom1 and opts.splitChrom2    
-            char *chromArr1 = strtok(iCSc, ";");
-            char *chromArr2 = strtok(NULL, ";");
+	    char *chromArr1 = strtok(iCSc, "/");
+            char *chromArr2 = strtok(NULL, "/");
             char *chrom = strtok(chromArr1, ",");
-            opts.splitChrom1.insert(string(chrom));
             while (chrom){
+		opts.splitChrom1.insert(string(chrom));
                 chrom = strtok(NULL, ",");
-                opts.splitChrom1.insert(string(chrom));
             }
-
             chrom = strtok(chromArr2, ",");
-            opts.splitChrom2.insert(string(chrom));
             while (chrom){
+		opts.splitChrom2.insert(string(chrom));
                 chrom = strtok(NULL, ",");
-                opts.splitChrom2.insert(string(chrom));
             }
-            
             configFile      <<  options[k].as<string>();
             cout            <<  options[k].as<string>();
         }
