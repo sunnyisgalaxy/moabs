@@ -12,9 +12,9 @@ AOBJS=		bam_tview.o bam_plcmd.o sam_view.o \
 			cut_target.o phase.o bam2depth.o padding.o bedcov.o bamshuf.o \
 			bam_tview_curses.o bam_tview_html.o
 PROG=		samtools
-INCLUDES=	-I/home/miniconda3/include -I.
+INCLUDES=	-I.
 SUBDIRS=	. bcftools misc
-LIBPATH=        -I/home/miniconda3/lib 
+LIBPATH=
 LIBCURSES=	-lncurses # -lXCurses
 
 .SUFFIXES:.c .o
