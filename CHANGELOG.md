@@ -1,3 +1,11 @@
+# MOABS v1.3.9.5 @ 20200626
+
+Feature release:
+
+1. To support chromosome split when generating statistics file in `MCALL`.
+
+2. To Refine the error message of short query length in `BSeQC2`.
+
 # MOABS v1.3.9.4 @ 20200603
 
 Minor release: add notes about usage of `-i` and `--def`.
