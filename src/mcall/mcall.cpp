@@ -177,8 +177,8 @@ public:
 	int reportStrand;		//output *_strand.bed? //this file has been incorporated in *bam.bed file and is only for debuging purpose now.
 	int reportSkip; 		//output *_skip.bed?
 	int reportCombined; 	//output *.bed?
-	vector<string> splitChromRecord; // --statSplit
-	vector<set<string>> splitChrom;
+	vector< string > splitChromRecord; // --statSplit
+	vector< set< string > > splitChrom;
 
 	Opts(){
 		threads = 1;
@@ -2468,7 +2468,7 @@ void mergeChroms(string file){
 
 		for (int i=0;i<opts.splitChrom.size();i++)
 		{
-			statsFile.open((file + "_stat" + to_string(i+1) + ".txt" ).c_str(), ios_base::out);
+			statsFile.open((file + "_stat" + itos(i+1) + ".txt" ).c_str(), ios_base::out);
 			statsFile << endl << "All reads = " << propertiesByLane[file].nAllReads << "; Mapped reads = " << propertiesByLane[file].nMappedReads << endl << endl;
 			statsFile << endl << "Selected chromosomes: " << opts.splitChromRecord[i] << endl << endl;
 			mergeStatsVec(file, statsFile, opts.splitChrom[i]);
