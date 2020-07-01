@@ -9,7 +9,7 @@ fi
 
 echo "Sorting BAM ..."
 mv $1 $1.unsorted.bam
-samtools sort $1.unsorted.bam ${outbam%.*}
+samtools sort -@ 4 $1.unsorted.bam ${outbam%.*}
 if [ $? -ne 0 ]; then
 	echo "BAM file sorting not sucessful."
 	echo "$outbam is in unsorted BAM format".
