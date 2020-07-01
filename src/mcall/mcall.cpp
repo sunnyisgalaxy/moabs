@@ -2536,7 +2536,7 @@ void initPrep(string file)
 		string idxfile=file+".bai";
 		if (!boost::filesystem::exists(idxfile)) {
 			cout << "Index file is missing: " << idxfile << endl;
-			string cmd = "samtools index " + file;
+			string cmd = "samtools index " + file + " 2>&1";
 			cout << cmd << endl;
 			FILE *fp;
 			fp=popen(cmd.c_str(), "r");
@@ -2544,13 +2544,15 @@ void initPrep(string file)
 				fprintf(stderr, "popen error.\n");
 				exit(EXIT_FAILURE);
 			}
+
+			string message;
 			char info[10240];
 			while (fgets(info, 10240, fp) != NULL) {
 				printf("%s", info);
+				message+=info;
 			}
 			pclose(fp);
 
-			string message(info);
 			if (message.find("fail")!=string::npos) {
 				cerr << "Error: fail to index " << file << endl;
 				cerr << "Please input a correctly indexed BAM file." << endl;
