@@ -1931,17 +1931,23 @@ int createHashFromFile(string file, string chromName, map<int, cMeth> & meth,  s
 		}
 
 		b = bam_init1();
+		bam_index_t *idx=0;
+		idx = bam_index_load(file.c_str());
+		int tid, beg, end, result;
+		bam_parse_region(BAM_fp->header, chromName.c_str(), &tid, &beg, &end);
+		bam_iter_t biter = bam_iter_query(idx, tid, beg, end);
+		int status = 0;
 
-		int found = 0;
-		while(samread(BAM_fp,b) > 0 )
+		while((status = bam_iter_read(BAM_fp->x.bam, biter, b))>=0)
 		{
 
-			if( chromsByLane[file][b->core.tid] != chromName ) {
-				if(found) break; //for sorted bam, otherwise it's a bug;
-				continue;
-			} else {
-				found = 1;
-			}
+			// Old code for unindexed bam:
+			// if( chromsByLane[file][b->core.tid] != chromName ) {
+			//	if(found) break; //for sorted bam, otherwise it's a bug;
+			//	continue;
+			// } else {
+			//	found = 1;
+			// }
 
 			read.name = string((char*)bam1_qname(b));
 
@@ -2114,6 +2120,8 @@ int createHashFromFile(string file, string chromName, map<int, cMeth> & meth,  s
 		}
 
 		//finished creating hash of cpgs found from all lines
+		bam_iter_destroy(biter);
+		bam_index_destroy(idx);
 		samclose(BAM_fp);
 
 	}	//end of BAM format
@@ -2515,6 +2523,13 @@ void initPrep(string file)
 	}
 	else if( format == "BAM" ) {
 		cout << "From the extension of file " << file << ", program is parsing file according to BAM foramt" << endl;
+		fstream _idxFile;
+		_idxFile.open(file+".bai");
+		if (!_idxFile)
+		{
+			string sys_cmd = "samtools index " + file;
+			system(sys_cmd.c_str());
+		}
 	}
 	else if( format == "BSP" ) {
 		cerr << "BSP format does not contain quality string and is not supported by this program" << endl;
