@@ -1931,13 +1931,23 @@ int createHashFromFile(string file, string chromName, map<int, cMeth> & meth,  s
 		}
 
 		b = bam_init1();
+
 		bam_index_t *idx=0;
 		idx = bam_index_load(file.c_str());
-		int tid, beg, end, result;
+		if (idx==0) {
+			cerr << "Error: not found index file of " << file << endl;
+			exit(1);
+		}
+
+		int tid, beg, end;
 		bam_parse_region(BAM_fp->header, chromName.c_str(), &tid, &beg, &end);
+		if (tid<0) {
+			cerr << "Error: unknown reference name " << chromName << endl;
+			exit(1);
+		}
+
 		bam_iter_t biter = bam_iter_query(idx, tid, beg, end);
 		int status = 0;
-
 		while((status = bam_iter_read(BAM_fp->x.bam, biter, b))>=0)
 		{
 
@@ -2523,12 +2533,29 @@ void initPrep(string file)
 	}
 	else if( format == "BAM" ) {
 		cout << "From the extension of file " << file << ", program is parsing file according to BAM foramt" << endl;
-		fstream _idxFile;
-		_idxFile.open(file+".bai");
-		if (!_idxFile)
-		{
-			string sys_cmd = "samtools index " + file;
-			system(sys_cmd.c_str());
+		string idxfile=file+".bai";
+		if (!boost::filesystem::exists(idxfile)) {
+			cout << "Index file is missing: " << idxfile << endl;
+			string cmd = "samtools index " + file;
+			cout << cmd << endl;
+			FILE *fp;
+			fp=popen(cmd.c_str(), "r");
+			if (fp==NULL) {
+				fprintf(stderr, "popen error.\n");
+				exit(EXIT_FAILURE);
+			}
+			char info[10240];
+			while (fgets(info, 10240, fp) != NULL) {
+				printf("%s", info);
+			}
+			pclose(fp);
+
+			string message(info);
+			if (message.find("fail")!=string::npos) {
+				cerr << "Error: fail to index " << file << endl;
+				cerr << "Please input a correctly indexed BAM file." << endl;
+				exit(1);
+			}
 		}
 	}
 	else if( format == "BSP" ) {
