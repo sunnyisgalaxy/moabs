@@ -1,3 +1,9 @@
+# MOABS v1.3.9.6 @ 20200630
+
+Feature release:
+
+To speedup chromosome processing in `MCALL` using the BAM index file.
+
 # MOABS v1.3.9.5 @ 20200626
 
 Feature release:
