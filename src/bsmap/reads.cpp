@@ -56,7 +56,7 @@ int ReadClass::LoadBatchReads(ifstream &fin, igzstream &gzfin, int readset)  // 
 				gzfin>>p->name; gzfin.getline(ch,1000);
 				gzfin>>p->seq; p->readset=readset;
                 if(param.input_format) {//*.fq
-					gzfin>>ch; fin.getline(ch, 1000);
+					gzfin>>ch; gzfin.getline(ch, 1000);
 					gzfin>>p->qual;
 				}
                 else p->qual=string(p->seq.size(), param.zero_qual+param.default_qual);
